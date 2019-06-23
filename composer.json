@@ -1,0 +1,17 @@
+{
+  "name": "stitch",
+  "description": "STITCH ORM.",
+  "keywords": [
+    "stitch",
+    "orm"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Gareth Hudson"
+    }
+  ],
+  "require": {
+    "php": "^7.1.3"
+  }
+}
