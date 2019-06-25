@@ -49,48 +49,6 @@ class Model
     }
 
     /**
-     * @param $result
-     * @return Collection|Record
-     */
-    public function hydrate($result)
-    {
-        return $result instanceof ResultSet ? $this->hydrateMany($result) : $this->hydrateOne($result);
-    }
-
-    /**
-     * @param ResultRecord $resultRecord
-     * @return Record
-     */
-    public function hydrateOne(ResultRecord $resultRecord)
-    {
-        $record = $this->make($resultRecord->getData(), true);
-
-        foreach ($resultRecord->getRelations() as $key => $relation) {
-            $record->setRelation(
-                $key,
-                $this->relations[$key]->getForeignModel()->hydrate($relation)
-            );
-        }
-
-        return $record;
-    }
-
-    /**
-     * @param ResultSet $result
-     * @return Collection
-     */
-    public function hydrateMany(ResultSet $result)
-    {
-        $items = new Collection();
-
-        foreach ($result as $item) {
-            $items->push($this->hydrateOne($item));
-        }
-
-        return $items;
-    }
-
-    /**
      * @param array ...$arguments
      * @return Model
      */

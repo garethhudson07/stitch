@@ -8,6 +8,8 @@ use Stitch\DBAL\Builders\Column;
 use Stitch\Queries\Paths\Factory as PathFactory;
 use Stitch\Queries\Paths\Path;
 use Stitch\DBAL\Dispatcher;
+use Stitch\Result\Hydrator as ResultHydrator;
+use Stitch\Result\Hydrator;
 use Stitch\Result\Set as ResultSet;
 use Closure;
 
@@ -255,13 +257,13 @@ class Query
     }
 
     /**
-     * @return \App\Orm\Collection
+     * @return \Stitch\Collection
      */
     public function get()
     {
         $this->forceSelection();
 
-        return $this->model->hydrateMany(
+        return (new Hydrator($this->model))->hydrate(
             new ResultSet(
                 $this,
                 Dispatcher::select($this->builder)
