@@ -9,8 +9,8 @@ use Stitch\Queries\Paths\Factory as PathFactory;
 use Stitch\Queries\Paths\Path;
 use Stitch\DBAL\Dispatcher;
 use Stitch\Result\Hydrator as ResultHydrator;
-use Stitch\Result\Hydrator;
 use Stitch\Result\Set as ResultSet;
+use Stitch\Relations\Relation;
 use Closure;
 
 class Query
@@ -263,7 +263,7 @@ class Query
     {
         $this->forceSelection();
 
-        return (new Hydrator($this->model))->hydrate(
+        return (new ResultHydrator($this->model))->hydrate(
             new ResultSet(
                 $this,
                 Dispatcher::select($this->builder)
@@ -332,8 +332,15 @@ class Query
         return $this->relations[$name];
     }
 
-    public function addRelation(string $name, $relation)
+    /**
+     * @param string $name
+     * @param Relation $relation
+     * @return $this
+     */
+    public function addRelation(string $name, Relation $relation)
     {
         $this->relations[$name] = $relation->query()->join($this);
+
+        return $this;
     }
 }
