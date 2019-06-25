@@ -322,7 +322,7 @@ class Query
         $name = $path->first();
 
         if ( ! array_key_exists($name, $this->relations)) {
-            $this->relations[$name] = $this->model->getRelation($name)->query()->join($this);
+            $this->addRelation($name, $this->model->getRelation($name));
         }
 
         if ($path->count() > 1) {
@@ -330,5 +330,10 @@ class Query
         }
 
         return $this->relations[$name];
+    }
+
+    public function addRelation(string $name, $relation)
+    {
+        $this->relations[$name] = $relation->query()->join($this);
     }
 }
