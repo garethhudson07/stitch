@@ -38,7 +38,7 @@ class Hydrator
             );
         }
 
-        return $record;
+        return $instance;
     }
 
     /**
