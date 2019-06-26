@@ -194,6 +194,8 @@ class Query
             echo 'closure';
 
             $arguments[0]($this);
+
+            return $this;
         }
 
         $path = array_shift($arguments);
@@ -228,6 +230,8 @@ class Query
             echo 'closure';
 
             $arguments[0]($this);
+
+            return $this;
         }
 
         $path = array_shift($arguments);
