@@ -190,6 +190,12 @@ class Query
      */
     public function where(...$arguments)
     {
+        if ($arguments[0] instanceof Closure) {
+            echo 'closure';
+
+            $arguments[0]($this);
+        }
+
         $path = array_shift($arguments);
 
         if (count($arguments) == 1) {
@@ -210,6 +216,40 @@ class Query
         }
 
         return $this->addCondition('where', "{$table}.{$column}", $operator, $value);
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Query
+     */
+    public function orWhere(...$arguments)
+    {
+        if ($arguments[0] instanceof Closure) {
+            echo 'closure';
+
+            $arguments[0]($this);
+        }
+
+        $path = array_shift($arguments);
+
+        if (count($arguments) == 1) {
+            $operator = '=';
+            $value = $arguments[0];
+        } else {
+            list($operator, $value) = $arguments;
+        }
+
+        if (strstr($path, '.')) {
+            $path = PathFactory::divide($this->model, $path);
+            $relation = $this->getRelation($path['relation']);
+            $table = $relation->getModel()->getTable()->getName();
+            $column = $path['column']->implode();
+        } else {
+            $table = $this->model->getTable()->getName();
+            $column = $path;
+        }
+
+        return $this->addCondition('orWhere', "{$table}.{$column}", $operator, $value);
     }
 
     /**
