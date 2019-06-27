@@ -30,7 +30,7 @@ class ManyToMany extends Relation
     protected $foreignPivotKey;
 
     /**
-     * @param mixed ...$arguments
+     * @param $value
      * @return $this
      */
     public function pivot($value)
