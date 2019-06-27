@@ -6,10 +6,21 @@ use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
 
+/**
+ * Class Declaration
+ * @package Stitch\DBAL\Statements\Queries\Variables
+ */
 class Declaration extends Statement
 {
+    /**
+     * @var QueryBuilder
+     */
     protected $queryBuilder;
 
+    /**
+     * Declaration constructor.
+     * @param QueryBuilder $queryBuilder
+     */
     public function __construct(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
@@ -17,6 +28,9 @@ class Declaration extends Statement
         parent::__construct();
     }
 
+    /**
+     *
+     */
     protected function evaluate()
     {
         $this->assembler->push(
@@ -28,6 +42,10 @@ class Declaration extends Statement
         );
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @return array
+     */
     protected function variables(QueryBuilder $queryBuilder)
     {
         $table = $queryBuilder->getTable();

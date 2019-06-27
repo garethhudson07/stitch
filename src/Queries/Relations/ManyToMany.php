@@ -2,8 +2,8 @@
 
 namespace Stitch\Queries\Relations;
 
-use Stitch\DBAL\Builders\Join as JoinBuilder;
 use Stitch\DBAL\Builders\Join;
+use Stitch\DBAL\Builders\Join as JoinBuilder;
 use Stitch\Queries\Query;
 use Stitch\Schema\ForeignKey;
 use Stitch\Schema\Table;

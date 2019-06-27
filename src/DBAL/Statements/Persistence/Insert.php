@@ -6,8 +6,15 @@ use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
 
+/**
+ * Class Insert
+ * @package Stitch\DBAL\Statements\Persistence
+ */
 class Insert extends Statement
 {
+    /**
+     * @var RecordBuilder
+     */
     protected $recordBuilder;
 
     /**
@@ -21,6 +28,9 @@ class Insert extends Statement
         parent::__construct();
     }
 
+    /**
+     *
+     */
     protected function evaluate()
     {
         $this->assembler->push(
@@ -49,10 +59,7 @@ class Insert extends Statement
      */
     protected function placeholders()
     {
-        $placeholders =  array_map(function ($item)
-        {
-            return '?';
-        }, $this->recordBuilder->getAttributes());
+        $placeholders = array_replace($this->recordBuilder->getAttributes(), array_fill(0, count($this->recordBuilder->getAttributes()), '?'));
 
         return '(' . implode(', ', $placeholders) . ')';
     }

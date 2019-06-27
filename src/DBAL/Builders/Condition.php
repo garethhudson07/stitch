@@ -2,14 +2,31 @@
 
 namespace Stitch\DBAL\Builders;
 
+/**
+ * Class Condition
+ * @package Stitch\DBAL\Builders
+ */
 class Condition
 {
+    /**
+     * @var mixed
+     */
     protected $column;
 
+    /**
+     * @var mixed|string
+     */
     protected $operator = '=';
 
+    /**
+     * @var mixed
+     */
     protected $value;
 
+    /**
+     * Condition constructor.
+     * @param mixed ...$arguments
+     */
     public function __construct(...$arguments)
     {
         if ($arguments) {
@@ -24,6 +41,10 @@ class Condition
         }
     }
 
+    /**
+     * @param string $column
+     * @return $this
+     */
     public function column(string $column)
     {
         $this->column = $column;
@@ -31,6 +52,10 @@ class Condition
         return $this;
     }
 
+    /**
+     * @param string $operator
+     * @return $this
+     */
     public function operator(string $operator)
     {
         $this->operator = $operator;
@@ -38,6 +63,10 @@ class Condition
         return $this;
     }
 
+    /**
+     * @param $value
+     * @return $this
+     */
     public function value($value)
     {
         $this->value = $value;
@@ -45,16 +74,25 @@ class Condition
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     public function getColumn()
     {
         return $this->column;
     }
 
+    /**
+     * @return mixed|string
+     */
     public function getOperator()
     {
         return $this->operator;
     }
 
+    /**
+     * @return mixed
+     */
     public function getValue()
     {
         return $this->value;

@@ -7,12 +7,26 @@ use Stitch\DBAL\Statements\Assembler;
 use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
 
+/**
+ * Class OrderBy
+ * @package Stitch\DBAL\Statements\Queries\Operations
+ */
 class OrderBy extends Statement
 {
+    /**
+     * @var QueryBuilder
+     */
     protected $queryBuilder;
 
+    /**
+     * @var Assembler
+     */
     protected $orderAssembler;
 
+    /**
+     * OrderBy constructor.
+     * @param QueryBuilder $queryBuilder
+     */
     public function __construct(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
@@ -21,6 +35,9 @@ class OrderBy extends Statement
         parent::__construct();
     }
 
+    /**
+     *
+     */
     protected function evaluate()
     {
         $this->sort($this->queryBuilder);
@@ -34,14 +51,16 @@ class OrderBy extends Statement
         }
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     */
     protected function sort(QueryBuilder $queryBuilder)
     {
         $sorter = $queryBuilder->getSorter();
 
         if ($sorter->count()) {
             $this->orderAssembler->push(
-                new Component(implode(', ', array_map(function ($column)
-                {
+                new Component(implode(', ', array_map(function ($column) {
                     return "{$column['name']} {$column['direction']}";
                 }, $sorter->getColumns())))
             );
