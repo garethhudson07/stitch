@@ -8,6 +8,9 @@ use Stitch\DBAL\Connection;
 
 class Stitch
 {
+    /**
+     * @var Connection
+     */
     protected static $connection;
 
     public static function setDatabaseDriver(string $driver)
