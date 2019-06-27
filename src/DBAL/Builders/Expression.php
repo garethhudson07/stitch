@@ -4,24 +4,70 @@ namespace Stitch\DBAL\Builders;
 
 use Closure;
 
-/**
- * Class Expression
- * @package Stitch\DBAL\Builders
- */
 class Expression
 {
-    /**
-     * @var array
-     */
     protected $items = [];
 
+    protected $aliases = [
+        'where' => 'and',
+        'whereRaw' => 'andRaw',
+        'or' => 'orWhere',
+        'orRaw' => 'orWhereRaw'
+    ];
+
     /**
-     * @param mixed ...$arguments
+     * @param array ...$arguments
      * @return Expression
      */
     public function and(...$arguments)
     {
-        return $this->add('AND', $this->constraint(...$arguments));
+        return $this->add(
+            'AND',
+            $arguments[0] instanceof Expression ? $arguments[0] : $this->constraint(...$arguments)
+        );
+    }
+
+    /**
+     * @param string $sql
+     * @param array $bindings
+     * @return Expression
+     */
+    public function andRaw(string $sql, array $bindings = [])
+    {
+        return $this->add('AND', new Raw($sql, $bindings));
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Expression
+     */
+    public function or(...$arguments)
+    {
+        return $this->add(
+            'OR',
+            $arguments[0] instanceof Expression ? $arguments[0] : $this->constraint(...$arguments)
+        );
+    }
+
+    /**
+     * @param string $sql
+     * @param array $bindings
+     * @return Expression
+     */
+    public function orRaw(string $sql, array $bindings = [])
+    {
+        return $this->add('OR', new Raw($sql, $bindings));
+    }
+
+    /**
+     * @param $method
+     * @param $arguments
+     */
+    public function __call($method, $arguments)
+    {
+        if (array_key_exists($method, $this->aliases)) {
+            $this->{$this->aliases[$method]}(...$arguments);
+        }
     }
 
     /**
@@ -40,48 +86,19 @@ class Expression
     }
 
     /**
-     * @param mixed ...$arguments
+     * @param array ...$arguments
      * @return Condition|Expression
      */
     protected function constraint(...$arguments)
     {
         if ($arguments[0] instanceof Closure) {
-            $expression = new static();
+            $expression = $this->newInstance();
             $arguments[0]($expression);
 
             return $expression;
         }
 
-        return new Condition(...$arguments);
-    }
-
-    /**
-     * @param string $sql
-     * @param array $bindings
-     * @return Expression
-     */
-    public function andRaw(string $sql, array $bindings = [])
-    {
-        return $this->add('AND', new Raw($sql, $bindings));
-    }
-
-    /**
-     * @param mixed ...$arguments
-     * @return Expression
-     */
-    public function or(...$arguments)
-    {
-        return $this->add('OR', $this->constraint(...$arguments));
-    }
-
-    /**
-     * @param string $sql
-     * @param array $bindings
-     * @return Expression
-     */
-    public function orRaw(string $sql, array $bindings = [])
-    {
-        return $this->add('OR', new Raw($sql, $bindings));
+        return $this->condition(...$arguments);
     }
 
     /**
@@ -98,5 +115,22 @@ class Expression
     public function getItems()
     {
         return $this->items;
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Condition
+     */
+    protected function condition(...$arguments)
+    {
+        return new Condition(...$arguments);
+    }
+
+    /**
+     * @return static
+     */
+    protected function newInstance()
+    {
+        return new static();
     }
 }
