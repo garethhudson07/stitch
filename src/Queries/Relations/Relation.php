@@ -18,5 +18,10 @@ abstract class Relation extends Query
         $this->blueprint = $blueprint;
     }
 
+    public function getBlueprint()
+    {
+        return $this->blueprint;
+    }
+
     abstract public function join(Query $query);
 }
