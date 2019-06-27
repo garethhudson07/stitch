@@ -67,24 +67,6 @@ class Model
 
     /**
      * @param array ...$arguments
-     * @return Model
-     */
-    public function hasOne(...$arguments)
-    {
-        return $this->addRelation(array_merge([HasOne::class], $arguments));
-    }
-
-    /**
-     * @param array ...$arguments
-     * @return Model
-     */
-    public function manyToMany(...$arguments)
-    {
-        return $this->addRelation(array_merge([ManyToMany::class], $arguments));
-    }
-
-    /**
-     * @param array ...$arguments
      * @return $this
      */
     protected function addRelation(array $arguments)
@@ -134,7 +116,7 @@ class Model
      */
     public function hasOne(...$arguments)
     {
-        return $this->addRelation(...array_merge([HasOne::class], $arguments));
+        return $this->addRelation(array_merge([HasOne::class], $arguments));
     }
 
     /**
@@ -143,7 +125,7 @@ class Model
      */
     public function manyToMany(...$arguments)
     {
-        return $this->addRelation(...array_merge([ManyToMany::class], $arguments));
+        return $this->addRelation(array_merge([ManyToMany::class], $arguments));
     }
 
     /**
