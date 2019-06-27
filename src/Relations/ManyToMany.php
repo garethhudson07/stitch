@@ -5,6 +5,7 @@ namespace Stitch\Relations;
 use Stitch\Registry;
 use Stitch\Schema\Table;
 use Stitch\Queries\Relations\ManyToMany as Query;
+use Closure;
 
 class ManyToMany extends Relation
 {
@@ -14,16 +15,16 @@ class ManyToMany extends Relation
 
     protected $foreignPivotKey;
 
-    public function pivot(...$arguments)
+    public function pivot($value)
     {
-        if (count($arguments) === 1) {
-            $this->pivotTable = $arguments[0];
-        } else {
-            $table = new Table($arguments[0]);
+        if ($value instanceof Closure) {
+            $table = new Table();
 
-            $arguments[1]($table);
+            $value($table);
 
             $this->pivotTable = $table;
+        } else {
+            $this->pivotTable = $value;
         }
 
         return $this;
