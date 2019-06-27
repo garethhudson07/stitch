@@ -25,7 +25,7 @@ class Sorter
     public function indexOf(string $name)
     {
         foreach ($this->columns as $key => $column) {
-            if ($column->name === 'name') {
+            if ($column['name'] === $name) {
                 return $key;
             }
         }

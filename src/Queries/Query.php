@@ -10,7 +10,7 @@ use Stitch\Queries\Paths\Path;
 use Stitch\DBAL\Dispatcher;
 use Stitch\Result\Hydrator as ResultHydrator;
 use Stitch\Result\Set as ResultSet;
-use Stitch\Relations\Relation;
+use Stitch\Queries\Relations\Relation;
 use Closure;
 
 class Query
@@ -138,16 +138,118 @@ class Query
     }
 
     /**
+     * @param array ...$arguments
+     * @return Query
+     */
+    public function where(...$arguments)
+    {
+        return $this->applyWhere('where', $arguments);
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Query
+     */
+    public function orWhere(...$arguments)
+    {
+        return $this->applyWhere('orWhere', $arguments);
+    }
+
+    /**
+     * @param $type
+     * @param array $arguments
+     * @return $this
+     */
+    protected function applyWhere($type, array $arguments)
+    {
+        if ($arguments[0] instanceof Closure) {
+            $expression = new Expression($this);
+            $arguments[0]($expression);
+
+            $this->builder->{$type}($expression);
+
+            return $this;
+        }
+
+        $path = array_shift($arguments);
+
+        if (count($arguments) == 1) {
+            $operator = '=';
+            $value = $arguments[0];
+        } else {
+            list($operator, $value) = $arguments;
+        }
+
+        return $this->addCondition($type, $this->translatePath($path), $operator, $value);
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Query
+     */
+//    public function on(...$arguments)
+//    {
+//        return $this->applyOn('on', $arguments);
+//    }
+
+    /**
+     * @param array ...$arguments
+     * @return Query
+     */
+//    public function orOn(...$arguments)
+//    {
+//        return $this->applyOn('orOn', $arguments);
+//    }
+
+    /**
+     * @param $type
+     * @param array $arguments
+     * @return $this
+     */
+//    protected function applyOn($type, array $arguments)
+//    {
+//        if ($arguments[1] instanceof Closure) {
+//            $expression = new Expression($this);
+//            $arguments[1]($expression);
+//
+//            $this->getRelation(PathFactory::split($arguments[0]))->getBuilder()->{$type}($expression);
+//
+//            return $this;
+//        }
+//
+//        $path = array_shift($arguments);
+//
+//        if (count($arguments) == 1) {
+//            $operator = '=';
+//            $value = $arguments[0];
+//        } else {
+//            list($operator, $value) = $arguments;
+//        }
+//
+//        $this->apply($path, function (Query $query, string $column) use ($type, $operator, $value)
+//        {
+//            $query->addCondition(
+//                $type,
+//                $column,
+//                $operator,
+//                $value
+//            );
+//        });
+//
+//        return $this;
+//    }
+
+    /**
      * @param string $type
      * @param string $column
      * @param string $operator
      * @param $value
      * @return $this
      */
-    public function addCondition(string $type, string $column, string $operator, $value)
+    public function addCondition(string $type, string $path, string $operator, $value)
     {
         $this->builder->{$type}(
-            "{$this->model->getTable()->getName()}.$column",
+            $path,
             $operator,
             $value
         );
@@ -156,76 +258,13 @@ class Query
     }
 
     /**
-     * @param $type
-     * @param array $argumants
-     * @return $this
-     */
-    protected function applyCondition($type, array $argumants)
-    {
-        $path = array_shift($argumants);
-
-        if (count($argumants) == 1) {
-            $operator = '=';
-            $value = $argumants[0];
-        } else {
-            list($operator, $value) = $argumants;
-        }
-
-        $this->apply($path, function (Query $query, string $column) use ($type, $operator, $value)
-        {
-            $query->addCondition(
-                $type,
-                $column,
-                $operator,
-                $value
-            );
-        });
-
-        return $this;
-    }
-
-    /**
-     * @param array ...$argumants
-     * @return Query
-     */
-    public function where(...$argumants)
-    {
-        return $this->applyCondition('where', $argumants);
-    }
-
-    /**
-     * @param array ...$argumants
-     * @return Query
-     */
-    public function on(...$argumants)
-    {
-        return $this->applyCondition('on', $argumants);
-    }
-
-
-    /**
-     * @param string $path
+     * @param string $column
      * @param string $direction
      * @return $this
      */
     public function orderBy(string $path, string $direction = 'ASC')
     {
-        $this->apply($path, function (Query $query, string $column) use ($direction)
-        {
-            $query->addOrderBy($column, $direction);
-        });
-
-        return $this;
-    }
-
-    /**
-     * @param string $column
-     * @param string $direction
-     * @return $this
-     */
-    public function addOrderBy(string $column, string $direction = 'ASC')
-    {
-        $this->builder->orderBy("{$this->model->getTable()->getName()}.$column", $direction);
+        $this->builder->orderBy($this->translatePath($path), $direction);
 
         return $this;
     }
@@ -273,16 +312,35 @@ class Query
 
     /**
      * @param string $path
+     * @return string
+     */
+    public function translatePath(string $path)
+    {
+        $bag = PathFactory::divide($this, $path);
+        $column = $bag->getColumn()->implode();
+
+        if ($bag->hasRelation()) {
+            $table = $this->getRelation($bag->getRelation())->getModel()->getTable()->getName();
+        } else {
+            $table = $this->model->getTable()->getName();
+        }
+
+        return "$table.$column";
+    }
+
+    /**
+     * @param string $path
      * @param Closure $callback
      */
     protected function apply(string $path, Closure $callback)
     {
-        if (strstr($path, '.')) {
-            $path = PathFactory::divide($this->model, $path);
+        $bag = PathFactory::divide($this, $path);
+        $column = $bag->getColumn()->implode();
 
-            $callback($this->getRelation($path['relation']), $path['column']->implode());
+        if ($bag->hasRelation()) {
+            $callback($this->getRelation($bag->getRelation()), $column);
         } else {
-            $callback($this, $path);
+            $callback($this, $column);
         }
     }
 
@@ -322,7 +380,7 @@ class Query
         $name = $path->first();
 
         if ( ! array_key_exists($name, $this->relations)) {
-            $this->addRelation($name, $this->model->getRelation($name));
+            $this->addRelation($name, $this->model->getRelation($name)->query());
         }
 
         if ($path->count() > 1) {
@@ -339,7 +397,7 @@ class Query
      */
     public function addRelation(string $name, Relation $relation)
     {
-        $this->relations[$name] = $relation->query()->join($this);
+        $this->relations[$name] = $relation->join($this);
 
         return $this;
     }
