@@ -8,6 +8,13 @@ class Expression
 {
     protected $items = [];
 
+    protected $aliases = [
+        'where' => 'and',
+        'whereRaw' => 'andRaw',
+        'or' => 'orWhere',
+        'orRaw' => 'orWhereRaw'
+    ];
+
     /**
      * @param array ...$arguments
      * @return Expression
@@ -50,6 +57,17 @@ class Expression
     public function orRaw(string $sql, array $bindings = [])
     {
         return $this->add('OR', new Raw($sql, $bindings));
+    }
+
+    /**
+     * @param $method
+     * @param $arguments
+     */
+    public function __call($method, $arguments)
+    {
+        if (array_key_exists($method, $this->aliases)) {
+            $this->{$this->aliases[$method]}(...$arguments);
+        }
     }
 
     /**
