@@ -62,14 +62,32 @@ class Model
      */
     public function hasMany(...$arguments)
     {
-        return $this->addRelation(...array_merge([Has::class], $arguments));
+        return $this->addRelation(array_merge([Has::class], $arguments));
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Model
+     */
+    public function hasOne(...$arguments)
+    {
+        return $this->addRelation(array_merge([HasOne::class], $arguments));
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Model
+     */
+    public function manyToMany(...$arguments)
+    {
+        return $this->addRelation(array_merge([ManyToMany::class], $arguments));
     }
 
     /**
      * @param array ...$arguments
      * @return $this
      */
-    protected function addRelation(...$arguments)
+    protected function addRelation(array $arguments)
     {
         $class = $arguments[0];
         $name = $arguments[1];
