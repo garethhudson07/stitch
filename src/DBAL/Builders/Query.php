@@ -29,7 +29,7 @@ class Query
     protected $where;
 
     /**
-     * @var
+     * @var int
      */
     protected $limit;
 

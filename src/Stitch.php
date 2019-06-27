@@ -55,7 +55,7 @@ class Stitch
     }
 
     /**
-     *
+     * @return void
      */
     public static function disconnect()
     {

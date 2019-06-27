@@ -34,7 +34,7 @@ class Unlimited extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {

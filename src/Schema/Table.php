@@ -9,7 +9,7 @@ namespace Stitch\Schema;
 class Table
 {
     /**
-     * @var
+     * @var string
      */
     protected $name;
 
@@ -43,7 +43,7 @@ class Table
     }
 
     /**
-     *
+     * @return void
      */
     public function timestamps(): void
     {

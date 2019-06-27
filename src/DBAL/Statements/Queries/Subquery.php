@@ -35,7 +35,7 @@ class Subquery extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {

@@ -9,12 +9,12 @@ namespace Stitch\DBAL\Builders;
 class Condition
 {
     /**
-     * @var mixed
+     * @var string
      */
     protected $column;
 
     /**
-     * @var mixed|string
+     * @var string
      */
     protected $operator = '=';
 

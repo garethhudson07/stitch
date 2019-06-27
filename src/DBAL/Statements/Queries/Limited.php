@@ -30,7 +30,7 @@ class Limited extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {
@@ -38,7 +38,7 @@ class Limited extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function numbered()
     {
@@ -75,7 +75,7 @@ class Limited extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function default()
     {

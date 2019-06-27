@@ -29,7 +29,7 @@ class Declaration extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {

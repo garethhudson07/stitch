@@ -9,12 +9,12 @@ namespace Stitch\Queries\Paths;
 class Bag
 {
     /**
-     * @var
+     * @var Path
      */
     protected $relation;
 
     /**
-     * @var
+     * @var Column
      */
     protected $column;
 

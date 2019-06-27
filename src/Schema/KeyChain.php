@@ -9,7 +9,7 @@ namespace Stitch\Schema;
 class KeyChain
 {
     /**
-     * @var
+     * @var Column
      */
     protected $primary;
 

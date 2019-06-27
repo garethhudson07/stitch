@@ -29,7 +29,7 @@ class Condition extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {

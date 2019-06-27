@@ -29,7 +29,7 @@ class Selection extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {

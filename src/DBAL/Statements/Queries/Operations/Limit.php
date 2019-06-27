@@ -29,7 +29,7 @@ class Limit extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {

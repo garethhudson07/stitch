@@ -11,7 +11,7 @@ use Stitch\DBAL\Statements\Contracts\Assemblable;
 class Component implements Assemblable
 {
     /**
-     * @var
+     * @var mixed
      */
     protected $value;
 

@@ -65,7 +65,7 @@ class Connection
     }
 
     /**
-     *
+     * @return void
      */
     public function disconnect()
     {

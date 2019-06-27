@@ -37,7 +37,7 @@ class Where extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {

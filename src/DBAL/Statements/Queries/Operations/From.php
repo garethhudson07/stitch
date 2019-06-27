@@ -29,7 +29,7 @@ class From extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {

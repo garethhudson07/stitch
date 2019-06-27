@@ -9,7 +9,7 @@ namespace Stitch\DBAL\Builders;
 class Join extends Query
 {
     /**
-     * @var
+     * @var string
      */
     protected $type;
 

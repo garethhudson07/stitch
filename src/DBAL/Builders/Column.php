@@ -14,7 +14,7 @@ class Column
     protected $name;
 
     /**
-     * @var
+     * @var string
      */
     protected $alias;
 

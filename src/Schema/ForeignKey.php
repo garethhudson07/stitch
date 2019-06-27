@@ -14,12 +14,12 @@ class ForeignKey
     protected $localColumn;
 
     /**
-     * @var
+     * @var string
      */
     protected $referenceColumnName;
 
     /**
-     * @var
+     * @var string
      */
     protected $referenceTableName;
 

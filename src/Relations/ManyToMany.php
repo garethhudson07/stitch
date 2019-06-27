@@ -15,7 +15,7 @@ use Closure;
 class ManyToMany extends Relation
 {
     /**
-     * @var
+     * @var Table|null
      */
     protected $pivotTable;
 

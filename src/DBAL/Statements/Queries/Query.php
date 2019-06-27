@@ -28,7 +28,7 @@ class Query extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {

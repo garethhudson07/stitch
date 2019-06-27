@@ -19,7 +19,7 @@ class Record
     protected $attributes = [];
 
     /**
-     * @var
+     * @var string
      */
     protected $primaryKey;
 

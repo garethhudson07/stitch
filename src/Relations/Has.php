@@ -3,6 +3,7 @@
 namespace Stitch\Relations;
 
 use Stitch\Queries\Relations\Has as Query;
+use Stitch\Schema\ForeignKey;
 
 /**
  * Class Has
@@ -11,7 +12,7 @@ use Stitch\Queries\Relations\Has as Query;
 class Has extends Relation
 {
     /**
-     * @var
+     * @var ForeignKey|null
      */
     protected $foreignKey;
 

@@ -30,7 +30,7 @@ class Numbered extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {

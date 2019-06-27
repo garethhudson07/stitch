@@ -30,7 +30,7 @@ class Expression extends Statement
     }
 
     /**
-     *
+     * @return void
      */
     protected function evaluate()
     {
