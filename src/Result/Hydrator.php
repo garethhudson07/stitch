@@ -3,7 +3,7 @@
 namespace Stitch\Result;
 
 use Stitch\Collection;
-use Stitch\Model;
+use Stitch\Queries\Query;
 
 /**
  * Class Hydrator
@@ -12,17 +12,17 @@ use Stitch\Model;
 class Hydrator
 {
     /**
-     * @var Model
+     * @var Query
      */
-    protected $model;
+    protected $query;
 
     /**
      * Hydrator constructor.
-     * @param Model $model
+     * @param query $query
      */
-    public function __construct(Model $model)
+    public function __construct(Query $query)
     {
-        $this->model = $model;
+        $this->query = $query;
     }
 
     /**
@@ -55,12 +55,12 @@ class Hydrator
      */
     public function one(Record $record)
     {
-        $instance = $this->model->make($record->getData(), true);
+        $instance = $this->query->getModel()->make($record->getData(), true);
 
         foreach ($record->getRelations() as $key => $relation) {
             $instance->setRelation(
                 $key,
-                (new static($this->model->getRelation($key)->getForeignModel()))->hydrate($relation)
+                (new static($this->query->getRelations()[$key]))->hydrate($relation)
             );
         }
 
