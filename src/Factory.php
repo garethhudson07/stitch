@@ -5,10 +5,13 @@ namespace Stitch;
 use Closure;
 use Stitch\Schema\Table;
 
+/**
+ * Class Factory
+ * @package Stitch
+ */
 class Factory
 {
     /**
-     * @param string $table
      * @param Closure $callback
      * @return Model
      */
@@ -18,7 +21,6 @@ class Factory
     }
 
     /**
-     * @param string $name
      * @param Closure $callback
      * @return Table
      */

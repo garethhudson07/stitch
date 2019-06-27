@@ -3,18 +3,14 @@
 namespace Stitch\Queries\Paths;
 
 use Stitch\Model;
+use Stitch\Relations\Relation;
 
+/**
+ * Class Factory
+ * @package Stitch\Queries\Paths
+ */
 class Factory
 {
-    /**
-     * @param string $path
-     * @return array
-     */
-    protected static function explode(string $path): array
-    {
-        return explode('.', $path);
-    }
-
     /**
      * @param string $path
      * @return Path
@@ -22,6 +18,15 @@ class Factory
     public static function split(string $path): Path
     {
         return new Path(static::explode($path));
+    }
+
+    /**
+     * @param string $path
+     * @return array
+     */
+    protected static function explode(string $path): array
+    {
+        return explode('.', $path);
     }
 
     /**
@@ -37,6 +42,9 @@ class Factory
 
         foreach ($pieces as $key => $piece) {
             if (!$relations->has($piece)) {
+
+                /** @var Relation $relation */
+
                 return [
                     'relation' => new Path(array_slice($pieces, 0, $key)),
                     'column' => new Column(

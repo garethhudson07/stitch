@@ -2,19 +2,26 @@
 
 namespace Stitch\Schema;
 
+/**
+ * Class KeyChain
+ * @package Stitch\Schema
+ */
 class KeyChain
 {
+    /**
+     * @var
+     */
     protected $primary;
 
+    /**
+     * @var array
+     */
     protected $foreign = [];
 
-    public function setPrimary(Column $column)
-    {
-        $this->primary = $column;
-
-        return $this;
-    }
-
+    /**
+     * @param ForeignKey $foreign
+     * @return $this
+     */
     public function addForeign(ForeignKey $foreign)
     {
         $this->foreign[$foreign->getLocalColumn()->getName()] = $foreign;
@@ -22,11 +29,29 @@ class KeyChain
         return $this;
     }
 
+    /**
+     * @return Column|null
+     */
     public function getPrimary(): ?Column
     {
         return $this->primary;
     }
 
+    /**
+     * @param Column $column
+     * @return $this
+     */
+    public function setPrimary(Column $column)
+    {
+        $this->primary = $column;
+
+        return $this;
+    }
+
+    /**
+     * @param string $column
+     * @return ForeignKey|null
+     */
     public function getForeignFrom(string $column): ?ForeignKey
     {
         if (array_key_exists($column, $this->foreign)) {
@@ -36,6 +61,11 @@ class KeyChain
         return null;
     }
 
+    /**
+     * @param string $table
+     * @param string $column
+     * @return ForeignKey|null
+     */
     public function getForeignFor(string $table, string $column): ?ForeignKey
     {
         foreach ($this->foreign as $foreign) {

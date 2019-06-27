@@ -3,18 +3,35 @@
 namespace Stitch\Queries;
 
 use ArrayIterator;
-use IteratorAggregate;
 use Countable;
+use IteratorAggregate;
 use Stitch\Relations\Collection as Relations;
 
-class Path implements IteratorAggregate, Countable {
+/**
+ * Class Path
+ * @package Stitch\Queries
+ */
+class Path implements IteratorAggregate, Countable
+{
 
+    /**
+     * @var string
+     */
     protected static $delimiter = '.';
 
+    /**
+     * @var array
+     */
     protected $pieces;
 
+    /**
+     * @var
+     */
     protected $column;
 
+    /**
+     * @var
+     */
     protected $relation;
 
     /**
@@ -60,6 +77,24 @@ class Path implements IteratorAggregate, Countable {
     }
 
     /**
+     * @param int $index
+     * @return static
+     */
+    public function after(int $index)
+    {
+        return new static(array_slice($this->pieces, $index + 1));
+    }
+
+    /**
+     * @param int $index
+     * @return static
+     */
+    public function before(int $index)
+    {
+        return new static(array_slice($this->pieces, 0, $index));
+    }
+
+    /**
      * @return mixed
      */
     public function relation()
@@ -75,7 +110,6 @@ class Path implements IteratorAggregate, Countable {
         return $this->column;
     }
 
-
     /**
      * @return mixed|null
      */
@@ -90,24 +124,6 @@ class Path implements IteratorAggregate, Countable {
     public function last()
     {
         return $this->pieces[count($this->pieces) - 1] ?? null;
-    }
-
-    /**
-     * @param int $index
-     * @return static
-     */
-    public function before(int $index)
-    {
-        return new static(array_slice($this->pieces, 0, $index));
-    }
-
-    /**
-     * @param int $index
-     * @return static
-     */
-    public function after(int $index)
-    {
-        return new static(array_slice($this->pieces, $index + 1));
     }
 
     /**
@@ -132,7 +148,7 @@ class Path implements IteratorAggregate, Countable {
     /**
      * Get an iterator for the pieces.
      *
-     * @return \ArrayIterator
+     * @return ArrayIterator
      */
     public function getIterator()
     {

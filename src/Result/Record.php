@@ -4,17 +4,37 @@ namespace Stitch\Result;
 
 use Stitch\Queries\Query;
 use Stitch\Queries\Relations\HasOne;
+use Stitch\Schema\Table;
 
+/**
+ * Class Record
+ * @package Stitch\Result
+ */
 class Record
 {
+    /**
+     * @var Query
+     */
     protected $query;
 
+    /**
+     * @var Table
+     */
     protected $table;
 
+    /**
+     * @var array
+     */
     protected $columns;
 
+    /**
+     * @var array
+     */
     protected $relations = [];
 
+    /**
+     * @var array
+     */
     protected $data = [];
 
     /**
@@ -32,20 +52,30 @@ class Record
     }
 
     /**
-     * @param string $key
-     * @return mixed
-     */
-    public function __get(string $key)
-    {
-        return $this->data[$key];
-    }
-
-    /**
      * @param array $raw
      */
     protected function assemble(array $raw)
     {
         $this->extract($raw)->extractRelations($raw);
+    }
+
+    /**
+     * @param $raw
+     * @return $this
+     */
+    public function extractRelations($raw)
+    {
+        foreach ($this->query->getRelations() as $key => $relation) {
+            if (!array_key_exists($key, $this->relations)) {
+                $instance = ($relation instanceof HasOne) ? new static($relation, $raw) : new Set($relation);
+
+                $this->relations[$key] = $instance->extract($raw);
+            } else {
+                $this->relations[$key]->extract($raw);
+            }
+        }
+
+        return $this;
     }
 
     /**
@@ -64,22 +94,12 @@ class Record
     }
 
     /**
-     * @param $raw
-     * @return $this
+     * @param string $key
+     * @return mixed
      */
-    public function extractRelations($raw)
+    public function __get(string $key)
     {
-        foreach ($this->query->getRelations() as $key => $relation) {
-            if ( ! array_key_exists($key, $this->relations)) {
-                $instance = ($relation instanceof HasOne) ? new static($relation, $raw) : new Set($relation);
-
-                $this->relations[$key] = $instance->extract($raw);
-            } else {
-                $this->relations[$key]->extract($raw);
-            }
-        }
-
-        return $this;
+        return $this->data[$key];
     }
 
     /**

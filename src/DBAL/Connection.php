@@ -2,47 +2,91 @@
 
 namespace Stitch\DBAL;
 
-use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Statements\Queries\Query as QueryStatement;
+use PDO;
+use PDOStatement;
 use Stitch\DBAL\Statements\Persistence\Insert as InsertStatement;
 use Stitch\DBAL\Statements\Persistence\Update as UpdateStatement;
-use PDO;
+use Stitch\DBAL\Statements\Queries\Query as QueryStatement;
+use Stitch\DBAL\Statements\Statement;
 
+/**
+ * Class Connection
+ * @package Stitch\DBAL
+ */
 class Connection
 {
+    /**
+     * @var string
+     */
     protected static $driver = 'mysql';
 
+    /**
+     * @var string
+     */
     protected static $host = 'localhost';
 
+    /**
+     * @var PDO
+     */
     protected $pdo;
 
+    /**
+     * Connection constructor.
+     * @param string $database
+     * @param string $username
+     * @param string $password
+     */
     public function __construct(string $database, string $username, string $password)
     {
         $this->pdo = new PDO(
             static::$driver . ':host=' . static::$host . ';dbname=' . $database,
-             $username,
-             $password
+            $username,
+            $password
         );
 
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
 
+    /**
+     * @param string $driver
+     */
     public static function setDriver(string $driver)
     {
         static::$driver = $driver;
     }
 
+    /**
+     * @param string $host
+     */
     public static function setHost(string $host)
     {
         static::$host = $host;
     }
 
+    /**
+     *
+     */
     public function disconnect()
     {
         $this->pdo = null;
     }
 
+    /**
+     * @param QueryStatement $statement
+     * @return array
+     */
+    public function select(QueryStatement $statement)
+    {
+        $result = $this->execute($statement);
+
+        return $result->fetchAll();
+    }
+
+    /**
+     * @param Statement $statement
+     * @return bool|PDOStatement
+     */
     public function execute(Statement $statement)
     {
         $prepared = $this->pdo->prepare($statement->resolve());
@@ -52,33 +96,21 @@ class Connection
         return $prepared;
     }
 
-    public function select(QueryStatement $statement)
-    {
-        echo $statement;
-        //exit;
-
-        $result = $this->execute($statement);
-
-        return $result->fetchAll();
-    }
-
+    /**
+     * @param InsertStatement $statement
+     * @return bool|PDOStatement
+     */
     public function insert(InsertStatement $statement)
     {
-        echo $statement;
-
-        exit;
-
         return $this->execute($statement);
     }
 
+    /**
+     * @param UpdateStatement $statement
+     * @return bool|PDOStatement
+     */
     public function update(UpdateStatement $statement)
     {
-        echo $statement;
-
-        var_dump($statement->getBindings());
-
-        //exit;
-
         return $this->execute($statement);
     }
 }

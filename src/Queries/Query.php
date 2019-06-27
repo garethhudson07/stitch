@@ -2,23 +2,37 @@
 
 namespace Stitch\Queries;
 
-use Stitch\Model;
-use Stitch\DBAL\Builders\Query as Builder;
+use Closure;
+use Stitch\Collection;
 use Stitch\DBAL\Builders\Column;
+use Stitch\DBAL\Builders\Query as Builder;
+use Stitch\DBAL\Dispatcher;
+use Stitch\Model;
 use Stitch\Queries\Paths\Factory as PathFactory;
 use Stitch\Queries\Paths\Path;
-use Stitch\DBAL\Dispatcher;
+use Stitch\Relations\Relation;
 use Stitch\Result\Hydrator as ResultHydrator;
 use Stitch\Result\Set as ResultSet;
-use Stitch\Relations\Relation;
-use Closure;
 
+/**
+ * Class Query
+ * @package Stitch\Queries
+ */
 class Query
 {
+    /**
+     * @var Model
+     */
     protected $model;
 
+    /**
+     * @var Builder
+     */
     protected $builder;
 
+    /**
+     * @var array
+     */
     protected $relations = [];
 
     /**
@@ -62,14 +76,44 @@ class Query
     }
 
     /**
+     * @param Path $path
+     * @return Query
+     */
+    public function makeRelation(Path $path)
+    {
+        $name = $path->first();
+
+        if (!array_key_exists($name, $this->relations)) {
+            $this->addRelation($name, $this->model->getRelation($name));
+        }
+
+        if ($path->count() > 1) {
+            return $this->relations[$name]->makeRelation($path->after(0));
+        }
+
+        return $this->relations[$name];
+    }
+
+    /**
+     * @param string $name
+     * @param Relation $relation
+     * @return $this
+     */
+    public function addRelation(string $name, Relation $relation)
+    {
+        $this->relations[$name] = $relation->query()->join($this);
+
+        return $this;
+    }
+
+    /**
      * @param array ...$paths
      * @return $this
      */
     public function select(...$paths)
     {
         foreach ($paths as $path) {
-            $this->apply($path, function (Query $query, string $column)
-            {
+            $this->apply($path, function (Query $query, string $column) {
                 $query->addColumn($column);
             });
         }
@@ -78,47 +122,40 @@ class Query
     }
 
     /**
-     * @return $this
+     * @param string $path
+     * @param Closure $callback
      */
-    public function selectAll()
+    protected function apply(string $path, Closure $callback)
     {
-        foreach ($this->model->getTable()->getColumns() as $column) {
-            $this->addColumn($column->getName());
-        }
+        if (strstr($path, '.')) {
+            $path = PathFactory::divide($this->model, $path);
 
-        foreach ($this->relations as $relation) {
-            $relation->selectAll();
-        }
+            /** @var Paths\Column $column */
+            $column = $path['column'];
 
-        return $this;
+            $callback($this->getRelation($path['relation']), $column->implode());
+        } else {
+            $callback($this, $path);
+        }
     }
 
     /**
-     * @return $this
+     * @param Path $path
+     * @return Query
      */
-    public function selectPrimaryKey()
+    public function getRelation(Path $path)
     {
-        $primaryKeyName = $this->model->getTable()->getPrimaryKey()->getName();
-
-        if (!$this->builder->getSelection()->has($primaryKeyName)) {
-            $this->addColumn($primaryKeyName);
+        if (!array_key_exists($path->first(), $this->relations)) {
+            return $this->makeRelation($path);
         }
 
-        return $this;
-    }
+        $relation = $this->relations[$path->first()];
 
-    /**
-     * @return $this
-     */
-    public function forceSelection()
-    {
-        count($this->builder->getSelection()->getColumns()) ? $this->selectPrimaryKey() : $this->selectAll();
-
-        foreach ($this->relations as $relation) {
-            $relation->forceSelection();
+        if ($path->count() > 1) {
+            return $relation->getRelation($path->after(0));
         }
 
-        return $this;
+        return $relation;
     }
 
     /**
@@ -129,9 +166,45 @@ class Query
     {
         $table = $this->model->getTable()->getName();
 
-        $this->builder->select($name, function (Column $column) use ($table, $name)
-        {
+        $this->builder->select($name, function (Column $column) use ($table, $name) {
             $column->alias("{$table}_{$name}");
+        });
+
+        return $this;
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Query
+     */
+    public function where(...$arguments)
+    {
+        return $this->applyCondition('where', $arguments);
+    }
+
+    /**
+     * @param $type
+     * @param array $arguments
+     * @return $this
+     */
+    protected function applyCondition($type, array $arguments)
+    {
+        $path = array_shift($arguments);
+
+        if (count($arguments) == 1) {
+            $operator = '=';
+            $value = $arguments[0];
+        } else {
+            list($operator, $value) = $arguments;
+        }
+
+        $this->apply($path, function (Query $query, string $column) use ($type, $operator, $value) {
+            $query->addCondition(
+                $type,
+                $column,
+                $operator,
+                $value
+            );
         });
 
         return $this;
@@ -156,52 +229,13 @@ class Query
     }
 
     /**
-     * @param $type
-     * @param array $argumants
-     * @return $this
-     */
-    protected function applyCondition($type, array $argumants)
-    {
-        $path = array_shift($argumants);
-
-        if (count($argumants) == 1) {
-            $operator = '=';
-            $value = $argumants[0];
-        } else {
-            list($operator, $value) = $argumants;
-        }
-
-        $this->apply($path, function (Query $query, string $column) use ($type, $operator, $value)
-        {
-            $query->addCondition(
-                $type,
-                $column,
-                $operator,
-                $value
-            );
-        });
-
-        return $this;
-    }
-
-    /**
-     * @param array ...$argumants
+     * @param array ...$arguments
      * @return Query
      */
-    public function where(...$argumants)
+    public function on(...$arguments)
     {
-        return $this->applyCondition('where', $argumants);
+        return $this->applyCondition('on', $arguments);
     }
-
-    /**
-     * @param array ...$argumants
-     * @return Query
-     */
-    public function on(...$argumants)
-    {
-        return $this->applyCondition('on', $argumants);
-    }
-
 
     /**
      * @param string $path
@@ -210,8 +244,7 @@ class Query
      */
     public function orderBy(string $path, string $direction = 'ASC')
     {
-        $this->apply($path, function (Query $query, string $column) use ($direction)
-        {
+        $this->apply($path, function (Query $query, string $column) use ($direction) {
             $query->addOrderBy($column, $direction);
         });
 
@@ -257,7 +290,7 @@ class Query
     }
 
     /**
-     * @return \Stitch\Collection
+     * @return Collection
      */
     public function get()
     {
@@ -272,18 +305,48 @@ class Query
     }
 
     /**
-     * @param string $path
-     * @param Closure $callback
+     * @return $this
      */
-    protected function apply(string $path, Closure $callback)
+    public function forceSelection()
     {
-        if (strstr($path, '.')) {
-            $path = PathFactory::divide($this->model, $path);
+        count($this->builder->getSelection()->getColumns()) ? $this->selectPrimaryKey() : $this->selectAll();
 
-            $callback($this->getRelation($path['relation']), $path['column']->implode());
-        } else {
-            $callback($this, $path);
+        foreach ($this->relations as $relation) {
+            $relation->forceSelection();
         }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function selectPrimaryKey()
+    {
+        $primaryKeyName = $this->model->getTable()->getPrimaryKey()->getName();
+
+        if (!$this->builder->getSelection()->has($primaryKeyName)) {
+            $this->addColumn($primaryKeyName);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function selectAll()
+    {
+        foreach ($this->model->getTable()->getColumns() as $column) {
+            /** @var \Stitch\Schema\Column $column */
+            $this->addColumn($column->getName());
+        }
+
+        foreach ($this->relations as $relation) {
+            $relation->selectAll();
+        }
+
+        return $this;
     }
 
     /**
@@ -292,55 +355,5 @@ class Query
     public function getRelations()
     {
         return $this->relations;
-    }
-
-    /**
-     * @param string $path
-     * @return Query
-     */
-    public function getRelation(Path $path)
-    {
-        if ( ! array_key_exists($path->first(), $this->relations)) {
-            return $this->makeRelation($path);
-        }
-
-        $relation = $this->relations[$path->first()];
-
-        if ($path->count() > 1) {
-            return $relation->getRelation($path->after(0));
-        }
-
-        return $relation;
-    }
-
-    /**
-     * @param string $path
-     * @return Query
-     */
-    public function makeRelation(Path $path)
-    {
-        $name = $path->first();
-
-        if ( ! array_key_exists($name, $this->relations)) {
-            $this->addRelation($name, $this->model->getRelation($name));
-        }
-
-        if ($path->count() > 1) {
-            return $this->relations[$name]->makeRelation($path->after(0));
-        }
-
-        return $this->relations[$name];
-    }
-
-    /**
-     * @param string $name
-     * @param Relation $relation
-     * @return $this
-     */
-    public function addRelation(string $name, Relation $relation)
-    {
-        $this->relations[$name] = $relation->query()->join($this);
-
-        return $this;
     }
 }
