@@ -2,12 +2,25 @@
 
 namespace Stitch\Schema;
 
+/**
+ * Class Column
+ * @package Stitch\Schema
+ */
 class Column
 {
+    /**
+     * @var KeyChain
+     */
     protected $keyChain;
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var string
+     */
     protected $type;
 
     /**
@@ -34,6 +47,17 @@ class Column
     }
 
     /**
+     * @param string $column
+     * @return $this
+     */
+    public function references(string $column)
+    {
+        $this->foreignKey()->references($column);
+
+        return $this;
+    }
+
+    /**
      * @return ForeignKey|null
      */
     protected function foreignKey()
@@ -44,17 +68,6 @@ class Column
         }
 
         return $foreignKey;
-    }
-
-    /**
-     * @param string $column
-     * @return $this
-     */
-    public function references(string $column)
-    {
-        $this->foreignKey()->references($column);
-
-        return $this;
     }
 
     /**
@@ -92,7 +105,7 @@ class Column
     {
         switch ($this->type) {
             case 'integer':
-                return (int) $value;
+                return (int)$value;
 
             case 'json':
                 return json_decode($value, true);

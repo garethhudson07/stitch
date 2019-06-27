@@ -7,10 +7,21 @@ use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Queries\Operations\Limit;
 use Stitch\DBAL\Statements\Statement;
 
+/**
+ * Class Limited
+ * @package Stitch\DBAL\Statements\Queries
+ */
 class Limited extends Statement
 {
+    /**
+     * @var QueryBuilder
+     */
     protected $queryBuilder;
 
+    /**
+     * Limited constructor.
+     * @param QueryBuilder $queryBuilder
+     */
     public function __construct(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
@@ -18,20 +29,17 @@ class Limited extends Statement
         parent::__construct();
     }
 
+    /**
+     * @return void
+     */
     protected function evaluate()
     {
         $this->queryBuilder->getJoins() ? $this->numbered() : $this->default();
     }
 
-    protected function default()
-    {
-        $this->assembler->push(
-            new Unlimited($this->queryBuilder)
-        )->push(
-            new Limit($this->queryBuilder)
-        );
-    }
-
+    /**
+     * @return void
+     */
     protected function numbered()
     {
         $this->assembler->push(
@@ -45,6 +53,10 @@ class Limited extends Statement
         );
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @return array
+     */
     protected function conditions(QueryBuilder $queryBuilder)
     {
         $table = $queryBuilder->getTable();
@@ -60,5 +72,17 @@ class Limited extends Statement
         }
 
         return $conditions;
+    }
+
+    /**
+     * @return void
+     */
+    protected function default()
+    {
+        $this->assembler->push(
+            new Unlimited($this->queryBuilder)
+        )->push(
+            new Limit($this->queryBuilder)
+        );
     }
 }

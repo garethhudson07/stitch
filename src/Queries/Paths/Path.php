@@ -3,13 +3,23 @@
 namespace Stitch\Queries\Paths;
 
 use ArrayIterator;
-use IteratorAggregate;
 use Countable;
+use IteratorAggregate;
 
-class Path implements IteratorAggregate, Countable {
-
+/**
+ * Class Path
+ * @package Stitch\Queries\Paths
+ */
+class Path implements IteratorAggregate, Countable
+{
+    /**
+     * @var string
+     */
     protected static $delimiter = '.';
 
+    /**
+     * @var array
+     */
     protected $pieces;
 
     /**
@@ -56,14 +66,6 @@ class Path implements IteratorAggregate, Countable {
     }
 
     /**
-     * @return string
-     */
-    public function implode(): string
-    {
-        return implode(static::$delimiter, $this->pieces);
-    }
-
-    /**
      * Count the number of pieces in the collection.
      *
      * @return int
@@ -76,7 +78,7 @@ class Path implements IteratorAggregate, Countable {
     /**
      * Get an iterator for the pieces.
      *
-     * @return \ArrayIterator
+     * @return ArrayIterator
      */
     public function getIterator()
     {
@@ -89,5 +91,13 @@ class Path implements IteratorAggregate, Countable {
     public function __toString()
     {
         return $this->implode();
+    }
+
+    /**
+     * @return string
+     */
+    public function implode(): string
+    {
+        return implode(static::$delimiter, $this->pieces);
     }
 }

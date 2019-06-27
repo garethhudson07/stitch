@@ -2,11 +2,18 @@
 
 namespace Stitch\Queries;
 
-use Stitch\DBAL\Builders\Expression as BaseExpression;
 use Stitch\DBAL\Builders\Condition;
+use Stitch\DBAL\Builders\Expression as BaseExpression;
 
+/**
+ * Class Expression
+ * @package Stitch\Queries
+ */
 class Expression extends BaseExpression
 {
+    /**
+     * @var Query
+     */
     protected $query;
 
     /**

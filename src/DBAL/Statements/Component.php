@@ -4,24 +4,39 @@ namespace Stitch\DBAL\Statements;
 
 use Stitch\DBAL\Statements\Contracts\Assemblable;
 
+/**
+ * Class Component
+ * @package Stitch\DBAL\Statements
+ */
 class Component implements Assemblable
 {
+    /**
+     * @var mixed
+     */
     protected $value;
 
+    /**
+     * @var bool
+     */
     protected $isolate = false;
 
+    /**
+     * @var array
+     */
     protected $bindings = [];
 
+    /**
+     * Component constructor.
+     * @param $value
+     */
     public function __construct($value)
     {
         $this->value = $value;
     }
 
-    public function resolve()
-    {
-        return $this->isolate ? "($this->value)" : $this->value;
-    }
-
+    /**
+     * @return $this
+     */
     public function isolate()
     {
         $this->isolate = true;
@@ -29,6 +44,10 @@ class Component implements Assemblable
         return $this;
     }
 
+    /**
+     * @param $value
+     * @return $this
+     */
     public function bind($value)
     {
         $this->bindings[] = $value;
@@ -36,6 +55,10 @@ class Component implements Assemblable
         return $this;
     }
 
+    /**
+     * @param array $values
+     * @return $this
+     */
     public function bindMany(array $values)
     {
         $this->bindings = array_merge($this->bindings, $values);
@@ -43,6 +66,9 @@ class Component implements Assemblable
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getBindings(): array
     {
         return $this->value instanceof Assemblable
@@ -50,8 +76,19 @@ class Component implements Assemblable
             : $this->bindings;
     }
 
+    /**
+     * @return string
+     */
     public function __toString(): string
     {
         return $this->resolve();
+    }
+
+    /**
+     * @return string
+     */
+    public function resolve()
+    {
+        return $this->isolate ? "($this->value)" : $this->value;
     }
 }

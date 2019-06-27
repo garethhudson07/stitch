@@ -2,23 +2,48 @@
 
 namespace Stitch\Result;
 
-use Countable;
 use ArrayIterator;
+use Countable;
 use IteratorAggregate;
+use Stitch\DBAL\Builders\Column;
 use Stitch\Queries\Query;
 
+/**
+ * Class Set
+ * @package Stitch\Result
+ */
 class Set implements Countable, IteratorAggregate
 {
+    /**
+     * @var Query
+     */
     protected $query;
 
+    /**
+     * @var array
+     */
     protected $columns;
 
+    /**
+     * @var Column
+     */
     protected $primaryKey;
 
+    /**
+     * @var array
+     */
     protected $items = [];
 
+    /**
+     * @var array
+     */
     protected $map = [];
 
+    /**
+     * Set constructor.
+     * @param Query $query
+     * @param array $items
+     */
     public function __construct(Query $query, array $items = [])
     {
         $this->query = $query;
@@ -29,25 +54,8 @@ class Set implements Countable, IteratorAggregate
     }
 
     /**
-     * Count the number of items in the collection.
-     *
-     * @return int
+     * @return $this
      */
-    public function count()
-    {
-        return count($this->items);
-    }
-
-    /**
-     * Get an iterator for the items.
-     *
-     * @return \ArrayIterator
-     */
-    public function getIterator()
-    {
-        return new ArrayIterator($this->items);
-    }
-
     protected function pullPrimaryKey()
     {
         $primaryKeyName = $this->query->getModel()->getTable()->getPrimaryKey()->getName();
@@ -63,6 +71,9 @@ class Set implements Countable, IteratorAggregate
         return $this;
     }
 
+    /**
+     * @param $items
+     */
     protected function assemble($items)
     {
         foreach ($items as $item) {
@@ -70,6 +81,10 @@ class Set implements Countable, IteratorAggregate
         }
     }
 
+    /**
+     * @param $data
+     * @return $this
+     */
     public function extract($data)
     {
         if ($data[$this->primaryKey->getAlias()] !== null) {
@@ -85,6 +100,10 @@ class Set implements Countable, IteratorAggregate
         return $this;
     }
 
+    /**
+     * @param $data
+     * @return bool|mixed
+     */
     public function match($data)
     {
         if ($item = $this->find($data[$this->primaryKey->getAlias()])) {
@@ -94,6 +113,10 @@ class Set implements Countable, IteratorAggregate
         return false;
     }
 
+    /**
+     * @param $primaryKey
+     * @return bool|mixed
+     */
     public function find($primaryKey)
     {
         if (array_key_exists($primaryKey, $this->map)) {
@@ -101,5 +124,25 @@ class Set implements Countable, IteratorAggregate
         }
 
         return false;
+    }
+
+    /**
+     * Count the number of items in the collection.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->items);
+    }
+
+    /**
+     * Get an iterator for the items.
+     *
+     * @return ArrayIterator
+     */
+    public function getIterator()
+    {
+        return new ArrayIterator($this->items);
     }
 }

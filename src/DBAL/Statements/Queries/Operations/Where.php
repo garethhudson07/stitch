@@ -8,12 +8,26 @@ use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Queries\Fragments\Expression;
 use Stitch\DBAL\Statements\Statement;
 
+/**
+ * Class Where
+ * @package Stitch\DBAL\Statements\Queries\Operations
+ */
 class Where extends Statement
 {
+    /**
+     * @var QueryBuilder
+     */
     protected $queryBuilder;
 
+    /**
+     * @var Assembler
+     */
     protected $expressionAssembler;
 
+    /**
+     * Where constructor.
+     * @param QueryBuilder $queryBuilder
+     */
     public function __construct(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
@@ -22,6 +36,9 @@ class Where extends Statement
         parent::__construct();
     }
 
+    /**
+     * @return void
+     */
     protected function evaluate()
     {
         $this->conditions($this->queryBuilder);
@@ -35,6 +52,9 @@ class Where extends Statement
         }
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     */
     protected function conditions(QueryBuilder $queryBuilder)
     {
         $conditions = $queryBuilder->getWhereConditions();
