@@ -2,10 +2,22 @@
 
 namespace Stitch\DBAL\Builders;
 
+/**
+ * Class Sorter
+ * @package Stitch\DBAL\Builders
+ */
 class Sorter
 {
+    /**
+     * @var array
+     */
     protected $columns = [];
 
+    /**
+     * @param string $name
+     * @param string $direction
+     * @return $this
+     */
     public function add(string $name, string $direction)
     {
         $index = $this->indexOf($name);
@@ -22,6 +34,10 @@ class Sorter
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @return bool|int|string
+     */
     public function indexOf(string $name)
     {
         foreach ($this->columns as $key => $column) {
@@ -33,11 +49,17 @@ class Sorter
         return false;
     }
 
+    /**
+     * @return array
+     */
     public function getColumns()
     {
         return $this->columns;
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return count($this->columns);

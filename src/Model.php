@@ -2,22 +2,30 @@
 
 namespace Stitch;
 
-use Stitch\Relations\ManyToMany;
-use Stitch\Relations\HasOne;
-use Stitch\Relations\Relation;
-use Stitch\Relations\Collection as Relations;
-use Stitch\Schema\Table;
-use Stitch\Queries\Query;
-use Stitch\DBAL\Builders\Query as QueryBuilder;
-use Stitch\Result\Set as ResultSet;
-use Stitch\Result\Record as ResultRecord;
-use Stitch\Relations\Has;
 use Closure;
+use Stitch\DBAL\Builders\Query as QueryBuilder;
+use Stitch\Queries\Query;
+use Stitch\Relations\Collection as Relations;
+use Stitch\Relations\Has;
+use Stitch\Relations\HasOne;
+use Stitch\Relations\ManyToMany;
+use Stitch\Relations\Relation;
+use Stitch\Schema\Table;
 
+/**
+ * Class Model
+ * @package Stitch
+ */
 class Model
 {
+    /**
+     * @var Table
+     */
     protected $table;
 
+    /**
+     * @var Relations
+     */
     protected $relations;
 
     /**
@@ -59,24 +67,6 @@ class Model
 
     /**
      * @param array ...$arguments
-     * @return Model
-     */
-    public function hasOne(...$arguments)
-    {
-        return $this->addRelation(array_merge([HasOne::class], $arguments));
-    }
-
-    /**
-     * @param array ...$arguments
-     * @return Model
-     */
-    public function manyToMany(...$arguments)
-    {
-        return $this->addRelation(array_merge([ManyToMany::class], $arguments));
-    }
-
-    /**
-     * @param array ...$arguments
      * @return $this
      */
     protected function addRelation(array $arguments)
@@ -87,8 +77,7 @@ class Model
         if ($arguments[2] instanceof Closure) {
             $this->relations->register(
                 $name,
-                function () use ($class, $arguments)
-                {
+                function () use ($class, $arguments) {
                     $relation = new $class($this);
                     $this->bootRelation($relation, $arguments[2]);
 
@@ -96,6 +85,7 @@ class Model
                 }
             );
         } else {
+            /** @noinspection PhpUndefinedMethodInspection */
             $relation = (new $class($this))->foreignModel($arguments[2]);
             $this->bootRelation($relation, $arguments[3] ?? null);
             $this->relations->add($name, $relation);
@@ -118,6 +108,24 @@ class Model
         $relation->boot();
 
         return $this;
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Model
+     */
+    public function hasOne(...$arguments)
+    {
+        return $this->addRelation(array_merge([HasOne::class], $arguments));
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Model
+     */
+    public function manyToMany(...$arguments)
+    {
+        return $this->addRelation(array_merge([ManyToMany::class], $arguments));
     }
 
     /**

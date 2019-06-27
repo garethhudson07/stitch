@@ -6,8 +6,15 @@ use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
 
+/**
+ * Class Update
+ * @package Stitch\DBAL\Statements\Persistence
+ */
 class Update extends Statement
 {
+    /**
+     * @var RecordBuilder
+     */
     protected $recordBuilder;
 
     /**
@@ -21,6 +28,9 @@ class Update extends Statement
         parent::__construct();
     }
 
+    /**
+     * @return void
+     */
     protected function evaluate()
     {
         $this->assembler->push(

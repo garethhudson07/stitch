@@ -4,8 +4,15 @@ namespace Stitch;
 
 use Closure;
 
+/**
+ * Class Registry
+ * @package Stitch
+ */
 class Registry
 {
+    /**
+     * @var array
+     */
     protected static $items = [];
 
     /**
@@ -18,21 +25,21 @@ class Registry
     }
 
     /**
-     * @param string $name
-     * @return bool
-     */
-    public static function has(string $name)
-    {
-        return array_key_exists($name, static::$items);
-    }
-
-    /**
      * @param $name
      * @return mixed|null
      */
     public static function get($name)
     {
         return static::has($name) ? static::resolve($name) : null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public static function has(string $name)
+    {
+        return array_key_exists($name, static::$items);
     }
 
     /**

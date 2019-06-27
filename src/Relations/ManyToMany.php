@@ -3,18 +3,36 @@
 namespace Stitch\Relations;
 
 use Stitch\Registry;
+use Stitch\Schema\ForeignKey;
 use Stitch\Schema\Table;
 use Stitch\Queries\Relations\ManyToMany as Query;
 use Closure;
 
+/**
+ * Class ManyToMany
+ * @package Stitch\Relations
+ */
 class ManyToMany extends Relation
 {
+    /**
+     * @var Table|null
+     */
     protected $pivotTable;
 
+    /**
+     * @var ForeignKey
+     */
     protected $localPivotKey;
 
+    /**
+     * @var ForeignKey
+     */
     protected $foreignPivotKey;
 
+    /**
+     * @param $value
+     * @return $this
+     */
     public function pivot($value)
     {
         if ($value instanceof Closure) {
@@ -30,6 +48,9 @@ class ManyToMany extends Relation
         return $this;
     }
 
+    /**
+     * @return mixed|Table|null
+     */
     public function getPivotTable()
     {
         if ($this->pivotTable instanceof Table) {
@@ -41,6 +62,10 @@ class ManyToMany extends Relation
         }
     }
 
+    /**
+     * @param $name
+     * @return $this
+     */
     public function localPivotKey($name)
     {
         $this->localPivotKey = $this->getPivotTable()->getForeignKeyFrom($name);
@@ -48,6 +73,10 @@ class ManyToMany extends Relation
         return $this;
     }
 
+    /**
+     * @param $name
+     * @return $this
+     */
     public function foreignPivotKey($name)
     {
         $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFrom($name);
@@ -55,31 +84,49 @@ class ManyToMany extends Relation
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     public function getLocalPivotKey()
     {
         return $this->localPivotKey;
     }
 
+    /**
+     * @return mixed
+     */
     public function getForeignPivotKey()
     {
         return $this->foreignPivotKey;
     }
 
+    /**
+     * @return string
+     */
     public function queryClass()
     {
         return Query::class;
     }
 
+    /**
+     * @return bool
+     */
     public function hasKeys()
     {
         return ($this->localPivotKey !== null && $this->foreignPivotKey !== null);
     }
 
+    /**
+     * @return ManyToMany
+     */
     public function pullKeys()
     {
         return $this->pullLocalPivotKey()->pullForeignPivotKey();
     }
 
+    /**
+     * @return $this
+     */
     protected function pullLocalPivotKey()
     {
         $localTable = $this->localModel->getTable();
@@ -92,8 +139,12 @@ class ManyToMany extends Relation
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     protected function pullForeignPivotKey()
     {
+        /** @var Table $foreignTable */
         $foreignTable = $this->getForeignModel()->getTable();
 
         $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFor(

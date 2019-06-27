@@ -2,9 +2,13 @@
 
 namespace Stitch\Relations;
 
-use Stitch\Collection as BaseCollection;
 use Closure;
+use Stitch\Collection as BaseCollection;
 
+/**
+ * Class Collection
+ * @package Stitch\Relations
+ */
 class Collection extends BaseCollection
 {
     /**
@@ -33,20 +37,20 @@ class Collection extends BaseCollection
 
     /**
      * @param string $name
-     * @return bool
-     */
-    public function has(string $name)
-    {
-        return array_key_exists($name, $this->items);
-    }
-
-    /**
-     * @param string $name
      * @return Relation|null
      */
     public function get(string $name): ?Relation
     {
         return $this->has($name) ? $this->resolve($name) : null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function has(string $name)
+    {
+        return array_key_exists($name, $this->items);
     }
 
     /**

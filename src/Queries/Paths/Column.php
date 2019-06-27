@@ -4,10 +4,20 @@ namespace Stitch\Queries\Paths;
 
 use Stitch\Schema\Column as Blueprint;
 
+/**
+ * Class Column
+ * @package Stitch\Queries\Paths
+ */
 class Column extends Path
 {
+    /**
+     * @var Blueprint
+     */
     protected $blueprint;
 
+    /**
+     * @var array
+     */
     protected $pieces;
 
     /**

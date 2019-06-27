@@ -2,12 +2,34 @@
 
 namespace Stitch\Queries\Paths;
 
+/**
+ * Class Bag
+ * @package Stitch\Queries\Paths
+ */
 class Bag
 {
+    /**
+     * @var Path
+     */
     protected $relation;
 
+    /**
+     * @var Column
+     */
     protected $column;
 
+    /**
+     * @return mixed
+     */
+    public function getRelation()
+    {
+        return $this->relation;
+    }
+
+    /**
+     * @param Path $relation
+     * @return $this
+     */
     public function setRelation(Path $relation)
     {
         $this->relation = $relation;
@@ -15,16 +37,26 @@ class Bag
         return $this;
     }
 
-    public function getRelation()
-    {
-        return $this->relation;
-    }
-
+    /**
+     * @return bool
+     */
     public function hasRelation()
     {
         return ($this->relation !== null);
     }
 
+    /**
+     * @return mixed
+     */
+    public function getColumn()
+    {
+        return $this->column;
+    }
+
+    /**
+     * @param Column $column
+     * @return $this
+     */
     public function setColumn(Column $column)
     {
         $this->column = $column;
@@ -32,11 +64,9 @@ class Bag
         return $this;
     }
 
-    public function getColumn()
-    {
-        return $this->column;
-    }
-
+    /**
+     * @return bool
+     */
     public function hasColumn()
     {
         return ($this->column !== null);
