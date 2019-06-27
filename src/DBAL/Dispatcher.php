@@ -4,12 +4,16 @@ namespace Stitch\DBAL;
 
 use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
-use Stitch\Stitch;
-use Stitch\DBAL\Statements\Queries\Query as QueryStatement;
-use Stitch\DBAL\Statements\Queries\Variables\Declaration as VariableDeclaration;
 use Stitch\DBAL\Statements\Persistence\Insert as InsertStatement;
 use Stitch\DBAL\Statements\Persistence\Update as UpdateStatement;
+use Stitch\DBAL\Statements\Queries\Query as QueryStatement;
+use Stitch\DBAL\Statements\Queries\Variables\Declaration as VariableDeclaration;
+use Stitch\Stitch;
 
+/**
+ * Class Dispatcher
+ * @package Stitch\DBAL
+ */
 class Dispatcher
 {
     /**

@@ -2,15 +2,26 @@
 
 namespace Stitch\DBAL\Statements\Queries\Operations;
 
-use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
+use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
 
+/**
+ * Class Select
+ * @package Stitch\DBAL\Statements\Queries\Operations
+ */
 class Select extends Statement
 {
+    /**
+     * @var QueryBuilder
+     */
     protected $queryBuilder;
 
+    /**
+     * Select constructor.
+     * @param QueryBuilder $queryBuilder
+     */
     public function __construct(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
@@ -18,6 +29,9 @@ class Select extends Statement
         parent::__construct();
     }
 
+    /**
+     * @return void
+     */
     protected function evaluate()
     {
         $this->assembler->push(
@@ -29,10 +43,13 @@ class Select extends Statement
         );
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @return string
+     */
     protected function selection(QueryBuilder $queryBuilder)
     {
-        $columns = array_map(function (ColumnBuilder $column) use ($queryBuilder)
-        {
+        $columns = array_map(function (ColumnBuilder $column) use ($queryBuilder) {
             $str = "{$queryBuilder->getTable()}.{$column->getName()}";
 
             if ($alias = $column->getAlias()) {

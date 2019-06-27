@@ -4,10 +4,20 @@ namespace Stitch\DBAL\Builders;
 
 use Closure;
 
+/**
+ * Class Expression
+ * @package Stitch\DBAL\Builders
+ */
 class Expression
 {
+    /**
+     * @var array
+     */
     protected $items = [];
 
+    /**
+     * @var array
+     */
     protected $aliases = [
         'where' => 'and',
         'whereRaw' => 'andRaw',

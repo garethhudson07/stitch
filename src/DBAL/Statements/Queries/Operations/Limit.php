@@ -6,10 +6,21 @@ use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
 
+/**
+ * Class Limit
+ * @package Stitch\DBAL\Statements\Queries\Operations
+ */
 class Limit extends Statement
 {
+    /**
+     * @var QueryBuilder
+     */
     protected $queryBuilder;
 
+    /**
+     * Limit constructor.
+     * @param QueryBuilder $queryBuilder
+     */
     public function __construct(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
@@ -17,6 +28,9 @@ class Limit extends Statement
         parent::__construct();
     }
 
+    /**
+     * @return void
+     */
     protected function evaluate()
     {
         $limit = $this->queryBuilder->getLimit();

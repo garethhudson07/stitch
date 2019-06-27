@@ -2,16 +2,26 @@
 
 namespace Stitch\DBAL\Statements\Queries\Operations;
 
-use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Builders\Join as JoinBuilder;
 use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Queries\Fragments\Expression;
 use Stitch\DBAL\Statements\Statement;
 
+/**
+ * Class Join
+ * @package Stitch\DBAL\Statements\Queries\Operations
+ */
 class Join extends Statement
 {
+    /**
+     * @var JoinBuilder
+     */
     protected $joinBuilder;
 
+    /**
+     * Join constructor.
+     * @param JoinBuilder $joinBuilder
+     */
     public function __construct(JoinBuilder $joinBuilder)
     {
         $this->joinBuilder = $joinBuilder;
@@ -19,6 +29,9 @@ class Join extends Statement
         parent::__construct();
     }
 
+    /**
+     * @return void
+     */
     protected function evaluate()
     {
         $this->assembler->push(
