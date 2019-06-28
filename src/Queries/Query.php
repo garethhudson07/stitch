@@ -354,7 +354,7 @@ class Query
     {
         $this->forceSelection();
 
-        return (new ResultHydrator($this->model))->hydrate(
+        return (new ResultHydrator($this))->hydrate(
             new ResultSet(
                 $this,
                 Dispatcher::select($this->builder)
