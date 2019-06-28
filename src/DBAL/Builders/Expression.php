@@ -21,8 +21,8 @@ class Expression
     protected $aliases = [
         'where' => 'and',
         'whereRaw' => 'andRaw',
-        'or' => 'orWhere',
-        'orRaw' => 'orWhereRaw'
+        'orWhere' => 'or',
+        'orWhereRaw' => 'orRaw'
     ];
 
     /**
