@@ -63,23 +63,23 @@ class ManyToMany extends Relation
     }
 
     /**
-     * @param $name
+     * @param string $column
      * @return $this
      */
-    public function localPivotKey($name)
+    public function localPivotKey(string $column)
     {
-        $this->localPivotKey = $this->getPivotTable()->getForeignKeyFrom($name);
+        $this->localPivotKey = $this->getPivotTable()->getForeignKeyFrom($column);
 
         return $this;
     }
 
     /**
-     * @param $name
+     * @param string $column
      * @return $this
      */
-    public function foreignPivotKey($name)
+    public function foreignPivotKey(string $column)
     {
-        $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFrom($name);
+        $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFrom($column);
 
         return $this;
     }
