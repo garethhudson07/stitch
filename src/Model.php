@@ -155,6 +155,15 @@ class Model
     }
 
     /**
+     * @param string $id
+     * @return null|Record
+     */
+    public function find(string $id)
+    {
+        return $this->query()->where($this->table->getPrimaryKey()->getName(), $id)->first();
+    }
+
+    /**
      * @param $method
      * @param $arguments
      * @return mixed

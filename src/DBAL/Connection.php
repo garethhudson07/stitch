@@ -89,6 +89,8 @@ class Connection
      */
     public function execute(Statement $statement)
     {
+//        echo $statement;
+
         $prepared = $this->pdo->prepare($statement->resolve());
 
         $prepared->execute($statement->getBindings());
