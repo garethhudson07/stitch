@@ -36,17 +36,7 @@ class Stitch
     {
         return static::$connections[$name];
     }
-
-    /**
-     * @return void
-     */
-    public static function disconnect()
-    {
-        if (static::$connection) {
-            static::$connection->disconnect();
-        }
-    }
-
+    
     /**
      * @param string $name
      * @param Closure $callback
