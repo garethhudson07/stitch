@@ -17,19 +17,8 @@ class Stitch
     protected static $connections = [];
 
     /**
-     * @param string $database
-     * @param string $username
-     * @param string $password
+     * @param Closure $callback
      */
-    public static function connect(string $database, string $username, string $password)
-    {
-        static::$connection = new Connection(
-            $database,
-            $username,
-            $password
-        );
-    }
-
     public static function addConnection(Closure $callback)
     {
         $connection = new Connection();
