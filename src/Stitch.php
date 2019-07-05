@@ -14,23 +14,7 @@ class Stitch
     /**
      * @var Connection
      */
-    protected static $connection;
-
-    /**
-     * @param string $driver
-     */
-    public static function setDatabaseDriver(string $driver)
-    {
-        Connection::setDriver($driver);
-    }
-
-    /**
-     * @param string $host
-     */
-    public static function setDatabaseHost(string $host)
-    {
-        Connection::setHost($host);
-    }
+    protected static $connections = [];
 
     /**
      * @param string $database
@@ -46,12 +30,22 @@ class Stitch
         );
     }
 
-    /**
-     * @return Connection
-     */
-    public static function getConnection()
+    public static function addConnection(Closure $callback)
     {
-        return static::$connection;
+        $connection = new Connection();
+
+        $callback($connection);
+
+        static::$connections[$connection->getName()] = $connection;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public static function getConnection(string $name)
+    {
+        return static::$connections[$name];
     }
 
     /**

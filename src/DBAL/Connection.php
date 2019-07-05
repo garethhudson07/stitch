@@ -18,12 +18,32 @@ class Connection
     /**
      * @var string
      */
-    protected static $driver = 'mysql';
+    protected $name = 'default';
 
     /**
      * @var string
      */
-    protected static $host = 'localhost';
+    protected $database;
+
+    /**
+     * @var string
+     */
+    protected $username;
+
+    /**
+     * @var string
+     */
+    protected $password;
+
+    /**
+     * @var string
+     */
+    protected $driver = 'mysql';
+
+    /**
+     * @var string
+     */
+    protected $host = 'localhost';
 
     /**
      * @var PDO
@@ -31,37 +51,106 @@ class Connection
     protected $pdo;
 
     /**
-     * Connection constructor.
-     * @param string $database
-     * @param string $username
-     * @param string $password
+     * @return $this
      */
-    public function __construct(string $database, string $username, string $password)
+    public function connect()
     {
         $this->pdo = new PDO(
-            static::$driver . ':host=' . static::$host . ';dbname=' . $database,
-            $username,
-            $password
+            $this->driver . ':host=' . $this->host . ';dbname=' . $this->database,
+            $this->username,
+            $this->password
         );
 
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+        return $this;
+    }
+
+    /**
+     * @return PDO
+     */
+    public function get()
+    {
+        if (!$this->pdo) {
+            $this->connect();
+        }
+
+        return $this->pdo;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function name(string $name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
      * @param string $driver
+     * @return $this
      */
-    public static function setDriver(string $driver)
+    public function driver(string $driver)
     {
-        static::$driver = $driver;
+        $this->driver = $driver;
+
+        return $this;
     }
 
     /**
      * @param string $host
+     * @return $this
      */
-    public static function setHost(string $host)
+    public function host(string $host)
     {
-        static::$host = $host;
+        $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * @param string $database
+     * @return $this
+     */
+    public function database(string $database)
+    {
+        $this->database = $database;
+
+        return $this;
+    }
+
+    /**
+     * @param string $username
+     * @return $this
+     */
+    public function username(string $username)
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    /**
+     * @param string $password
+     * @return $this
+     */
+    public function password(string $password)
+    {
+        $this->password = $password;
+
+        return $this;
     }
 
     /**
@@ -91,7 +180,7 @@ class Connection
     {
 //        echo $statement;
 
-        $prepared = $this->pdo->prepare($statement->resolve());
+        $prepared = $this->get()->prepare($statement->resolve());
 
         $prepared->execute($statement->getBindings());
 

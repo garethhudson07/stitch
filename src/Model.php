@@ -4,6 +4,7 @@ namespace Stitch;
 
 use Closure;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
+use Stitch\DBAL\Connection;
 use Stitch\Queries\Query;
 use Stitch\Relations\Collection as Relations;
 use Stitch\Relations\Has;
@@ -18,6 +19,11 @@ use Stitch\Schema\Table;
  */
 class Model
 {
+    /**
+     * @var string
+     */
+    protected $connection = 'default';
+
     /**
      * @var Table
      */
@@ -54,6 +60,25 @@ class Model
     public function make(array $attributes = [], $exists = false)
     {
         return new Record($this, $attributes, $exists);
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function connection(string $name)
+    {
+        $this->connection = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Connection
+     */
+    public function getConnection(): Connection
+    {
+        return Stitch::getConnection($this->connection);
     }
 
     /**

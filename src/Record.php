@@ -141,7 +141,7 @@ class Record implements Arrayable
         $builder = $this->builder()
             ->primaryKey($this->model->getTable()->getPrimaryKey()->getName());
 
-        Dispatcher::update($builder);
+        Dispatcher::update($this->model->getConnection(), $builder);
 
         return $this;
     }
@@ -184,7 +184,7 @@ class Record implements Arrayable
      */
     protected function insert()
     {
-        Dispatcher::insert($this->builder());
+        Dispatcher::insert($this->model->getConnection(), $this->builder());
 
         $this->exists = true;
 

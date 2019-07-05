@@ -48,6 +48,14 @@ class Query
     }
 
     /**
+     * @return Model
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
      * @return Builder
      */
     public function getBuilder()
@@ -294,14 +302,6 @@ class Query
     }
 
     /**
-     * @return Model
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    /**
      * @param array ...$arguments
      * @return Query
      */
@@ -358,7 +358,7 @@ class Query
         return (new ResultHydrator($this))->hydrate(
             new ResultSet(
                 $this,
-                Dispatcher::select($this->builder)
+                Dispatcher::select($this->model->getConnection(), $this->builder)
             )
         );
     }
