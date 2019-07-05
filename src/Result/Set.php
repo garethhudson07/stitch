@@ -2,9 +2,7 @@
 
 namespace Stitch\Result;
 
-use ArrayIterator;
-use Countable;
-use IteratorAggregate;
+use stitch\Collection;
 use Stitch\DBAL\Builders\Column;
 use Stitch\Queries\Query;
 
@@ -12,7 +10,7 @@ use Stitch\Queries\Query;
  * Class Set
  * @package Stitch\Result
  */
-class Set implements Countable, IteratorAggregate
+class Set extends Collection
 {
     /**
      * @var Query
@@ -124,36 +122,5 @@ class Set implements Countable, IteratorAggregate
         }
 
         return false;
-    }
-
-    /**
-     * Count the number of items in the collection.
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return count($this->items);
-    }
-
-    /**
-     * Get an iterator for the items.
-     *
-     * @return ArrayIterator
-     */
-    public function getIterator()
-    {
-        return new ArrayIterator($this->items);
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        return array_map(function ($item)
-        {
-            return $item->toArray();
-        }, $this->items);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Stitch\Result;
 
+use Stitch\Contracts\Arrayable;
 use Stitch\Queries\Query;
 use Stitch\Queries\Relations\HasOne;
 use Stitch\Schema\Table;
@@ -10,7 +11,7 @@ use Stitch\Schema\Table;
  * Class Record
  * @package Stitch\Result
  */
-class Record
+class Record implements arrayable
 {
     /**
      * @var Query
@@ -121,7 +122,7 @@ class Record
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return array_merge($this->data, array_map(function ($relation)
         {
