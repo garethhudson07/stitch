@@ -117,4 +117,15 @@ class Record
     {
         return $this->relations;
     }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return array_merge($this->data, array_map(function ($relation)
+        {
+            return $relation->toArray();
+        }, $this->relations));
+    }
 }

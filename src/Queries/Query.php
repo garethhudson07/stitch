@@ -353,13 +353,21 @@ class Query
      */
     public function get()
     {
+        return (new ResultHydrator($this))->hydrate(
+            $this->getResultSet()
+        );
+    }
+
+    /**
+     * @return ResultSet
+     */
+    public function getResultSet(): ResultSet
+    {
         $this->forceSelection();
 
-        return (new ResultHydrator($this))->hydrate(
-            new ResultSet(
-                $this,
-                Dispatcher::select($this->model->getConnection(), $this->builder)
-            )
+        return new ResultSet(
+            $this,
+            Dispatcher::select($this->model->getConnection(), $this->builder)
         );
     }
 

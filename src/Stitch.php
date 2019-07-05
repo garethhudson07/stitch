@@ -36,7 +36,7 @@ class Stitch
     {
         return static::$connections[$name];
     }
-    
+
     /**
      * @param string $name
      * @param Closure $callback

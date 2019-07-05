@@ -145,4 +145,15 @@ class Set implements Countable, IteratorAggregate
     {
         return new ArrayIterator($this->items);
     }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return array_map(function ($item)
+        {
+            return $item->toArray();
+        }, $this->items);
+    }
 }
