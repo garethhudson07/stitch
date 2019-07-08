@@ -1,8 +1,9 @@
 <?php
 
-namespace Stitch;
+namespace Stitch\Records;
 
 use Stitch\Contracts\Arrayable;
+use Stitch\Model;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
 use Stitch\DBAL\Dispatcher;
 use Stitch\Schema\Column;
@@ -36,14 +37,10 @@ class Record implements Arrayable
     /**
      * Record constructor.
      * @param Model $model
-     * @param array $attributes
-     * @param bool $exists
      */
-    public function __construct(Model $model, array $attributes = [], bool $exists = false)
+    public function __construct(Model $model)
     {
         $this->model = $model;
-        $this->attributes = $attributes;
-        $this->exists = $exists;
     }
 
     /**

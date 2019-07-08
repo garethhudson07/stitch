@@ -55,7 +55,7 @@ class Hydrator
      */
     public function one(Record $record)
     {
-        $instance = $this->query->getModel()->make($record->getData(), true);
+        $instance = $this->query->getModel()->make($record->getData())->exists();
 
         foreach ($record->getRelations() as $key => $relation) {
             $relatedQuery = $relation->getQuery();

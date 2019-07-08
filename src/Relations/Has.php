@@ -3,6 +3,7 @@
 namespace Stitch\Relations;
 
 use Stitch\Queries\Relations\Has as Query;
+use Stitch\Records\Relations\Has as RecordCollection;
 use Stitch\Schema\ForeignKey;
 
 /**
@@ -59,10 +60,15 @@ class Has extends Relation
     }
 
     /**
-     * @return string
+     * @return Query
      */
-    protected function queryClass()
+    public function query()
     {
-        return Query::class;
+        return new Query($this->foreignModel, $this->joinBuilder(), $this);
+    }
+
+    public function make()
+    {
+
     }
 }

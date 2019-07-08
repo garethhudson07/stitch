@@ -12,6 +12,7 @@ use Stitch\Relations\HasOne;
 use Stitch\Relations\ManyToMany;
 use Stitch\Relations\Relation;
 use Stitch\Schema\Table;
+use Stitch\Records\Record;
 
 /**
  * Class Model
@@ -54,12 +55,11 @@ class Model
 
     /**
      * @param array $attributes
-     * @param bool $exists
      * @return Record
      */
-    public function make(array $attributes = [], $exists = false)
+    public function make(array $attributes = [])
     {
-        return new Record($this, $attributes, $exists);
+        return (new Record($this))->fill($attributes);
     }
 
     /**

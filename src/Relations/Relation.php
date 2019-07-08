@@ -116,33 +116,18 @@ abstract class Relation
         return $this->binding;
     }
 
-    public function make()
-    {
-
-    }
-
     /**
-     * @return mixed
+     * @return JoinBuilder
      */
-    public function query()
+    protected function joinBuilder()
     {
-        $queryClass = $this->queryClass();
         $table = $this->foreignModel->getTable();
 
-        return (new $queryClass(
-            $this->foreignModel,
-            new JoinBuilder(
-                $table->getName(),
-                $table->getPrimaryKey()->getName()
-            ),
-            $this
-        ));
+        return new JoinBuilder(
+            $table->getName(),
+            $table->getPrimaryKey()->getName()
+        );
     }
-
-    /**
-     * @return mixed
-     */
-    abstract protected function queryClass();
 
     /**
      * @return $this
@@ -155,6 +140,16 @@ abstract class Relation
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    abstract public function query();
+
+    /**
+     * @return mixed
+     */
+    abstract public function make();
 
     /**
      * @return mixed
