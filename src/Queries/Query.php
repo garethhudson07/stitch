@@ -37,6 +37,11 @@ class Query
     protected $relations = [];
 
     /**
+     * @var bool
+     */
+    protected $hydrate = true;
+
+    /**
      * Query constructor.
      * @param Model $model
      * @param Builder $builder
@@ -61,6 +66,26 @@ class Query
     public function getBuilder()
     {
         return $this->builder;
+    }
+
+    /**
+     * @return $this
+     */
+    public function hydrated()
+    {
+        $this->hydrate = true;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function dehydrated()
+    {
+        $this->hydrate = false;
+
+        return $this;
     }
 
     /**
@@ -353,6 +378,13 @@ class Query
      */
     public function get()
     {
+        $this->forceSelection();
+        $resultSet = $this->getResultSet();
+
+        if (!$this->hydrate) {
+            return $resultSet;
+        }
+
         return (new ResultHydrator($this))->hydrate(
             $this->getResultSet()
         );
@@ -361,10 +393,8 @@ class Query
     /**
      * @return ResultSet
      */
-    public function getResultSet(): ResultSet
+    protected function getResultSet(): ResultSet
     {
-        $this->forceSelection();
-
         return new ResultSet(
             $this,
             Dispatcher::select($this->model->getConnection(), $this->builder)
