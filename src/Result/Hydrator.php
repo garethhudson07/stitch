@@ -58,9 +58,13 @@ class Hydrator
         $instance = $this->query->getModel()->make($record->getData(), true);
 
         foreach ($record->getRelations() as $key => $relation) {
+            $relatedQuery = $relation->getQuery();
+
             $instance->setRelation(
                 $key,
-                (new static($this->query->getRelations()[$key]))->hydrate($relation)
+                $relatedQuery->getBlueprint()->make()->fill(
+                    (new static($relatedQuery))->hydrate($relation)
+                )
             );
         }
 

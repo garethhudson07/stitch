@@ -214,12 +214,7 @@ class Query
     protected function applyWhere($type, array $arguments)
     {
         if ($arguments[0] instanceof Closure) {
-            $expression = new Expression($this);
-            $arguments[0]($expression);
-
-            $this->builder->{$type}($expression);
-
-            return $this;
+            return $this->applyWhereExpression($type, $arguments[0]);
         }
 
         $path = array_shift($arguments);
@@ -232,6 +227,21 @@ class Query
         }
 
         return $this->addCondition($type, $this->translatePath($path), $operator, $value);
+    }
+
+    /**
+     * @param $type
+     * @param Closure $callback
+     * @return $this
+     */
+    protected function applyWhereExpression($type, Closure $callback)
+    {
+        $expression = new Expression($this);
+        $callback($expression);
+
+        $this->builder->{$type}($expression);
+
+        return $this;
     }
 
     /**

@@ -116,6 +116,11 @@ abstract class Relation
         return $this->binding;
     }
 
+    public function make()
+    {
+
+    }
+
     /**
      * @return mixed
      */

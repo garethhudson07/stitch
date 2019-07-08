@@ -30,11 +30,6 @@ class Set extends Collection
     /**
      * @var array
      */
-    protected $items = [];
-
-    /**
-     * @var array
-     */
     protected $map = [];
 
     /**
@@ -49,6 +44,14 @@ class Set extends Collection
 
         $this->pullPrimaryKey();
         $this->assemble($items);
+    }
+
+    /**
+     * @return Query
+     */
+    public function getQuery()
+    {
+        return $this->query;
     }
 
     /**

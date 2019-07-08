@@ -53,6 +53,14 @@ class Record implements arrayable
     }
 
     /**
+     * @return Query
+     */
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
+    /**
      * @param array $raw
      */
     protected function assemble(array $raw)
