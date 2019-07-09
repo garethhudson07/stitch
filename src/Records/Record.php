@@ -22,7 +22,7 @@ class Record implements Arrayable
     /**
      * @var array
      */
-    protected $attributes;
+    protected $attributes = [];
 
     /**
      * @var array
@@ -41,6 +41,16 @@ class Record implements Arrayable
     public function __construct(Model $model)
     {
         $this->model = $model;
+    }
+
+    /**
+     * @return $this
+     */
+    public function exists()
+    {
+        $this->exists = true;
+
+        return $this;
     }
 
     /**
@@ -119,7 +129,19 @@ class Record implements Arrayable
      */
     public function getRelation(string $key)
     {
-        return $this->relations[$key] ?? null;
+        if (array_key_exists($key, $this->relations)) {
+            return $this->relations[$key];
+        }
+
+        if ($relation = $this->model->getRelation($key)) {
+            $relation = $relation->make()->associate($this);
+
+            $this->setRelation($key, $relation);
+
+            return $relation;
+        }
+
+        return null;
     }
 
     /**
@@ -181,11 +203,16 @@ class Record implements Arrayable
      */
     protected function insert()
     {
-        Dispatcher::insert($this->model->getConnection(), $this->builder());
+        $connection = $this->model->getConnection();
+        $primaryKey = $this->model->getTable()->getPrimaryKey();
 
-        $this->exists = true;
+        Dispatcher::insert($connection, $this->builder());
 
-        return $this;
+        if ($primaryKey->autoIncrements()) {
+            $this->attributes[$primaryKey->getName()] = $connection->lastInsertId();
+        }
+
+        return $this->exists();
     }
 
     /**

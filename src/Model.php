@@ -13,6 +13,7 @@ use Stitch\Relations\ManyToMany;
 use Stitch\Relations\Relation;
 use Stitch\Schema\Table;
 use Stitch\Records\Record;
+use Stitch\Records\Collection as RecordCollection;
 
 /**
  * Class Model
@@ -60,6 +61,14 @@ class Model
     public function make(array $attributes = [])
     {
         return (new Record($this))->fill($attributes);
+    }
+
+    /**
+     * @return RecordCollection
+     */
+    public function collection()
+    {
+        return new RecordCollection($this);
     }
 
     /**

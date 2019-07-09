@@ -2,33 +2,40 @@
 
 namespace Stitch\Records\Relations;
 
-use Stitch\Collection as BaseCollection;
+use Stitch\Records\Collection as BaseCollection;
+use Stitch\Records\Record;
 
 class Collection extends BaseCollection
 {
-    protected $record;
+    protected $associated;
 
-    protected $blueprint;
-
-    public function __construct($blueprint)
+    /**
+     * @param array $attributes
+     * @return mixed
+     */
+    public function make(array $attributes = [])
     {
-        $this->blueprint = $blueprint;
-    }
+        $record = $this->factory->record($attributes);
 
-    public function make(array $attributes)
-    {
-        return $this->blueprint->getForeignModel()->make($attributes);
-    }
-
-    public function new(array $attributes)
-    {
-        return $this->push($this->make($attributes));
-    }
-
-    public function save()
-    {
-        foreach ($this->items as $item) {
-            $item->associate();
+        if ($this->associated) {
+            $record->associate($this->associated);
         }
+
+        return $record;
+    }
+
+    /**
+     * @param Record $associated
+     * @return $this
+     */
+    public function associate(Record $associated)
+    {
+        $this->associated = $associated;
+
+        foreach ($this->items as $item) {
+            $item->associate($associated);
+        }
+
+        return $this;
     }
 }

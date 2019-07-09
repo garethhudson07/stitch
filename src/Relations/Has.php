@@ -3,7 +3,8 @@
 namespace Stitch\Relations;
 
 use Stitch\Queries\Relations\Has as Query;
-use Stitch\Records\Relations\Has as RecordCollection;
+use Stitch\Records\Relations\Collection as RecordCollection;
+use Stitch\Records\Relations\BelongsTo;
 use Stitch\Schema\ForeignKey;
 
 /**
@@ -64,11 +65,23 @@ class Has extends Relation
      */
     public function query()
     {
-        return new Query($this->foreignModel, $this->joinBuilder(), $this);
+        return new Query($this->getForeignModel(), $this->joinBuilder(), $this);
     }
 
+    /**
+     * @return mixed|RecordCollection
+     */
     public function make()
     {
+        return new RecordCollection($this);
+    }
 
+    /**
+     * @param array $attributes
+     * @return BelongsTo
+     */
+    public function record(array $attributes = [])
+    {
+        return (new BelongsTo($this->getForeignModel(), $this))->fill($attributes);
     }
 }

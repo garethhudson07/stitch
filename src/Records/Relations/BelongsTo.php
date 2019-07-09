@@ -8,27 +8,50 @@ use Stitch\Relations\Has as Blueprint;
 
 class BelongsTo extends Record
 {
-    protected $associatedRecord;
-
     protected $blueprint;
 
-    public function __construct(Model $model, Record $associatedRecord, Blueprint $blueprint)
+    protected $associated;
+
+    /**
+     * BelongsTo constructor.
+     * @param Model $model
+     * @param Blueprint $blueprint
+     */
+    public function __construct(Model $model, Blueprint $blueprint)
     {
         parent::__construct($model);
 
-        $this->associatedRecord = $associatedRecord;
+
         $this->blueprint = $blueprint;
+    }
+
+    /**
+     * @param Record $associated
+     */
+    public function associate(Record $associated)
+    {
+        $this->associated = $associated;
     }
 
     /**
      * @return $this
      */
-    public function associate()
+    public function applyAssociation()
     {
         $foreignKey = $this->blueprint->getForeignKey();
 
-        $this->attributes[$foreignKey->getLocalColumn()->getName()] = $this->associatedRecord->getAttribute($foreignKey->getReferenceColumnName());
+        $this->attributes[$foreignKey->getLocalColumn()->getName()] = $this->associated->getAttribute($foreignKey->getReferenceColumnName());
 
         return $this;
+    }
+
+    /**
+     * @return Record|void
+     */
+    public function save()
+    {
+        $this->applyAssociation();
+
+        parent::save();
     }
 }

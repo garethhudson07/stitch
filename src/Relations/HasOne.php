@@ -3,6 +3,7 @@
 namespace Stitch\Relations;
 
 use Stitch\Queries\Relations\HasOne as Query;
+use Stitch\Records\Relations\BelongsTo;
 
 /**
  * Class HasOne
@@ -11,10 +12,18 @@ use Stitch\Queries\Relations\HasOne as Query;
 class HasOne extends Has
 {
     /**
-     * @return string
+     * @return Query
      */
-    public function queryClass()
+    public function query()
     {
-        return Query::class;
+        return new Query($this->getForeignModel(), $this->joinBuilder(), $this);
+    }
+
+    /**
+     * @return mixed|BelongsTo|\Stitch\Records\Relations\Collection
+     */
+    public function make()
+    {
+        return $this->record();
     }
 }

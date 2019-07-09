@@ -33,23 +33,23 @@ class Dispatcher
         );
     }
 
+
     /**
      * @param Connection $connection
      * @param RecordBuilder $builder
-     * @return mixed
+     * @return string
      */
     public static function insert(Connection $connection, RecordBuilder $builder)
     {
-        return $connection->insert(new InsertStatement($builder));
+        $connection->insert(new InsertStatement($builder));
     }
 
     /**
      * @param Connection $connection
      * @param RecordBuilder $builder
-     * @return mixed
      */
     public static function update(Connection $connection, RecordBuilder $builder)
     {
-        return $connection->update(new UpdateStatement($builder));
+        $connection->update(new UpdateStatement($builder));
     }
 }

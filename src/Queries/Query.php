@@ -11,7 +11,7 @@ use Stitch\Model;
 use Stitch\Queries\Paths\Factory as PathFactory;
 use Stitch\Queries\Paths\Path;
 use Stitch\Queries\Relations\Relation;
-use Stitch\Record;
+use Stitch\Records\Record;
 use Stitch\Result\Hydrator as ResultHydrator;
 use Stitch\Result\Set as ResultSet;
 
@@ -395,9 +395,7 @@ class Query
             return $resultSet;
         }
 
-        return (new ResultHydrator($this))->hydrate(
-            $this->getResultSet()
-        );
+        return ResultHydrator::hydrate($this->model->collection(), $this->getResultSet());
     }
 
     /**

@@ -2,8 +2,9 @@
 
 namespace Stitch\Result;
 
-use Stitch\Collection;
-use Stitch\Queries\Query;
+use Stitch\Result\Record as ResultRecord;
+use Stitch\Records\Record as ActiveRecord;
+use Stitch\Records\Collection;
 
 /**
  * Class Hydrator
@@ -12,62 +13,47 @@ use Stitch\Queries\Query;
 class Hydrator
 {
     /**
-     * @var Query
-     */
-    protected $query;
-
-    /**
-     * Hydrator constructor.
-     * @param query $query
-     */
-    public function __construct(Query $query)
-    {
-        $this->query = $query;
-    }
-
-    /**
+     * @param $instance
      * @param $result
-     * @return Collection|\Stitch\Record
+     * @return Collection|ActiveRecord
      */
-    public function hydrate($result)
+    public static function hydrate($instance, $result)
     {
-        return $result instanceof Set ? $this->many($result) : $this->one($result);
+        return $result instanceof Set ? static::many($instance, $result) : static::one($instance, $result);
     }
 
     /**
+     * @param Collection $collection
      * @param Set $set
      * @return Collection
      */
-    public function many(Set $set)
+    public static function many(Collection $collection, Set $set)
     {
-        $items = new Collection();
-
         foreach ($set as $item) {
-            $items->push($this->one($item));
+            $collection->push(static::one($collection->make(), $item));
         }
 
-        return $items;
+        return $collection;
     }
 
     /**
-     * @param Record $record
-     * @return \Stitch\Record
+     * @param ActiveRecord $activeRecord
+     * @param Record $resultRecord
+     * @return ActiveRecord
      */
-    public function one(Record $record)
+    public static function one(ActiveRecord $activeRecord, ResultRecord $resultRecord)
     {
-        $instance = $this->query->getModel()->make($record->getData())->exists();
+        $activeRecord->fill($resultRecord->getData())->exists();
 
-        foreach ($record->getRelations() as $key => $relation) {
+        foreach ($resultRecord->getRelations() as $key => $relation) {
             $relatedQuery = $relation->getQuery();
 
-            $instance->setRelation(
+            $activeRecord->setRelation(
                 $key,
-                $relatedQuery->getBlueprint()->make()->fill(
-                    (new static($relatedQuery))->hydrate($relation)
-                )
+                static::hydrate($relatedQuery->getBlueprint()->make(), $relation)->associate($activeRecord)
             );
         }
 
-        return $instance;
+        return $activeRecord;
     }
 }

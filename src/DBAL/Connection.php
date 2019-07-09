@@ -178,7 +178,7 @@ class Connection
      */
     public function execute(Statement $statement)
     {
-//        echo $statement;
+        echo $statement;
 
         $prepared = $this->get()->prepare($statement->resolve());
 
@@ -189,19 +189,31 @@ class Connection
 
     /**
      * @param InsertStatement $statement
-     * @return bool|PDOStatement
+     * @return $this
      */
     public function insert(InsertStatement $statement)
     {
-        return $this->execute($statement);
+        $this->execute($statement);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function lastInsertId()
+    {
+        return $this->get()->lastInsertId();
     }
 
     /**
      * @param UpdateStatement $statement
-     * @return bool|PDOStatement
+     * @return $this
      */
     public function update(UpdateStatement $statement)
     {
-        return $this->execute($statement);
+        $this->execute($statement);
+
+        return $this;
     }
 }

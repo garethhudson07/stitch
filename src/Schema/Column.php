@@ -24,6 +24,11 @@ class Column
     protected $type;
 
     /**
+     * @var bool
+     */
+    protected $autoIncrement = false;
+
+    /**
      * Column constructor.
      * @param KeyChain $keyChain
      * @param string $name
@@ -34,6 +39,16 @@ class Column
         $this->keyChain = $keyChain;
         $this->name = $name;
         $this->type = $type;
+    }
+
+    /**
+     * @return $this
+     */
+    public function autoIncrement()
+    {
+        $this->autoIncrement = true;
+
+        return $this;
     }
 
     /**
@@ -95,6 +110,14 @@ class Column
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function autoIncrements()
+    {
+        return $this->autoIncrement;
     }
 
     /**
