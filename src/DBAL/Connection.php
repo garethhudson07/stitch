@@ -178,6 +178,8 @@ class Connection
      */
     public function execute(Statement $statement)
     {
+        echo 'execute';
+
         echo $statement;
 
         $prepared = $this->get()->prepare($statement->resolve());
