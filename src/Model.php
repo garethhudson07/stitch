@@ -4,6 +4,7 @@ namespace Stitch;
 
 use Closure;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
+use Stitch\DBAL\Connection;
 use Stitch\Queries\Query;
 use Stitch\Relations\Collection as Relations;
 use Stitch\Relations\Has;
@@ -11,6 +12,8 @@ use Stitch\Relations\HasOne;
 use Stitch\Relations\ManyToMany;
 use Stitch\Relations\Relation;
 use Stitch\Schema\Table;
+use Stitch\Records\Record;
+use Stitch\Records\Collection as RecordCollection;
 
 /**
  * Class Model
@@ -18,6 +21,11 @@ use Stitch\Schema\Table;
  */
 class Model
 {
+    /**
+     * @var string
+     */
+    protected $connection = 'default';
+
     /**
      * @var Table
      */
@@ -48,12 +56,38 @@ class Model
 
     /**
      * @param array $attributes
-     * @param bool $exists
      * @return Record
      */
-    public function make(array $attributes = [], $exists = false)
+    public function make(array $attributes = [])
     {
-        return new Record($this, $attributes, $exists);
+        return (new Record($this))->fill($attributes);
+    }
+
+    /**
+     * @return RecordCollection
+     */
+    public function collection()
+    {
+        return new RecordCollection($this);
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function connection(string $name)
+    {
+        $this->connection = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Connection
+     */
+    public function getConnection(): Connection
+    {
+        return Stitch::getConnection($this->connection);
     }
 
     /**
@@ -152,6 +186,15 @@ class Model
     public function getRelation(string $name): ?Relation
     {
         return $this->relations->get($name);
+    }
+
+    /**
+     * @param string $id
+     * @return null|Record
+     */
+    public function find(string $id)
+    {
+        return $this->query()->where($this->table->getPrimaryKey()->getName(), $id)->first();
     }
 
     /**

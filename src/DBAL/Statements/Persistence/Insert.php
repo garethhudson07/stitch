@@ -59,7 +59,7 @@ class Insert extends Statement
      */
     protected function placeholders()
     {
-        $placeholders = array_replace($this->recordBuilder->getAttributes(), array_fill(0, count($this->recordBuilder->getAttributes()), '?'));
+        $placeholders = array_fill(0, count($this->recordBuilder->getAttributes()), '?');
 
         return '(' . implode(', ', $placeholders) . ')';
     }

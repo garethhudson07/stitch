@@ -11,6 +11,7 @@ use Stitch\Model;
 use Stitch\Queries\Paths\Factory as PathFactory;
 use Stitch\Queries\Paths\Path;
 use Stitch\Queries\Relations\Relation;
+use Stitch\Records\Record;
 use Stitch\Result\Hydrator as ResultHydrator;
 use Stitch\Result\Set as ResultSet;
 
@@ -36,6 +37,11 @@ class Query
     protected $relations = [];
 
     /**
+     * @var bool
+     */
+    protected $hydrate = true;
+
+    /**
      * Query constructor.
      * @param Model $model
      * @param Builder $builder
@@ -47,11 +53,39 @@ class Query
     }
 
     /**
+     * @return Model
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
      * @return Builder
      */
     public function getBuilder()
     {
         return $this->builder;
+    }
+
+    /**
+     * @return $this
+     */
+    public function hydrated()
+    {
+        $this->hydrate = true;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function dehydrated()
+    {
+        $this->hydrate = false;
+
+        return $this;
     }
 
     /**
@@ -180,12 +214,7 @@ class Query
     protected function applyWhere($type, array $arguments)
     {
         if ($arguments[0] instanceof Closure) {
-            $expression = new Expression($this);
-            $arguments[0]($expression);
-
-            $this->builder->{$type}($expression);
-
-            return $this;
+            return $this->applyWhereExpression($type, $arguments[0]);
         }
 
         $path = array_shift($arguments);
@@ -198,6 +227,21 @@ class Query
         }
 
         return $this->addCondition($type, $this->translatePath($path), $operator, $value);
+    }
+
+    /**
+     * @param $type
+     * @param Closure $callback
+     * @return $this
+     */
+    protected function applyWhereExpression($type, Closure $callback)
+    {
+        $expression = new Expression($this);
+        $callback($expression);
+
+        $this->builder->{$type}($expression);
+
+        return $this;
     }
 
     /**
@@ -293,14 +337,6 @@ class Query
     }
 
     /**
-     * @return Model
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    /**
      * @param array ...$arguments
      * @return Query
      */
@@ -353,13 +389,34 @@ class Query
     public function get()
     {
         $this->forceSelection();
+        $resultSet = $this->getResultSet();
 
-        return (new ResultHydrator($this->model))->hydrate(
-            new ResultSet(
-                $this,
-                Dispatcher::select($this->builder)
-            )
+        if (!$this->hydrate) {
+            return $resultSet;
+        }
+
+        return ResultHydrator::hydrate($this->model->collection(), $this->getResultSet());
+    }
+
+    /**
+     * @return ResultSet
+     */
+    protected function getResultSet(): ResultSet
+    {
+        return new ResultSet(
+            $this,
+            Dispatcher::select($this->model->getConnection(), $this->builder)
         );
+    }
+
+    /**
+     * @return Record|null
+     */
+    public function first()
+    {
+        $result = $this->limit(1)->get();
+
+        return $result->count() ? $result[0] : null;
     }
 
     /**
