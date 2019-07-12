@@ -1,8 +1,9 @@
 <?php
 
-namespace Stitch;
+namespace Stitch\Records;
 
 use Stitch\Contracts\Arrayable;
+use Stitch\Model;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
 use Stitch\DBAL\Dispatcher;
 use Stitch\Schema\Column;
@@ -21,7 +22,7 @@ class Record implements Arrayable
     /**
      * @var array
      */
-    protected $attributes;
+    protected $attributes = [];
 
     /**
      * @var array
@@ -36,14 +37,20 @@ class Record implements Arrayable
     /**
      * Record constructor.
      * @param Model $model
-     * @param array $attributes
-     * @param bool $exists
      */
-    public function __construct(Model $model, array $attributes = [], bool $exists = false)
+    public function __construct(Model $model)
     {
         $this->model = $model;
-        $this->attributes = $attributes;
-        $this->exists = $exists;
+    }
+
+    /**
+     * @return $this
+     */
+    public function exists()
+    {
+        $this->exists = true;
+
+        return $this;
     }
 
     /**
@@ -122,7 +129,19 @@ class Record implements Arrayable
      */
     public function getRelation(string $key)
     {
-        return $this->relations[$key] ?? null;
+        if (array_key_exists($key, $this->relations)) {
+            return $this->relations[$key];
+        }
+
+        if ($relation = $this->model->getRelation($key)) {
+            $relation = $relation->make()->associate($this);
+
+            $this->setRelation($key, $relation);
+
+            return $relation;
+        }
+
+        return null;
     }
 
     /**
@@ -141,7 +160,7 @@ class Record implements Arrayable
         $builder = $this->builder()
             ->primaryKey($this->model->getTable()->getPrimaryKey()->getName());
 
-        Dispatcher::update($builder);
+        Dispatcher::update($this->model->getConnection(), $builder);
 
         return $this;
     }
@@ -184,11 +203,16 @@ class Record implements Arrayable
      */
     protected function insert()
     {
-        Dispatcher::insert($this->builder());
+        $connection = $this->model->getConnection();
+        $primaryKey = $this->model->getTable()->getPrimaryKey();
 
-        $this->exists = true;
+        Dispatcher::insert($connection, $this->builder());
 
-        return $this;
+        if ($primaryKey->autoIncrements()) {
+            $this->attributes[$primaryKey->getName()] = $connection->lastInsertId();
+        }
+
+        return $this->exists();
     }
 
     /**

@@ -37,11 +37,11 @@ class Condition extends Statement
         $operator = $this->conditionBuilder->getOperator();
         $value = $this->conditionBuilder->getValue();
 
-        if (strtolower($operator) === 'in') {
+        if (is_array($value)) {
             $placeholders = implode(',', array_replace($value, array_fill(0, count($value), '?')));
 
             $this->assembler->push(
-                (new Component("$column IN($placeholders)"))->bindMany($value)
+                (new Component("$column " . strtoupper($operator) . "($placeholders)"))->bindMany($value)
             );
         } else {
             $this->assembler->push(
