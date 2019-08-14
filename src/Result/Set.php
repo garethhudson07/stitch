@@ -34,15 +34,17 @@ class Set extends Collection
 
     /**
      * Set constructor.
-     * @param Query $query
+     * @param $query
      * @param array $items
      */
-    public function __construct(Query $query, array $items = [])
+    public function __construct($query, array $items = [])
     {
         $this->query = $query;
-        $this->columns = $query->getBuilder()->getSelection()->getColumns();
 
-        $this->pullPrimaryKey();
+        $table = $query->getModel()->getTable();
+        $this->columns = $table->getColumns();
+        $this->primaryKey = $table->getPrimaryKey();
+
         $this->assemble($items);
     }
 
@@ -52,24 +54,6 @@ class Set extends Collection
     public function getQuery()
     {
         return $this->query;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function pullPrimaryKey()
-    {
-        $primaryKeyName = $this->query->getModel()->getTable()->getPrimaryKey()->getName();
-
-        foreach ($this->columns as $column) {
-            if ($column->getName() === $primaryKeyName) {
-                $this->primaryKey = $column;
-
-                return $this;
-            }
-        }
-
-        return $this;
     }
 
     /**

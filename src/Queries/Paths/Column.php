@@ -16,11 +16,6 @@ class Column extends Path
     protected $blueprint;
 
     /**
-     * @var array
-     */
-    protected $pieces;
-
-    /**
      * Column constructor.
      * @param Blueprint $blueprint
      * @param array $pieces

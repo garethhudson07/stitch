@@ -35,7 +35,7 @@ class Join extends Statement
     protected function evaluate()
     {
         $this->assembler->push(
-            new Component("{$this->joinBuilder->getType()} JOIN {$this->joinBuilder->getTable()}")
+            new Component("{$this->joinBuilder->getType()} JOIN {$this->joinBuilder->getSchema()->getName()}")
         )->push(
             new Component('ON')
         );

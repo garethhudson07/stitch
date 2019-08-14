@@ -1,6 +1,7 @@
 <?php
 
 namespace Stitch\DBAL\Builders;
+use Stitch\Schema\Column;
 
 /**
  * Class Sorter
@@ -8,25 +9,39 @@ namespace Stitch\DBAL\Builders;
  */
 class Sorter
 {
+    protected $bindings = [];
+
     /**
      * @var array
      */
-    protected $columns = [];
+    protected $items = [];
 
     /**
-     * @param string $name
+     * @param string $path
      * @param string $direction
      * @return $this
      */
-    public function add(string $name, string $direction)
+    public function bind(string $path, string $direction)
     {
-        $index = $this->indexOf($name);
+        $this->bindings[$path] = $direction;
+
+        return $this;
+    }
+
+    /**
+     * @param Column $column
+     * @param string $direction
+     * @return $this
+     */
+    public function add(Column $column, string $direction)
+    {
+        $index = $this->indexOf($column);
 
         if ($index !== false) {
-            $this->columns[$index]['direction'] = $direction;
+            $this->items[$index]['direction'] = $direction;
         } else {
-            $this->columns[] = [
-                'name' => $name,
+            $this->items[] = [
+                'column' => $column,
                 'direction' => $direction
             ];
         }
@@ -35,13 +50,13 @@ class Sorter
     }
 
     /**
-     * @param string $name
+     * @param Column $column
      * @return bool|int|string
      */
-    public function indexOf(string $name)
+    public function indexOf(Column $column)
     {
-        foreach ($this->columns as $key => $column) {
-            if ($column['name'] === $name) {
+        foreach ($this->items as $key => $item) {
+            if ($item['column'] === $column) {
                 return $key;
             }
         }
@@ -50,18 +65,26 @@ class Sorter
     }
 
     /**
-     * @return array
-     */
-    public function getColumns()
-    {
-        return $this->columns;
-    }
-
-    /**
      * @return int
      */
     public function count()
     {
-        return count($this->columns);
+        return count($this->items);
+    }
+
+    /**
+     * @return array
+     */
+    public function getBindings()
+    {
+        return $this->bindings;
+    }
+
+    /**
+     * @return array
+     */
+    public function getItems()
+    {
+        return $this->items;
     }
 }

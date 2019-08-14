@@ -46,18 +46,16 @@ class Declaration extends Statement
      * @param QueryBuilder $queryBuilder
      * @return array
      */
-    protected function variables(QueryBuilder $queryBuilder)
+    protected function variables($builder)
     {
-        $table = $queryBuilder->getTable();
-        $limit = $queryBuilder->getLimit();
+        $schema = $builder->getSchema();
+        $table = $schema->getName();
         $variables = [];
 
-        if ($limit !== null) {
-            $variables[] = "@{$table}_{$queryBuilder->getPrimaryKey()->getName()} = NULL";
-            $variables[] = "@{$table}_row_num = 0";
-        }
+        $variables[] = "@{$table}_{$schema->getPrimaryKey()->getName()} = NULL";
+        $variables[] = "@{$table}_row_num = 0";
 
-        foreach ($queryBuilder->getJoins() as $join) {
+        foreach ($builder->getJoins() as $join) {
             $variables = array_merge($variables, $this->variables($join));
         }
 

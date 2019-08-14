@@ -64,9 +64,5 @@ class Where extends Statement
                 new Expression($conditions)
             );
         }
-
-        foreach ($queryBuilder->getJoins() as $join) {
-            $this->conditions($join);
-        }
     }
 }

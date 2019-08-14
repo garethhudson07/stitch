@@ -38,31 +38,11 @@ class Select extends Statement
             new Component('SELECT')
         )->push(
             new Component(
-                $this->selection($this->queryBuilder)
+                implode(', ', array_map(function ($column)
+                {
+                    return "{$column->getPath()} as {$column->getAlias()}";
+                }, $this->queryBuilder->getSelection()->getColumns()))
             )
         );
-    }
-
-    /**
-     * @param QueryBuilder $queryBuilder
-     * @return string
-     */
-    protected function selection(QueryBuilder $queryBuilder)
-    {
-        $columns = array_map(function (ColumnBuilder $column) use ($queryBuilder) {
-            $str = "{$queryBuilder->getTable()}.{$column->getName()}";
-
-            if ($alias = $column->getAlias()) {
-                $str .= " as $alias";
-            }
-
-            return $str;
-        }, $queryBuilder->getSelection()->getColumns());
-
-        foreach ($queryBuilder->getJoins() as $join) {
-            $columns[] = $this->selection($join);
-        }
-
-        return implode(', ', array_filter($columns));
     }
 }

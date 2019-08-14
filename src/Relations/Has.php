@@ -2,7 +2,7 @@
 
 namespace Stitch\Relations;
 
-use Stitch\Queries\Relations\Has as Query;
+use Stitch\Queries\Joins\Has as Join;
 use Stitch\Records\Relations\Collection as RecordCollection;
 use Stitch\Records\Relations\BelongsTo;
 use Stitch\Schema\ForeignKey;
@@ -61,11 +61,11 @@ class Has extends Relation
     }
 
     /**
-     * @return Query
+     * @return mixed|Join
      */
-    public function query()
+    public function join()
     {
-        return new Query($this->getForeignModel(), $this->joinBuilder(), $this);
+        return new Join($this->getForeignModel(), $this->joinBuilder(), $this);
     }
 
     /**

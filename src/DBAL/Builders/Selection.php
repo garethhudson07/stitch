@@ -2,7 +2,7 @@
 
 namespace Stitch\DBAL\Builders;
 
-use Closure;
+use Stitch\Schema\Column;
 
 /**
  * Class Selection
@@ -10,51 +10,39 @@ use Closure;
  */
 class Selection
 {
-    /**
-     * @var array
-     */
+    protected $bindings = [];
+
     protected $columns = [];
 
     /**
-     * Selection constructor.
-     * @param array $items
-     */
-    public function __construct(array $items = [])
-    {
-        $this->unpack($items);
-    }
-
-    /**
-     * @param array $items
+     * @param string $path
      * @return $this
      */
-    public function unpack(array $items)
+    public function bind(string $path)
     {
-        if (count($items) === 2 && $items[1] instanceof Closure) {
-            $this->add(...$items);
-        } else {
-            foreach ($items as $key => $item) {
-                is_array($item) ? $this->add(...$item) : $this->add($item);
-            }
+        if (!$this->hasBinding($path)) {
+            $this->bindings[] = $path;
         }
 
         return $this;
     }
 
     /**
-     * @param string $name
-     * @param Closure|null $callback
+     * @param string $path
+     * @return bool
+     */
+    public function hasBinding(string $path)
+    {
+        return in_array($path, $this->bindings);
+    }
+
+    /**
+     * @param Column $column
      * @return $this
      */
-    public function add(string $name, ?Closure $callback = null)
+    public function add(Column $column)
     {
-        if (!$this->has($name)) {
-            $column = new Column($name);
-
-            if ($callback) {
-                $callback($column);
-            }
-
+        if (!$this->hasColumn($column)) {
             $this->columns[] = $column;
         }
 
@@ -62,18 +50,20 @@ class Selection
     }
 
     /**
-     * @param string $name
+     * @param Column $column
      * @return bool
      */
-    public function has(string $name)
+    public function hasColumn(Column $column)
     {
-        foreach ($this->columns as $column) {
-            if ($column->getName() === $name) {
-                return true;
-            }
-        }
+        return in_array($column, $this->columns);
+    }
 
-        return false;
+    /**
+     * @return array
+     */
+    public function getBindings()
+    {
+        return $this->bindings;
     }
 
     /**
@@ -82,5 +72,13 @@ class Selection
     public function getColumns()
     {
         return $this->columns;
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->columns);
     }
 }

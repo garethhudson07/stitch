@@ -2,22 +2,15 @@
 
 namespace Stitch\DBAL\Builders;
 
+use Closure;
+use Stitch\Schema\Table as Schema;
+
 /**
  * Class Query
  * @package Stitch\DBAL\Builders
  */
-class Query
+class Query extends Table
 {
-    /**
-     * @var string
-     */
-    protected $table;
-
-    /**
-     * @var Column|null
-     */
-    protected $primaryKey;
-
     /**
      * @var Selection
      */
@@ -29,52 +22,42 @@ class Query
     protected $where;
 
     /**
-     * @var int
-     */
-    protected $limit;
-
-    /**
      * @var array|Sorter
      */
     protected $sorter = [];
 
     /**
-     * @var array
-     */
-    protected $joins = [];
-
-    /**
      * Query constructor.
-     * @param string $table
-     * @param string|null $primaryKey
+     * @param Schema $schema
      */
-    public function __construct(string $table, ?string $primaryKey)
+    public function __construct(Schema $schema)
     {
-        $this->table = $table;
-        $this->primaryKey = $primaryKey ? new Column($primaryKey) : null;
+        parent::__construct($schema);
+
         $this->selection = new Selection();
-        $this->where = new Expression();
         $this->sorter = new Sorter();
+        $this->where = new Expression();
     }
 
     /**
-     * @param mixed ...$arguments
+     * @param string $path
      * @return $this
      */
-    public function select(...$arguments)
+    public function select(string $path)
     {
-        $this->selection->unpack($arguments);
+        $this->selection->bind($path);
 
         return $this;
     }
 
     /**
-     * @param Join $join
+     * @param string $path
+     * @param string $direction
      * @return $this
      */
-    public function join(Join $join)
+    public function orderBy(string $path, string $direction = 'ASC')
     {
-        $this->joins[] = $join;
+        $this->sorter->bind($path, $direction);
 
         return $this;
     }
@@ -124,47 +107,6 @@ class Query
     }
 
     /**
-     * @param string $column
-     * @param string $direction
-     * @return $this
-     */
-    public function orderBy(string $column, string $direction = 'ASC')
-    {
-        $this->sorter->add($column, $direction);
-
-        return $this;
-    }
-
-    /**
-     * @param int $limit
-     * @return $this
-     */
-    public function limit(int $limit)
-    {
-        $this->limit = $limit;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function limited()
-    {
-        if ($this->limit !== null) {
-            return true;
-        }
-
-        foreach ($this->joins as $join) {
-            if ($join->limited()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * @return Selection
      */
     public function getSelection()
@@ -173,11 +115,24 @@ class Query
     }
 
     /**
-     * @return string
+     * @return Query
      */
-    public function getTable()
+    public function resolve()
     {
-        return $this->table;
+        return $this->resolveSelection()
+            ->resolveSorter();
+    }
+
+    /**
+     * @return $this
+     */
+    public function resolveSelection()
+    {
+        foreach ($this->selection->getBindings() as $binding) {
+            $this->selection->add($this->pullColumn($binding));
+        }
+
+        return $this;
     }
 
     /**
@@ -185,7 +140,7 @@ class Query
      */
     public function getPrimaryKey()
     {
-        return $this->primaryKey;
+        return $this->columns->getPrimaryKey();
     }
 
     /**
@@ -197,26 +152,22 @@ class Query
     }
 
     /**
-     * @return array
-     */
-    public function getJoins()
-    {
-        return $this->joins;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLimit()
-    {
-        return $this->limit;
-    }
-
-    /**
      * @return array|Sorter
      */
     public function getSorter()
     {
         return $this->sorter;
+    }
+
+    /**
+     * @return $this
+     */
+    public function resolveSorter()
+    {
+        foreach ($this->sorter->getBindings() as $path => $direction) {
+            $this->sorter->add($this->pullColumn($path), $direction);
+        }
+
+        return $this;
     }
 }

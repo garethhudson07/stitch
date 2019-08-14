@@ -121,12 +121,7 @@ abstract class Relation
      */
     protected function joinBuilder()
     {
-        $table = $this->foreignModel->getTable();
-
-        return new JoinBuilder(
-            $table->getName(),
-            $table->getPrimaryKey()->getName()
-        );
+        return new JoinBuilder($this->foreignModel->getTable());
     }
 
     /**
@@ -144,7 +139,7 @@ abstract class Relation
     /**
      * @return mixed
      */
-    abstract public function query();
+    abstract public function join();
 
     /**
      * @return mixed
