@@ -8,8 +8,6 @@ use Stitch\DBAL\Builders\Column;
 use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Dispatcher;
 use Stitch\Model;
-use Stitch\Queries\Paths\Factory as PathFactory;
-use Stitch\Queries\Paths\Path;
 use Stitch\Records\Record;
 use Stitch\Result\Hydrator as ResultHydrator;
 use Stitch\Result\Set as ResultSet;
@@ -30,8 +28,6 @@ class Query extends Base
      */
     protected $builder;
 
-    protected $pathFactory;
-
     /**
      * @var array
      */
@@ -50,8 +46,6 @@ class Query extends Base
     public function __construct(Model $model, Builder $builder)
     {
         parent::__construct($model, $builder);
-
-        $this->pathFactory = new PathFactory($model);
     }
 
     /**
@@ -70,19 +64,6 @@ class Query extends Base
     public function dehydrated()
     {
         $this->hydrate = false;
-
-        return $this;
-    }
-
-    /**
-     * @param array ...$relations
-     * @return $this
-     */
-    public function with(...$relations)
-    {
-        foreach ($relations as $relation) {
-            $this->join($this->pathFactory->explode($relation));
-        }
 
         return $this;
     }
@@ -114,22 +95,6 @@ class Query extends Base
         $this->builder->orderBy($this->translatePath($path), $direction);
 
         return $this;
-    }
-
-    /**
-     * @param string $path
-     * @param Closure $callback
-     */
-    protected function resolve(string $path, Closure $callback)
-    {
-        $bag = $this->pathFactory->split($path);
-        $column = $bag->getColumn()->implode();
-
-        if ($bag->hasRelation()) {
-            $callback($this->getJoin($bag->getRelation()), $column);
-        } else {
-            $callback($this, $column);
-        }
     }
 
     /**
@@ -198,64 +163,12 @@ class Query extends Base
     }
 
     /**
-     * @param string $path
-     * @return array
-     */
-    protected function resolvePath(string $path)
-    {
-        $bag = $this->pathFactory->split($path);
-
-        return [
-            'table' => $bag->hasRelation() ?
-                $this->getJoin($bag->getRelation())->getModel()->getTable()->getName() :
-                $this->model->getTable()->getName(),
-            'column' => $bag->getColumn()->implode()
-        ];
-    }
-
-    /**
-     * @param string $path
-     * @return string
-     */
-    public function translatePath(string $path)
-    {
-        $resolved = $this->resolvePath($path);
-
-        return $this->assemblePath($resolved['table'], $resolved['column']);
-    }
-
-    /**
-     * @param string $table
-     * @param string $column
-     * @return string
-     */
-    public function assemblePath(string $table, string $column)
-    {
-        return "$table.$column";
-    }
-
-    /**
      * @param array ...$arguments
      * @return Query
      */
     public function orWhere(...$arguments)
     {
         return $this->applyWhere('orWhere', $arguments);
-    }
-
-    /**
-     * @param array ...$arguments
-     * @return $this
-     */
-    public function limit(...$arguments)
-    {
-        if (count($arguments) > 1) {
-            $this->getJoin($this->pathFactory->explode($arguments[0]))->setLimit($arguments[1]);
-        } else {
-            $this->setLimit($arguments[0]);
-        }
-
-        return $this;
     }
 
     /**

@@ -1,7 +1,6 @@
 <?php
 
 namespace Stitch\DBAL\Builders;
-use Closure;
 use Stitch\Schema\Table as Schema;
 
 /**
@@ -101,6 +100,20 @@ class Table
         }
 
         return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function pullColumns()
+    {
+        $columns = array_values($this->schema->getColumns());
+
+        foreach ($this->joins as $join) {
+            $columns = array_merge($columns, $join->pullColumns());
+        }
+
+        return $columns;
     }
 
     /**

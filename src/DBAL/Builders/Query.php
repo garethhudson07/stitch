@@ -2,7 +2,6 @@
 
 namespace Stitch\DBAL\Builders;
 
-use Closure;
 use Stitch\Schema\Table as Schema;
 
 /**
@@ -107,14 +106,6 @@ class Query extends Table
     }
 
     /**
-     * @return Selection
-     */
-    public function getSelection()
-    {
-        return $this->selection;
-    }
-
-    /**
      * @return Query
      */
     public function resolve()
@@ -136,11 +127,23 @@ class Query extends Table
     }
 
     /**
-     * @return Column|null
+     * @return $this
      */
-    public function getPrimaryKey()
+    public function resolveSorter()
     {
-        return $this->columns->getPrimaryKey();
+        foreach ($this->sorter->getBindings() as $path => $direction) {
+            $this->sorter->add($this->pullColumn($path), $direction);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Selection
+     */
+    public function getSelection()
+    {
+        return $this->selection;
     }
 
     /**
@@ -157,17 +160,5 @@ class Query extends Table
     public function getSorter()
     {
         return $this->sorter;
-    }
-
-    /**
-     * @return $this
-     */
-    public function resolveSorter()
-    {
-        foreach ($this->sorter->getBindings() as $path => $direction) {
-            $this->sorter->add($this->pullColumn($path), $direction);
-        }
-
-        return $this;
     }
 }

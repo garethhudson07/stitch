@@ -2,7 +2,9 @@
 
 namespace Stitch\Queries;
 
+use Closure;
 use Stitch\Model;
+use Stitch\Queries\Paths\Factory as PathFactory;
 use Stitch\Queries\Paths\Path;
 use Stitch\Queries\Joins\Join;
 
@@ -19,6 +21,8 @@ class Base
 
     protected $builder;
 
+    protected $pathFactory;
+
     /**
      * @var array
      */
@@ -33,6 +37,7 @@ class Base
     {
         $this->model = $model;
         $this->builder = $builder;
+        $this->pathFactory = new PathFactory($model);
     }
 
     /**
@@ -49,6 +54,19 @@ class Base
     public function getBuilder()
     {
         return $this->builder;
+    }
+
+    /**
+     * @param array ...$relations
+     * @return $this
+     */
+    public function with(...$relations)
+    {
+        foreach ($relations as $relation) {
+            $this->join($this->pathFactory->explode($relation));
+        }
+
+        return $this;
     }
 
     /**
@@ -95,6 +113,74 @@ class Base
         }
 
         return $join;
+    }
+
+    /**
+     * @param string $path
+     * @param Closure $callback
+     */
+    protected function resolve(string $path, Closure $callback)
+    {
+        $bag = $this->pathFactory->split($path);
+        $column = $bag->getColumn()->implode();
+
+        if ($bag->hasRelation()) {
+            $callback($this->getJoin($bag->getRelation()), $column);
+        } else {
+            $callback($this, $column);
+        }
+    }
+
+    /**
+     * @param string $path
+     * @return array
+     */
+    protected function resolvePath(string $path)
+    {
+        $bag = $this->pathFactory->split($path);
+
+        return [
+            'table' => $bag->hasRelation() ?
+                $this->getJoin($bag->getRelation())->getModel()->getTable()->getName() :
+                $this->model->getTable()->getName(),
+            'column' => $bag->getColumn()->implode()
+        ];
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public function translatePath(string $path)
+    {
+        $resolved = $this->resolvePath($path);
+
+        return $this->assemblePath($resolved['table'], $resolved['column']);
+    }
+
+    /**
+     * @param string $table
+     * @param string $column
+     * @return string
+     */
+    public function assemblePath(string $table, string $column)
+    {
+        return "$table.$column";
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return $this
+     */
+    public function limit(...$arguments)
+    {
+        if (count($arguments) > 1) {
+            $this->getJoin($this->pathFactory->explode($arguments[0]))->setLimit($arguments[1]);
+        } else {
+            $this->setLimit($arguments[0]);
+        }
+
+        return $this;
     }
 
     /**
