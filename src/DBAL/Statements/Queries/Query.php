@@ -3,6 +3,7 @@
 namespace Stitch\DBAL\Statements\Queries;
 
 use Stitch\DBAL\Builders\Query as QueryBuilder;
+use Stitch\DBAL\Statements\Queries\Operations\OrderBy;
 use Stitch\DBAL\Statements\Statement;
 
 /**
@@ -32,8 +33,26 @@ class Query extends Statement
      */
     protected function evaluate()
     {
-        $this->queryBuilder->limited() ?
-            $this->assembler->push(new Limited($this->queryBuilder)) :
-            $this->assembler->push(new Unlimited($this->queryBuilder));
+        $this->queryBuilder->limited() ? $this->limited() : $this->unlimited();
+
+        $this->assembler->push(
+            new OrderBy($this->queryBuilder)
+        );
+    }
+
+    /**
+     * @return void
+     */
+    protected function limited()
+    {
+        $this->assembler->push(new Limited($this->queryBuilder));
+    }
+
+    /**
+     * @return void
+     */
+    protected function unlimited()
+    {
+        $this->assembler->push(new Unlimited($this->queryBuilder));
     }
 }

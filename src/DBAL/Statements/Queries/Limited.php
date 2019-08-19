@@ -54,20 +54,20 @@ class Limited extends Statement
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
+     * @param $builder
      * @return array
      */
-    protected function conditions(QueryBuilder $queryBuilder)
+    protected function conditions($builder)
     {
-        $table = $queryBuilder->getTable();
-        $limit = $queryBuilder->getLimit();
+        $table = $builder->getSchema()->getName();
+        $limit = $builder->getLimit();
         $conditions = [];
 
         if ($limit !== null) {
-            $conditions[] = "{$table}_row_number <= $limit";
+            $conditions[] = "{$table}_row_num <= $limit";
         }
 
-        foreach ($queryBuilder->getJoins() as $join) {
+        foreach ($builder->getJoins() as $join) {
             $conditions = array_merge($conditions, $this->conditions($join));
         }
 

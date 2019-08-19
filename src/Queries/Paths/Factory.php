@@ -2,8 +2,7 @@
 
 namespace Stitch\Queries\Paths;
 
-use Stitch\Queries\Query;
-use Stitch\Queries\Relations\Relation;
+use Stitch\Model;
 
 /**
  * Class Factory
@@ -11,62 +10,52 @@ use Stitch\Queries\Relations\Relation;
  */
 class Factory
 {
+    protected $model;
+
+    /**
+     * Factory constructor.
+     * @param Model $model
+     */
+    public function __construct(Model $model)
+    {
+        $this->model = $model;
+    }
+
     /**
      * @param string $path
      * @return Path
      */
-    public static function split(string $path): Path
+    public function explode(string $path): Path
     {
-        return new Path(static::explode($path));
+        return Path::explode($path);
     }
 
     /**
-     * @param string $path
-     * @return array
-     */
-    protected static function explode(string $path): array
-    {
-        return explode('.', $path);
-    }
-
-    /**
-     * @param Query $query
      * @param string $path
      * @return Bag
      */
-    public static function divide(Query $query, string $path): Bag
+    public function split(string $path): Bag
     {
         $bag = new Bag();
-        $pieces = static::explode($path);
+        $pieces = Path::explode($path);
+        $relation = null;
+        $relations = $this->model->getRelations();
 
-        if (count($pieces) === 1) {
+        if ($pieces->count() === 1) {
             return $bag->setColumn(
-                new Column(
-                    $query->getModel()->getTable()->getColumn($pieces[0]),
-                    $pieces
-                )
+                new Column($this->model->getTable()->getColumn($pieces->first()), $pieces->all())
             );
         }
 
-        $relation = null;
-        $relations = $query->getRelations();
-
         foreach ($pieces as $key => $piece) {
-            /** @var Relation $relation */
-
-            if (!array_key_exists($piece, $relations)) {
-                return $bag->setRelation(
-                    new Path(array_slice($pieces, 0, $key))
-                )->setColumn(
-                    new Column(
-                        $relation->getBlueprint()->getForeignModel()->getTable()->getColumn($piece),
-                        array_slice($pieces, $key)
-                    )
+            if (!$relations->has($piece)) {
+                return $bag->setRelation($pieces->before($key))->setColumn(
+                    new Column($relation->getForeignModel()->getTable()->getColumn($piece), $pieces->slice($key)->all())
                 );
             }
 
-            $relation = $relations[$piece];
-            $relations = $relation->getRelations();
+            $relation = $relations->get($piece);
+            $relations = $relation->getLocalModel()->getRelations();
         }
 
         return $bag;

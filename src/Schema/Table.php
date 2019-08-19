@@ -58,11 +58,7 @@ class Table
      */
     protected function addColumn($type, $name): Column
     {
-        $column = new Column(
-            $this->keyChain,
-            $name,
-            $type
-        );
+        $column = new Column($this, $name, $type);
 
         $this->columns[$name] = $column;
 
@@ -93,6 +89,14 @@ class Table
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return KeyChain
+     */
+    public function getKeyChain()
+    {
+        return $this->keyChain;
     }
 
     /**

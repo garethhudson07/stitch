@@ -5,7 +5,6 @@ namespace Stitch\DBAL\Statements\Queries;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Statements\Queries\Operations\From;
 use Stitch\DBAL\Statements\Queries\Operations\Join;
-use Stitch\DBAL\Statements\Queries\Operations\OrderBy;
 use Stitch\DBAL\Statements\Queries\Operations\Select;
 use Stitch\DBAL\Statements\Queries\Operations\Where;
 use Stitch\DBAL\Statements\Statement;
@@ -52,10 +51,6 @@ class Unlimited extends Statement
 
         $this->assembler->push(
             new Where($this->queryBuilder)
-        );
-
-        $this->assembler->push(
-            new OrderBy($this->queryBuilder)
         );
     }
 }

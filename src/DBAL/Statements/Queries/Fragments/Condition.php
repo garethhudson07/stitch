@@ -17,6 +17,11 @@ class Condition extends Statement
      */
     protected $conditionBuilder;
 
+    protected CONST SUPPORTED_METHODS = [
+        'IN',
+        'NOT IN'
+    ];
+
     /**
      * Condition constructor.
      * @param ConditionBuilder $conditionBuilder
@@ -38,10 +43,18 @@ class Condition extends Statement
         $value = $this->conditionBuilder->getValue();
 
         if (is_array($value)) {
-            $placeholders = implode(',', array_replace($value, array_fill(0, count($value), '?')));
+            $placeholders = array_replace($value, array_fill(0, count($value), '?'));
 
             $this->assembler->push(
-                (new Component("$column " . strtoupper($operator) . "($placeholders)"))->bindMany($value)
+                (new Component("$column $operator " . (
+                    in_array($operator, $this::SUPPORTED_METHODS) ? '(' . implode(',', $placeholders) . ')' : implode(' AND ', $placeholders)
+                )))->bindMany($value)
+            );
+        } elseif (is_null($value)) {
+            $this->assembler->push(
+                (new Component("$column " . (
+                    $operator === '!=' ? 'IS NOT NULL' : 'IS NULL'
+                )))
             );
         } else {
             $this->assembler->push(

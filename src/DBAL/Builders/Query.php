@@ -2,22 +2,14 @@
 
 namespace Stitch\DBAL\Builders;
 
+use Stitch\Schema\Table as Schema;
+
 /**
  * Class Query
  * @package Stitch\DBAL\Builders
  */
-class Query
+class Query extends Table
 {
-    /**
-     * @var string
-     */
-    protected $table;
-
-    /**
-     * @var Column|null
-     */
-    protected $primaryKey;
-
     /**
      * @var Selection
      */
@@ -29,52 +21,42 @@ class Query
     protected $where;
 
     /**
-     * @var int
-     */
-    protected $limit;
-
-    /**
      * @var array|Sorter
      */
     protected $sorter = [];
 
     /**
-     * @var array
-     */
-    protected $joins = [];
-
-    /**
      * Query constructor.
-     * @param string $table
-     * @param string|null $primaryKey
+     * @param Schema $schema
      */
-    public function __construct(string $table, ?string $primaryKey)
+    public function __construct(Schema $schema)
     {
-        $this->table = $table;
-        $this->primaryKey = $primaryKey ? new Column($primaryKey) : null;
+        parent::__construct($schema);
+
         $this->selection = new Selection();
-        $this->where = new Expression();
         $this->sorter = new Sorter();
+        $this->where = new Expression();
     }
 
     /**
-     * @param mixed ...$arguments
+     * @param string $path
      * @return $this
      */
-    public function select(...$arguments)
+    public function select(string $path)
     {
-        $this->selection->unpack($arguments);
+        $this->selection->bind($path);
 
         return $this;
     }
 
     /**
-     * @param Join $join
+     * @param string $path
+     * @param string $direction
      * @return $this
      */
-    public function join(Join $join)
+    public function orderBy(string $path, string $direction = 'ASC')
     {
-        $this->joins[] = $join;
+        $this->sorter->bind($path, $direction);
 
         return $this;
     }
@@ -124,44 +106,36 @@ class Query
     }
 
     /**
-     * @param string $column
-     * @param string $direction
+     * @return Query
+     */
+    public function resolve()
+    {
+        return $this->resolveSelection()
+            ->resolveSorter();
+    }
+
+    /**
      * @return $this
      */
-    public function orderBy(string $column, string $direction = 'ASC')
+    public function resolveSelection()
     {
-        $this->sorter->add($column, $direction);
+        foreach ($this->selection->getBindings() as $binding) {
+            $this->selection->add($this->pullColumn($binding));
+        }
 
         return $this;
     }
 
     /**
-     * @param int $limit
      * @return $this
      */
-    public function limit(int $limit)
+    public function resolveSorter()
     {
-        $this->limit = $limit;
+        foreach ($this->sorter->getBindings() as $path => $direction) {
+            $this->sorter->add($this->pullColumn($path), $direction);
+        }
 
         return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function limited()
-    {
-        if ($this->limit !== null) {
-            return true;
-        }
-
-        foreach ($this->joins as $join) {
-            if ($join->limited()) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -173,43 +147,11 @@ class Query
     }
 
     /**
-     * @return string
-     */
-    public function getTable()
-    {
-        return $this->table;
-    }
-
-    /**
-     * @return Column|null
-     */
-    public function getPrimaryKey()
-    {
-        return $this->primaryKey;
-    }
-
-    /**
      * @return Expression
      */
     public function getWhereConditions()
     {
         return $this->where;
-    }
-
-    /**
-     * @return array
-     */
-    public function getJoins()
-    {
-        return $this->joins;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLimit()
-    {
-        return $this->limit;
     }
 
     /**

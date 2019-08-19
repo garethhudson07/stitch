@@ -11,7 +11,7 @@ class Column
     /**
      * @var KeyChain
      */
-    protected $keyChain;
+    protected $table;
 
     /**
      * @var string
@@ -30,13 +30,13 @@ class Column
 
     /**
      * Column constructor.
-     * @param KeyChain $keyChain
+     * @param Table $table
      * @param string $name
      * @param string $type
      */
-    public function __construct(KeyChain $keyChain, string $name, string $type)
+    public function __construct(Table $table, string $name, string $type)
     {
-        $this->keyChain = $keyChain;
+        $this->table = $table;
         $this->name = $name;
         $this->type = $type;
     }
@@ -56,7 +56,7 @@ class Column
      */
     public function primary()
     {
-        $this->keyChain->setPrimary($this);
+        $this->table->getkeyChain()->setPrimary($this);
 
         return $this;
     }
@@ -77,9 +77,11 @@ class Column
      */
     protected function foreignKey()
     {
-        if (!$foreignKey = $this->keyChain->getForeignFrom($this->name)) {
+        $keyChain = $this->table->getkeyChain();
+
+        if (!$foreignKey = $keyChain->getForeignFrom($this->name)) {
             $foreignKey = new ForeignKey($this);
-            $this->keyChain->addForeign($foreignKey);
+            $keyChain->addForeign($foreignKey);
         }
 
         return $foreignKey;
@@ -97,11 +99,35 @@ class Column
     }
 
     /**
+     * @return KeyChain|Table
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
+
+    /**
      * @return string
      */
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return "{$this->table->getName()}.{$this->name}";
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias()
+    {
+        return "{$this->table->getName()}_{$this->name}";
     }
 
     /**

@@ -5,7 +5,7 @@ namespace Stitch\Relations;
 use Stitch\Registry;
 use Stitch\Schema\ForeignKey;
 use Stitch\Schema\Table;
-use Stitch\Queries\Relations\ManyToMany as Query;
+use Stitch\Queries\Joins\ManyToMany as Query;
 use Closure;
 
 /**
