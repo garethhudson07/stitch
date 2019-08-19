@@ -30,13 +30,13 @@ class Condition
     public function __construct(...$arguments)
     {
         if ($arguments) {
-            $this->column = array_shift($arguments);
+            $this->column(array_shift($arguments));
 
             if (count($arguments) == 1) {
-                $this->value = $arguments[0];
+                $this->value($arguments[0]);
             } else {
-                $this->operator = $arguments[0];
-                $this->value = $arguments[1];
+                $this->operator($arguments[0]);
+                $this->value($arguments[1]);
             }
         }
     }
@@ -58,7 +58,7 @@ class Condition
      */
     public function operator(string $operator)
     {
-        $this->operator = $operator;
+        $this->operator = strtoupper($operator);
 
         return $this;
     }
