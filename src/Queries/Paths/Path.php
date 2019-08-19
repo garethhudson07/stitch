@@ -32,6 +32,23 @@ class Path implements IteratorAggregate, Countable
     }
 
     /**
+     * @param string $path
+     * @return Path
+     */
+    public static function explode(string $path)
+    {
+        return new static(explode(static::$delimiter, $path));
+    }
+
+    /**
+     * @return array
+     */
+    public function all()
+    {
+        return $this->pieces;
+    }
+
+    /**
      * @return mixed|null
      */
     public function first()
@@ -63,6 +80,16 @@ class Path implements IteratorAggregate, Countable
     public function after(int $index)
     {
         return new static(array_slice($this->pieces, $index + 1));
+    }
+
+    /**
+     * @param $offset
+     * @param null $length
+     * @return Path
+     */
+    public function slice($offset, $length = null)
+    {
+        return new static(array_slice($this->pieces, $offset, $length));
     }
 
     /**

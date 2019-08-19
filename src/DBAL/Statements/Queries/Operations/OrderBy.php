@@ -30,7 +30,6 @@ class OrderBy extends Statement
     public function __construct(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
-        $this->orderAssembler = (new Assembler())->glue(', ');
 
         parent::__construct();
     }
@@ -40,34 +39,16 @@ class OrderBy extends Statement
      */
     protected function evaluate()
     {
-        $this->sort($this->queryBuilder);
+        $sorter = $this->queryBuilder->getSorter();
 
-        if ($this->orderAssembler->count()) {
+        if ($sorter->count()) {
             $this->assembler->push(
                 new Component('ORDER BY')
             )->push(
-                $this->orderAssembler
+                new Component(implode(', ', array_map(function ($order) {
+                    return "{$order['column']->getAlias()} {$order['direction']}";
+                }, $sorter->getItems())))
             );
-        }
-    }
-
-    /**
-     * @param QueryBuilder $queryBuilder
-     */
-    protected function sort(QueryBuilder $queryBuilder)
-    {
-        $sorter = $queryBuilder->getSorter();
-
-        if ($sorter->count()) {
-            $this->orderAssembler->push(
-                new Component(implode(', ', array_map(function ($column) {
-                    return "{$column['name']} {$column['direction']}";
-                }, $sorter->getColumns())))
-            );
-        }
-
-        foreach ($queryBuilder->getJoins() as $join) {
-            $this->sort($join);
         }
     }
 }

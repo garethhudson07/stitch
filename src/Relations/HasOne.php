@@ -2,7 +2,7 @@
 
 namespace Stitch\Relations;
 
-use Stitch\Queries\Relations\HasOne as Query;
+use Stitch\Queries\Joins\HasOne as Join;
 use Stitch\Records\Relations\BelongsTo;
 
 /**
@@ -12,11 +12,11 @@ use Stitch\Records\Relations\BelongsTo;
 class HasOne extends Has
 {
     /**
-     * @return Query
+     * @return mixed|\Stitch\Queries\Joins\Has|Join
      */
-    public function query()
+    public function join()
     {
-        return new Query($this->getForeignModel(), $this->joinBuilder(), $this);
+        return new Join($this->getForeignModel(), $this->joinBuilder(), $this);
     }
 
     /**

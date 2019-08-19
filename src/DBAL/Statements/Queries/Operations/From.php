@@ -36,7 +36,7 @@ class From extends Statement
         $this->assembler->push(
             new Component('FROM')
         )->push(
-            new Component($this->queryBuilder->getTable())
+            new Component($this->queryBuilder->getSchema()->getName())
         );
     }
 }

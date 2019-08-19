@@ -1,10 +1,10 @@
 <?php
 
-namespace Stitch\Queries\Relations;
+namespace Stitch\Queries\Joins;
 
 use Stitch\DBAL\Builders\Join;
 use Stitch\DBAL\Builders\Join as JoinBuilder;
-use Stitch\Queries\Query;
+use Stitch\Queries\Base;
 use Stitch\Schema\ForeignKey;
 use Stitch\Schema\Table;
 
@@ -12,13 +12,13 @@ use Stitch\Schema\Table;
  * Class ManyToMany
  * @package Stitch\Queries\Relations
  */
-class ManyToMany extends Relation
+class ManyToMany extends Join
 {
     /**
-     * @param Query $query
-     * @return $this|mixed
+     * @param Base $query
+     * @return $this
      */
-    public function join(Query $query)
+    public function apply(Base $query)
     {
         /** @var Table $pivotTable */
         /** @var ForeignKey $localPivotKey */

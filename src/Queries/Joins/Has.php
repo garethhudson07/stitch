@@ -1,25 +1,21 @@
 <?php
 
-namespace Stitch\Queries\Relations;
+namespace Stitch\Queries\Joins;
 
-use Stitch\DBAL\Builders\Join;
-use Stitch\Queries\Query;
+use Stitch\Queries\Base;
 
 /**
  * Class Has
  * @package Stitch\Queries\Relations
  */
-class Has extends Relation
+class Has extends Join
 {
     /**
-     * @param Query $query
+     * @param Base $base
      * @return $this|mixed
      */
-    public function join(Query $query)
+    public function apply(Base $base)
     {
-        /** @var \Stitch\Relations\Has $blueprint */
-        /** @var Join $builder */
-
         $blueprint = $this->blueprint;
         $builder = $this->builder;
 
@@ -32,7 +28,7 @@ class Has extends Relation
                 "{$foreignKey->getReferenceTableName()}.{$foreignKey->getReferenceColumnName()}"
             );
 
-        $query->getBuilder()->join($builder);
+        $base->getBuilder()->join($builder);
 
         return $this;
     }

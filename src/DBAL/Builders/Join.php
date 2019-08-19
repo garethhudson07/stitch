@@ -2,12 +2,16 @@
 
 namespace Stitch\DBAL\Builders;
 
+use Stitch\Schema\Table as Schema;
+
 /**
  * Class Join
  * @package Stitch\DBAL\Builders
  */
-class Join extends Query
+class Join extends Table
 {
+    protected $primaryKey;
+
     /**
      * @var string
      */
@@ -20,12 +24,11 @@ class Join extends Query
 
     /**
      * Join constructor.
-     * @param string $table
-     * @param string|null $primaryKey
+     * @param Schema $schema
      */
-    public function __construct(string $table, ?string $primaryKey)
+    public function __construct(Schema $schema)
     {
-        parent::__construct($table, $primaryKey);
+        parent::__construct($schema);
 
         $this->on = new Expression();
     }

@@ -96,20 +96,20 @@ class Model
      */
     public function hasMany(...$arguments)
     {
-        return $this->addRelation(array_merge([Has::class], $arguments));
+        return $this->includeRelation(array_merge([Has::class], $arguments));
     }
 
     /**
      * @param array ...$arguments
      * @return $this
      */
-    protected function addRelation(array $arguments)
+    protected function includeRelation(array $arguments)
     {
         $class = $arguments[0];
         $name = $arguments[1];
 
         if ($arguments[2] instanceof Closure) {
-            $this->relations->register(
+            $this->registerRelation(
                 $name,
                 function () use ($class, $arguments) {
                     $relation = new $class($this);
@@ -122,10 +122,28 @@ class Model
             /** @noinspection PhpUndefinedMethodInspection */
             $relation = (new $class($this))->foreignModel($arguments[2]);
             $this->bootRelation($relation, $arguments[3] ?? null);
-            $this->relations->add($name, $relation);
+            $this->addRelation($name, $relation);
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param Closure $callback
+     */
+    public function registerRelation(string $name, Closure $callback)
+    {
+        $this->relations->register($name, $callback);
+    }
+
+    /**
+     * @param string $name
+     * @param Relation $relation
+     */
+    public function addRelation(string $name, Relation $relation)
+    {
+        $this->relations->add($name, $relation);
     }
 
     /**
@@ -150,7 +168,7 @@ class Model
      */
     public function hasOne(...$arguments)
     {
-        return $this->addRelation(array_merge([HasOne::class], $arguments));
+        return $this->includeRelation(array_merge([HasOne::class], $arguments));
     }
 
     /**
@@ -159,7 +177,7 @@ class Model
      */
     public function manyToMany(...$arguments)
     {
-        return $this->addRelation(array_merge([ManyToMany::class], $arguments));
+        return $this->includeRelation(array_merge([ManyToMany::class], $arguments));
     }
 
     /**
@@ -212,12 +230,6 @@ class Model
      */
     public function query()
     {
-        return (new Query(
-            $this,
-            new QueryBuilder(
-                $this->table->getName(),
-                $this->table->getPrimaryKey()->getName()
-            )
-        ));
+        return new Query($this, new QueryBuilder($this->table));
     }
 }

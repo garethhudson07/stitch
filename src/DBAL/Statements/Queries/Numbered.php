@@ -42,6 +42,46 @@ class Numbered extends Statement
             new Component('FROM')
         )->push(
             new Subquery(new Unlimited($this->queryBuilder), 'selection')
+        )->push(
+            new Component('ORDER BY')
+        )->push(
+            new Component(implode(', ', array_map(function($item)
+                {
+                    return "{$item['column']->getAlias()} {$item['direction']}";
+                }, $this->sort($this->queryBuilder, $this->queryBuilder->getSorter())))
+            )
         );
     }
+
+    /**
+     * @param $builder
+     * @param $sorter
+     * @return array
+     */
+    protected function sort($builder, $sorter)
+    {
+        $schema = $builder->getSchema();
+        $sort = [];
+
+        foreach ($sorter->getItems() as $item) {
+            if ($schema === $item['column']->getTable()) {
+                $sort[] = $item;
+                break;
+            }
+        }
+
+        if (!$sort) {
+            $sort[] = [
+                'column' => $schema->getPrimaryKey(),
+                'direction' => 'ASC'
+            ];
+        }
+
+        foreach ($builder->getJoins() as $join) {
+            $sort = array_merge($sort, $this->sort($join, $sorter));
+        }
+
+        return $sort;
+    }
+
 }

@@ -4,7 +4,7 @@ namespace Stitch\Result;
 
 use Stitch\Contracts\Arrayable;
 use Stitch\Queries\Query;
-use Stitch\Queries\Relations\HasOne;
+use Stitch\Queries\Joins\HasOne;
 use Stitch\Schema\Table;
 
 /**
@@ -40,14 +40,15 @@ class Record implements arrayable
 
     /**
      * Record constructor.
-     * @param Query $query
+     * @param $query
      * @param array $raw
      */
-    public function __construct(Query $query, array $raw)
+    public function __construct($query, array $raw)
     {
         $this->query = $query;
+
         $this->table = $query->getModel()->getTable();
-        $this->columns = $query->getBuilder()->getSelection()->getColumns();
+        $this->columns = $this->table->getColumns();
 
         $this->assemble($raw);
     }
@@ -74,9 +75,9 @@ class Record implements arrayable
      */
     public function extractRelations($raw)
     {
-        foreach ($this->query->getRelations() as $key => $relation) {
+        foreach ($this->query->getJoins() as $key => $join) {
             if (!array_key_exists($key, $this->relations)) {
-                $instance = ($relation instanceof HasOne) ? new static($relation, $raw) : new Set($relation);
+                $instance = ($join instanceof HasOne) ? new static($join, $raw) : new Set($join);
 
                 $this->relations[$key] = $instance->extract($raw);
             } else {
@@ -95,8 +96,11 @@ class Record implements arrayable
     {
         foreach ($this->columns as $column) {
             $name = $column->getName();
+            $alias = $column->getAlias();
 
-            $this->data[$name] = $this->table->getColumn($name)->cast($raw[$column->getAlias()]);
+            if (array_key_exists($alias, $raw)) {
+                $this->data[$name] = $this->table->getColumn($name)->cast($raw[$alias]);
+            }
         }
 
         return $this;
