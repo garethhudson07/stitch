@@ -1,7 +1,6 @@
 <?php
 
 namespace Stitch\DBAL\Builders;
-use Stitch\Schema\Column;
 
 /**
  * Class Sorter
@@ -9,24 +8,10 @@ use Stitch\Schema\Column;
  */
 class Sorter
 {
-    protected $bindings = [];
-
     /**
      * @var array
      */
     protected $items = [];
-
-    /**
-     * @param string $path
-     * @param string $direction
-     * @return $this
-     */
-    public function bind(string $path, string $direction)
-    {
-        $this->bindings[$path] = $direction;
-
-        return $this;
-    }
 
     /**
      * @param Column $column
@@ -70,14 +55,6 @@ class Sorter
     public function count()
     {
         return count($this->items);
-    }
-
-    /**
-     * @return array
-     */
-    public function getBindings()
-    {
-        return $this->bindings;
     }
 
     /**

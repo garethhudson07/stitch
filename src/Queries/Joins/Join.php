@@ -4,19 +4,30 @@ namespace Stitch\Queries\Joins;
 
 use Stitch\DBAL\Builders\Join as Builder;
 use Stitch\Model;
-use Stitch\Queries\Base;
 use Stitch\Relations\Relation as Blueprint;
 
 /**
  * Class Relation
  * @package Stitch\Queries\Relations
  */
-abstract class Join extends Base
+abstract class Join
 {
+    /**
+     * @var Model
+     */
+    protected $model;
+
+    protected $builder;
+
     /**
      * @var Blueprint
      */
     protected $blueprint;
+
+    /**
+     * @var array
+     */
+    protected $joins;
 
     /**
      * Relation constructor.
@@ -26,9 +37,36 @@ abstract class Join extends Base
      */
     public function __construct(Model $model, Builder $builder, Blueprint $blueprint)
     {
-        parent::__construct($model, $builder);
-
+        $this->model = $model;
+        $this->builder = $builder;
         $this->blueprint = $blueprint;
+        $this->joins = new Collection($builder);
+
+        $this->apply();
+    }
+
+    /**
+     * @return Blueprint
+     */
+    public function getBlueprint()
+    {
+        return $this->blueprint;
+    }
+
+    /**
+     * @return Builder
+     */
+    public function getBuilder()
+    {
+        return $this->builder;
+    }
+
+    /**
+     * @return array|Collection
+     */
+    public function getJoins()
+    {
+        return $this->joins;
     }
 
     /**
@@ -88,16 +126,19 @@ abstract class Join extends Base
 //    }
 
     /**
-     * @return Blueprint
+     * @param int $count
+     * @return $this
      */
-    public function getBlueprint()
+    public function setLimit(int $count)
     {
-        return $this->blueprint;
+        $this->builder->limit($count);
+
+        return $this;
     }
 
     /**
      * @param Base $query
      * @return mixed
      */
-    abstract public function apply(Base $query);
+    abstract public function apply();
 }

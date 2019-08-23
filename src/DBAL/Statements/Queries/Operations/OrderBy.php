@@ -46,7 +46,9 @@ class OrderBy extends Statement
                 new Component('ORDER BY')
             )->push(
                 new Component(implode(', ', array_map(function ($order) {
-                    return "{$order['column']->getAlias()} {$order['direction']}";
+                    $schema = $order['column']->getSchema();
+
+                    return "{$schema->getTable()}_{$schema->getName()} {$order['direction']}";
                 }, $sorter->getItems())))
             );
         }

@@ -57,7 +57,7 @@ class Where extends Statement
      */
     protected function conditions(QueryBuilder $queryBuilder)
     {
-        $conditions = $queryBuilder->getWhereConditions();
+        $conditions = $queryBuilder->getConditions();
 
         if ($conditions->count()) {
             $this->expressionAssembler->push(

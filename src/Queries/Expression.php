@@ -2,45 +2,50 @@
 
 namespace Stitch\Queries;
 
-use Stitch\DBAL\Builders\Condition;
-use Stitch\DBAL\Builders\Expression as BaseExpression;
+use Stitch\DBAL\Builders\Expression as Builder;
 
 /**
  * Class Expression
  * @package Stitch\Queries
  */
-class Expression extends BaseExpression
+class Expression
 {
     /**
      * @var Query
      */
     protected $query;
 
+    protected $builder;
+
     /**
      * Expression constructor.
      * @param Query $query
      */
-    public function __construct(Query $query)
+    public function __construct(Query $query, Builder $builder)
     {
         $this->query = $query;
+        $this->builder = $builder;
     }
 
     /**
-     * @param array ...$arguments
-     * @return Condition
+     * @param $method
+     * @param $arguments
+     * @return $this
      */
-    protected function condition(...$arguments)
+    public function __call($method, $arguments)
     {
-        $arguments[0] = $this->query->translatePath($arguments[0]);
+        var_dump($method);
+        var_dump($arguments);
 
-        return new Condition(...$arguments);
-    }
+        if ($arguments[0] instanceof Closure) {
+            $expression = new static($this->query, $this->builder);
+            $arguments[0]($expression);
+        }
 
-    /**
-     * @return static
-     */
-    protected function newInstance()
-    {
-        return new static($this->query);
+        $arguments[0] = $this->query->parsePipeline($arguments[0])->last();
+
+        $this->builder->{$method}(...$arguments);
+
+        return $this;
     }
 }

@@ -50,22 +50,17 @@ class Select extends Statement
     {
         $selection = $this->queryBuilder->getSelection();
 
-        if ($selection->count()) {
-            return $this->map($this->queryBuilder->getSelection()->getColumns());
+        if (!$selection->count()) {
+            $selection = $this->queryBuilder->pullSelection();
         }
 
-        return $this->map($this->queryBuilder->pullColumns());
-    }
-
-    /**
-     * @param array $columns
-     * @return array
-     */
-    protected function map(array $columns)
-    {
         return array_map(function ($column)
         {
-            return "{$column->getPath()} as {$column->getAlias()}";
-        }, $columns);
+            $schema = $column->getSchema();
+            $tableName = $schema->getTable()->getName();
+            $columnName = $schema->getName();
+
+            return "$tableName.$columnName as {$tableName}_{$columnName}";
+        }, $selection->getColumns());
     }
 }

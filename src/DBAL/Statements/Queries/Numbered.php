@@ -64,7 +64,7 @@ class Numbered extends Statement
         $sort = [];
 
         foreach ($sorter->getItems() as $item) {
-            if ($schema === $item['column']->getTable()) {
+            if ($schema === $item['column']->getSchema()->getTable()) {
                 $sort[] = $item;
                 break;
             }

@@ -108,21 +108,22 @@ class Model
         $class = $arguments[0];
         $name = $arguments[1];
 
-        if ($arguments[2] instanceof Closure) {
+        if (!array_key_exists(2, $arguments) || $arguments[2] instanceof Closure) {
             $this->registerRelation(
                 $name,
-                function () use ($class, $arguments) {
-                    $relation = new $class($this);
-                    $this->bootRelation($relation, $arguments[2]);
+                function () use ($class, $name, $arguments) {
+                    $relation = new $class($name, $this);
+                    $this->bootRelation($relation, $arguments[2] ?? null);
 
                     return $relation;
                 }
             );
         } else {
             /** @noinspection PhpUndefinedMethodInspection */
-            $relation = (new $class($this))->foreignModel($arguments[2]);
-            $this->bootRelation($relation, $arguments[3] ?? null);
-            $this->addRelation($name, $relation);
+            $relation = (new $class($name, $this))->foreignModel($arguments[2]);
+
+            $this->bootRelation($relation, $arguments[3] ?? null)
+                ->addRelation($relation);
         }
 
         return $this;
@@ -131,19 +132,24 @@ class Model
     /**
      * @param string $name
      * @param Closure $callback
+     * @return $this
      */
     public function registerRelation(string $name, Closure $callback)
     {
         $this->relations->register($name, $callback);
+
+        return $this;
     }
 
     /**
-     * @param string $name
      * @param Relation $relation
+     * @return $this
      */
-    public function addRelation(string $name, Relation $relation)
+    public function addRelation(Relation $relation)
     {
-        $this->relations->add($name, $relation);
+        $this->relations->add($relation);
+
+        return $this;
     }
 
     /**

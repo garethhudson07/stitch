@@ -4,10 +4,10 @@ namespace Stitch\Queries;
 
 use Closure;
 use Stitch\Collection;
-use Stitch\DBAL\Builders\Column;
-use Stitch\DBAL\Builders\Query as Builder;
-use Stitch\DBAL\Dispatcher;
 use Stitch\Model;
+use Stitch\DBAL\Builders\Query as Builder;
+use Stitch\Queries\Joins\Collection as Joins;
+use Stitch\DBAL\Dispatcher;
 use Stitch\Records\Record;
 use Stitch\Result\Hydrator as ResultHydrator;
 use Stitch\Result\Set as ResultSet;
@@ -16,36 +16,59 @@ use Stitch\Result\Set as ResultSet;
  * Class Query
  * @package Stitch\Queries
  */
-class Query extends Base
+class Query
 {
     /**
      * @var Model
      */
     protected $model;
 
-    /**
-     * @var Builder
-     */
     protected $builder;
 
     /**
      * @var array
      */
-    protected $relations = [];
+    protected $joins;
 
-    /**
-     * @var bool
-     */
+    protected $conditions;
+
     protected $hydrate = true;
 
     /**
-     * Query constructor.
+     * Base constructor.
      * @param Model $model
-     * @param Builder $builder
+     * @param $builder
      */
     public function __construct(Model $model, Builder $builder)
     {
-        parent::__construct($model, $builder);
+        $this->model = $model;
+        $this->builder = $builder;
+        $this->joins = new Joins($builder);
+        $this->conditions = new Expression($this, $builder->getConditions());
+    }
+
+    /**
+     * @return Model
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBuilder()
+    {
+        return $this->builder;
+    }
+
+    /**
+     * @return array|Joins
+     */
+    public function getJoins()
+    {
+        return $this->joins;
     }
 
     /**
@@ -69,16 +92,23 @@ class Query extends Base
     }
 
     /**
-     * @param array ...$paths
+     * @param string $pipeline
+     * @return Pipeline
+     */
+    public function parsePipeline(string $pipeline)
+    {
+        return Pipeline::parse($this->model, $pipeline);
+    }
+
+    /**
+     * @param array ...$relations
      * @return $this
      */
-    public function select(...$paths)
+    public function with(...$pipelines)
     {
-        foreach ($paths as $path) {
-            $resolved = $this->resolvePath($path);
-
-            $this->builder->select(
-                $this->assemblePath($resolved['table'], $resolved['column'])
+        foreach ($pipelines as $pipeline) {
+            $this->joins->push(
+                $this->parsePipeline($pipeline)
             );
         }
 
@@ -86,13 +116,31 @@ class Query extends Base
     }
 
     /**
-     * @param string $path
+     * @param array ...$pipelines
+     * @return $this
+     */
+    public function select(...$pipelines)
+    {
+        foreach ($pipelines as $pipeline) {
+            $this->builder->select(
+                $this->parsePipeline($pipeline)->last()
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $pipeline
      * @param string $direction
      * @return $this
      */
-    public function orderBy(string $path, string $direction = 'ASC')
+    public function orderBy(string $pipeline, string $direction = 'ASC')
     {
-        $this->builder->orderBy($this->translatePath($path), $direction);
+        $this->builder->orderBy(
+            $this->parsePipeline($pipeline)->last(),
+            $direction
+        );
 
         return $this;
     }
@@ -103,61 +151,7 @@ class Query extends Base
      */
     public function where(...$arguments)
     {
-        return $this->applyWhere('where', $arguments);
-    }
-
-    /**
-     * @param $type
-     * @param array $arguments
-     * @return $this
-     */
-    protected function applyWhere($type, array $arguments)
-    {
-        if ($arguments[0] instanceof Closure) {
-            return $this->applyWhereExpression($type, $arguments[0]);
-        }
-
-        $path = array_shift($arguments);
-
-        if (count($arguments) == 1) {
-            $operator = '=';
-            $value = $arguments[0];
-        } else {
-            list($operator, $value) = $arguments;
-        }
-
-        return $this->addCondition($type, $this->translatePath($path), $operator, $value);
-    }
-
-    /**
-     * @param $type
-     * @param Closure $callback
-     * @return $this
-     */
-    protected function applyWhereExpression($type, Closure $callback)
-    {
-        $expression = new Expression($this);
-        $callback($expression);
-
-        $this->builder->{$type}($expression);
-
-        return $this;
-    }
-
-    /**
-     * @param string $type
-     * @param string $path
-     * @param string $operator
-     * @param $value
-     * @return $this
-     */
-    public function addCondition(string $type, string $path, string $operator, $value)
-    {
-        $this->builder->{$type}(
-            $path,
-            $operator,
-            $value
-        );
+        $this->conditions->where(...$arguments);
 
         return $this;
     }
@@ -168,7 +162,82 @@ class Query extends Base
      */
     public function orWhere(...$arguments)
     {
-        return $this->applyWhere('orWhere', $arguments);
+        $this->conditions->orWhere(...$arguments);
+
+        return $this;
+    }
+
+//    /**
+//     * @param $type
+//     * @param array $arguments
+//     * @return $this
+//     */
+//    protected function applyWhere($type, array $arguments)
+//    {
+//        if ($arguments[0] instanceof Closure) {
+//            return $this->applyWhereExpression($type, $arguments[0]);
+//        }
+//
+//        $path = array_shift($arguments);
+//
+//        if (count($arguments) == 1) {
+//            $operator = '=';
+//            $value = $arguments[0];
+//        } else {
+//            list($operator, $value) = $arguments;
+//        }
+//
+//        return $this->addCondition($type, $this->translatePath($path), $operator, $value);
+//    }
+
+//    /**
+//     * @param $type
+//     * @param Closure $callback
+//     * @return $this
+//     */
+//    protected function applyWhereExpression($type, Closure $callback)
+//    {
+//        $expression = new Expression($this);
+//        $callback($expression);
+//
+//        $this->builder->{$type}($expression);
+//
+//        return $this;
+//    }
+
+//    /**
+//     * @param string $type
+//     * @param string $path
+//     * @param string $operator
+//     * @param $value
+//     * @return $this
+//     */
+//    protected function addCondition(string $type, string $path, string $operator, $value)
+//    {
+//        $this->builder->{$type}(
+//            $path,
+//            $operator,
+//            $value
+//        );
+//
+//        return $this;
+//    }
+
+    /**
+     * @param array ...$arguments
+     * @return $this
+     */
+    public function limit(...$arguments)
+    {
+        if (count($arguments) > 1) {
+            $this->joins->get(
+                $this->parsePipeline($arguments[0])
+            )->setLimit($arguments[1]);
+        } else {
+            $this->builder->limit($arguments[0]);
+        }
+
+        return $this;
     }
 
     /**
@@ -192,7 +261,7 @@ class Query extends Base
     {
         return new ResultSet(
             $this,
-            Dispatcher::select($this->model->getConnection(), $this->builder->resolve())
+            Dispatcher::select($this->model->getConnection(), $this->builder)
         );
     }
 

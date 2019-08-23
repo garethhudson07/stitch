@@ -2,7 +2,7 @@
 
 namespace Stitch\Queries\Joins;
 
-use Stitch\Queries\Base;
+use Stitch\Queries\Table;
 
 /**
  * Class Has
@@ -10,26 +10,16 @@ use Stitch\Queries\Base;
  */
 class Has extends Join
 {
-    /**
-     * @param Base $base
-     * @return $this|mixed
-     */
-    public function apply(Base $base)
+    public function apply()
     {
         $blueprint = $this->blueprint;
-        $builder = $this->builder;
-
         $foreignKey = $blueprint->getForeignKey();
 
-        $builder->type('LEFT')
+        $this->builder->type('LEFT')
             ->on(
                 "{$blueprint->getForeignModel()->getTable()->getName()}.{$foreignKey->getLocalColumn()->getName()}",
                 '=',
                 "{$foreignKey->getReferenceTableName()}.{$foreignKey->getReferenceColumnName()}"
             );
-
-        $base->getBuilder()->join($builder);
-
-        return $this;
     }
 }

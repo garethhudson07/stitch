@@ -18,7 +18,7 @@ class Query extends Table
     /**
      * @var Expression
      */
-    protected $where;
+    protected $conditions;
 
     /**
      * @var array|Sorter
@@ -35,28 +35,28 @@ class Query extends Table
 
         $this->selection = new Selection();
         $this->sorter = new Sorter();
-        $this->where = new Expression();
+        $this->conditions = new Expression();
     }
 
     /**
-     * @param string $path
+     * @param Column $column
      * @return $this
      */
-    public function select(string $path)
+    public function select(Column $column)
     {
-        $this->selection->bind($path);
+        $this->selection->add($column);
 
         return $this;
     }
 
     /**
-     * @param string $path
+     * @param Column $column
      * @param string $direction
      * @return $this
      */
-    public function orderBy(string $path, string $direction = 'ASC')
+    public function orderBy(Column $column, string $direction = 'ASC')
     {
-        $this->sorter->bind($path, $direction);
+        $this->sorter->add($column, $direction);
 
         return $this;
     }
@@ -67,7 +67,7 @@ class Query extends Table
      */
     public function where(...$arguments)
     {
-        $this->where->and(...$arguments);
+        $this->conditions->and(...$arguments);
 
         return $this;
     }
@@ -78,7 +78,7 @@ class Query extends Table
      */
     public function whereRaw(...$arguments)
     {
-        $this->where->andRaw(...$arguments);
+        $this->conditions->andRaw(...$arguments);
 
         return $this;
     }
@@ -89,7 +89,7 @@ class Query extends Table
      */
     public function orWhere(...$arguments)
     {
-        $this->where->or(...$arguments);
+        $this->conditions->or(...$arguments);
 
         return $this;
     }
@@ -100,40 +100,7 @@ class Query extends Table
      */
     public function orWhereRaw(...$arguments)
     {
-        $this->where->orRaw(...$arguments);
-
-        return $this;
-    }
-
-    /**
-     * @return Query
-     */
-    public function resolve()
-    {
-        return $this->resolveSelection()
-            ->resolveSorter();
-    }
-
-    /**
-     * @return $this
-     */
-    public function resolveSelection()
-    {
-        foreach ($this->selection->getBindings() as $binding) {
-            $this->selection->add($this->pullColumn($binding));
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function resolveSorter()
-    {
-        foreach ($this->sorter->getBindings() as $path => $direction) {
-            $this->sorter->add($this->pullColumn($path), $direction);
-        }
+        $this->conditions->orRaw(...$arguments);
 
         return $this;
     }
@@ -147,11 +114,25 @@ class Query extends Table
     }
 
     /**
+     * @return Selection
+     */
+    public function pullSelection()
+    {
+        $selection = new Selection();
+
+        foreach ($this->pullColumns() as $column) {
+            $selection->add($column);
+        }
+
+        return $selection;
+    }
+
+    /**
      * @return Expression
      */
-    public function getWhereConditions()
+    public function getConditions()
     {
-        return $this->where;
+        return $this->conditions;
     }
 
     /**

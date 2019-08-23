@@ -31,10 +31,7 @@ class Expression
      */
     public function and(...$arguments)
     {
-        return $this->add(
-            'AND',
-            $arguments[0] instanceof Expression ? $arguments[0] : $this->constraint(...$arguments)
-        );
+        return $this->add('AND', $this->constraint(...$arguments));
     }
 
     /**
@@ -53,10 +50,7 @@ class Expression
      */
     public function or(...$arguments)
     {
-        return $this->add(
-            'OR',
-            $arguments[0] instanceof Expression ? $arguments[0] : $this->constraint(...$arguments)
-        );
+        return $this->add('OR', $this->constraint(...$arguments));
     }
 
     /**
@@ -102,13 +96,13 @@ class Expression
     protected function constraint(...$arguments)
     {
         if ($arguments[0] instanceof Closure) {
-            $expression = $this->newInstance();
+            $expression = new static();
             $arguments[0]($expression);
 
             return $expression;
         }
 
-        return $this->condition(...$arguments);
+        return new Condition(...$arguments);
     }
 
     /**
@@ -125,22 +119,5 @@ class Expression
     public function getItems()
     {
         return $this->items;
-    }
-
-    /**
-     * @param array ...$arguments
-     * @return Condition
-     */
-    protected function condition(...$arguments)
-    {
-        return new Condition(...$arguments);
-    }
-
-    /**
-     * @return static
-     */
-    protected function newInstance()
-    {
-        return new static();
     }
 }

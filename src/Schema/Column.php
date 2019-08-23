@@ -117,22 +117,6 @@ class Column
     /**
      * @return string
      */
-    public function getPath()
-    {
-        return "{$this->table->getName()}.{$this->name}";
-    }
-
-    /**
-     * @return string
-     */
-    public function getAlias()
-    {
-        return "{$this->table->getName()}_{$this->name}";
-    }
-
-    /**
-     * @return string
-     */
     public function getType()
     {
         return $this->type;

@@ -2,7 +2,7 @@
 
 namespace Stitch\Queries\Joins;
 
-use Stitch\Queries\Base;
+use Stitch\Queries\Table;
 
 /**
  * Class HasOne
@@ -10,12 +10,8 @@ use Stitch\Queries\Base;
  */
 class HasOne extends Has
 {
-    /**
-     * @param Base $query
-     * @return mixed|Has
-     */
-    public function apply(Base $query)
+    public function apply()
     {
-        return parent::apply($query)->limit(1);
+        parent::apply()->limit(1);
     }
 }
