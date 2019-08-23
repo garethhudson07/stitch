@@ -58,7 +58,7 @@ class Condition
      */
     public function operator(string $operator)
     {
-        $this->operator = $operator;
+        $this->operator = strtoupper($operator);
 
         return $this;
     }
