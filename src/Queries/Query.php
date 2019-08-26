@@ -2,7 +2,6 @@
 
 namespace Stitch\Queries;
 
-use Closure;
 use Stitch\Collection;
 use Stitch\Model;
 use Stitch\DBAL\Builders\Query as Builder;
@@ -166,62 +165,6 @@ class Query
 
         return $this;
     }
-
-//    /**
-//     * @param $type
-//     * @param array $arguments
-//     * @return $this
-//     */
-//    protected function applyWhere($type, array $arguments)
-//    {
-//        if ($arguments[0] instanceof Closure) {
-//            return $this->applyWhereExpression($type, $arguments[0]);
-//        }
-//
-//        $path = array_shift($arguments);
-//
-//        if (count($arguments) == 1) {
-//            $operator = '=';
-//            $value = $arguments[0];
-//        } else {
-//            list($operator, $value) = $arguments;
-//        }
-//
-//        return $this->addCondition($type, $this->translatePath($path), $operator, $value);
-//    }
-
-//    /**
-//     * @param $type
-//     * @param Closure $callback
-//     * @return $this
-//     */
-//    protected function applyWhereExpression($type, Closure $callback)
-//    {
-//        $expression = new Expression($this);
-//        $callback($expression);
-//
-//        $this->builder->{$type}($expression);
-//
-//        return $this;
-//    }
-
-//    /**
-//     * @param string $type
-//     * @param string $path
-//     * @param string $operator
-//     * @param $value
-//     * @return $this
-//     */
-//    protected function addCondition(string $type, string $path, string $operator, $value)
-//    {
-//        $this->builder->{$type}(
-//            $path,
-//            $operator,
-//            $value
-//        );
-//
-//        return $this;
-//    }
 
     /**
      * @param array ...$arguments

@@ -18,7 +18,7 @@ class Sorter
      * @param string $direction
      * @return $this
      */
-    public function add(Column $column, string $direction)
+    public function add(Column $column, string $direction = 'ASC')
     {
         $index = $this->indexOf($column);
 

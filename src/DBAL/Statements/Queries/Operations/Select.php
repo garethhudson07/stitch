@@ -2,9 +2,9 @@
 
 namespace Stitch\DBAL\Statements\Queries\Operations;
 
-use Stitch\DBAL\Builders\Column as ColumnBuilder;
-use Stitch\DBAL\Builders\Query as QueryBuilder;
-use Stitch\DBAL\Statements\Component;
+use Stitch\DBAL\Builders\Query as Builder;
+use Stitch\DBAL\Statements\Assembler;
+use Stitch\DBAL\Statements\Queries\Fragments\Column;
 use Stitch\DBAL\Statements\Statement;
 
 /**
@@ -14,53 +14,39 @@ use Stitch\DBAL\Statements\Statement;
 class Select extends Statement
 {
     /**
-     * @var QueryBuilder
+     * @var Builder
      */
-    protected $queryBuilder;
+    protected $builder;
+
+    protected $columns;
 
     /**
      * Select constructor.
-     * @param QueryBuilder $queryBuilder
+     * @param Builder $builder
      */
-    public function __construct(QueryBuilder $queryBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->queryBuilder = $queryBuilder;
-
-        parent::__construct();
+        $this->builder = $builder;
+        $this->columns = (new Assembler())->glue(', ');
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->assembler->push(
-            new Component('SELECT')
-        )->push(
-            new Component(
-                implode(', ', $this->columns())
-            )
-        );
-    }
+        $this->push('SELECT')->push($this->columns);
 
-    /**
-     * @return array
-     */
-    protected function columns()
-    {
-        $selection = $this->queryBuilder->getSelection();
+        $selection = $this->builder->getSelection();
 
         if (!$selection->count()) {
-            $selection = $this->queryBuilder->pullSelection();
+            $selection = $this->builder->pullSelection();
         }
 
-        return array_map(function ($column)
-        {
-            $schema = $column->getSchema();
-            $tableName = $schema->getTable()->getName();
-            $columnName = $schema->getName();
-
-            return "$tableName.$columnName as {$tableName}_{$columnName}";
-        }, $selection->getColumns());
+        foreach ($selection->getColumns() as $column) {
+            $this->columns->push(
+                (new Column($column))->path()->alias()
+            );
+        }
     }
 }

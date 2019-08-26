@@ -2,6 +2,7 @@
 
 namespace Stitch\Queries;
 
+use Closure;
 use Stitch\DBAL\Builders\Expression as Builder;
 
 /**
@@ -34,12 +35,15 @@ class Expression
      */
     public function __call($method, $arguments)
     {
-        var_dump($method);
-        var_dump($arguments);
-
         if ($arguments[0] instanceof Closure) {
-            $expression = new static($this->query, $this->builder);
+            $builder = new Builder();
+            $expression = new static($this->query, $builder);
+
             $arguments[0]($expression);
+
+            $this->builder->{$method}($builder);
+
+            return $this;
         }
 
         $arguments[0] = $this->query->parsePipeline($arguments[0])->last();

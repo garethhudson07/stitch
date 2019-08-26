@@ -2,9 +2,8 @@
 
 namespace Stitch\DBAL\Statements\Persistence;
 
-use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Builders\Record as RecordBuilder;
+use Stitch\DBAL\Builders\Record as Builder;
 
 /**
  * Class Insert
@@ -13,34 +12,32 @@ use Stitch\DBAL\Builders\Record as RecordBuilder;
 class Insert extends Statement
 {
     /**
-     * @var RecordBuilder
+     * @var Builder
      */
-    protected $recordBuilder;
+    protected $builder;
 
     /**
      * Insert constructor.
-     * @param RecordBuilder $recordBuilder
+     * @param Builder builder
      */
-    public function __construct(RecordBuilder $recordBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->recordBuilder = $recordBuilder;
-
-        parent::__construct();
+        $this->builder = $builder;
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->assembler->push(
-            new Component('INSERT INTO ' . $this->recordBuilder->getTable())
+        $this->push(
+            'INSERT INTO ' . $this->builder->getTable()
         )->push(
-            new Component($this->columns())
+            $this->columns()
         )->push(
-            new Component('VALUES')
+            'VALUES'
         )->push(
-            (new Component($this->placeholders()))->bindMany($this->values())
+            $this->component($this->placeholders())->bindMany($this->values())
         );
     }
 
@@ -49,7 +46,7 @@ class Insert extends Statement
      */
     protected function columns()
     {
-        $columns = array_keys($this->recordBuilder->getAttributes());
+        $columns = array_keys($this->builder->getAttributes());
 
         return '(' . implode(', ', $columns) . ')';
     }
@@ -59,7 +56,7 @@ class Insert extends Statement
      */
     protected function placeholders()
     {
-        $placeholders = array_fill(0, count($this->recordBuilder->getAttributes()), '?');
+        $placeholders = array_fill(0, count($this->builder->getAttributes()), '?');
 
         return '(' . implode(', ', $placeholders) . ')';
     }
@@ -69,6 +66,6 @@ class Insert extends Statement
      */
     protected function values()
     {
-        return array_values($this->recordBuilder->getAttributes());
+        return array_values($this->builder->getAttributes());
     }
 }

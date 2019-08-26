@@ -3,18 +3,19 @@
 namespace Stitch\Records;
 
 use Stitch\Collection as BaseCollection;
+use Stitch\Model;
 
 class Collection extends BaseCollection
 {
-    protected $factory;
+    protected $model;
 
     /**
      * Collection constructor.
-     * @param $factory
+     * @param Model $model
      */
-    public function __construct($factory)
+    public function __construct(Model $model)
     {
-        $this->factory = $factory;
+        $this->model = $model;
     }
 
     /**
@@ -23,7 +24,7 @@ class Collection extends BaseCollection
      */
     public function make(array $attributes = [])
     {
-        return $this->factory->make($attributes);
+        return $this->model->make($attributes);
     }
 
     /**

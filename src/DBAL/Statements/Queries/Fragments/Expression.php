@@ -2,9 +2,8 @@
 
 namespace Stitch\DBAL\Statements\Queries\Fragments;
 
-use Stitch\DBAL\Builders\Expression as ExpressionBuilder;
+use Stitch\DBAL\Builders\Expression as Builder;
 use Stitch\DBAL\Builders\Raw;
-use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
 
 /**
@@ -14,48 +13,41 @@ use Stitch\DBAL\Statements\Statement;
 class Expression extends Statement
 {
     /**
-     * @var ExpressionBuilder
+     * @var Builder
      */
-    protected $expressionBuilder;
+    protected $builder;
 
     /**
      * Expression constructor.
-     * @param ExpressionBuilder $expressionBuilder
+     * @param Builder $builder
      */
-    public function __construct(ExpressionBuilder $expressionBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->expressionBuilder = $expressionBuilder;
-
-        parent::__construct();
+        $this->builder = $builder;
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        foreach ($this->expressionBuilder->getItems() as $key => $item) {
+        foreach ($this->builder->getItems() as $key => $item) {
             if ($key > 0) {
-                $this->assembler->push(
-                    new Component($item['operator'])
-                );
+                $this->push($item['operator']);
             }
 
-            if ($item['constraint'] instanceOf ExpressionBuilder) {
-                $component = (new Component(
-                    new static($item['constraint'])
-                ))->isolate();
+            if ($item['constraint'] instanceOf Builder) {
+                $this->push(
+                    $this->component(new static($item['constraint']))->isolate()
+                );
             } elseif ($item['constraint'] instanceOf Raw) {
-                $component = (new Component(
-                    $item['constraint']->getSql()
-                ))->bindMany($item['constraint']->getBindings());
-            } else {
-                $component = new Component(
-                    new Condition($item['constraint'])
+                $this->push(
+                    $this->component($item['constraint']->getSql())
+                        ->bindMany($item['constraint']->getBindings())
                 );
+            } else {
+                $this->push(new Condition($item['constraint']));
             }
-
-            $this->assembler->push($component);
         }
     }
 }

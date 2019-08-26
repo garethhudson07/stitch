@@ -79,7 +79,7 @@ class Expression
      * @param $constraint
      * @return $this
      */
-    protected function add(string $operator, $constraint)
+    public function add(string $operator, $constraint)
     {
         $this->items[] = [
             'operator' => $operator,
@@ -95,6 +95,10 @@ class Expression
      */
     protected function constraint(...$arguments)
     {
+        if ($arguments[0] instanceof Expression) {
+            return $arguments[0];
+        }
+
         if ($arguments[0] instanceof Closure) {
             $expression = new static();
             $arguments[0]($expression);

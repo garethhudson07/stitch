@@ -2,8 +2,7 @@
 
 namespace Stitch\DBAL\Statements\Queries\Operations;
 
-use Stitch\DBAL\Builders\Query as QueryBuilder;
-use Stitch\DBAL\Statements\Component;
+use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Statements\Statement;
 
 /**
@@ -13,34 +12,28 @@ use Stitch\DBAL\Statements\Statement;
 class Limit extends Statement
 {
     /**
-     * @var QueryBuilder
+     * @var Builder
      */
-    protected $queryBuilder;
+    protected $builder;
 
     /**
      * Limit constructor.
-     * @param QueryBuilder $queryBuilder
+     * @param Builder $builder
      */
-    public function __construct(QueryBuilder $queryBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->queryBuilder = $queryBuilder;
-
-        parent::__construct();
+        $this->builder = $builder;
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $limit = $this->queryBuilder->getLimit();
+        $limit = $this->builder->getLimit();
 
         if ($limit) {
-            $this->assembler->push(
-                new Component('LIMIT')
-            )->push(
-                new Component($limit)
-            );
+            $this->push("LIMIT $limit");
         }
     }
 }

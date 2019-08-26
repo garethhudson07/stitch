@@ -2,8 +2,10 @@
 
 namespace Stitch\DBAL\Statements\Queries;
 
-use Stitch\DBAL\Builders\Query as QueryBuilder;
-use Stitch\DBAL\Statements\Component;
+use Stitch\DBAL\Builders\Query as Builder;
+use Stitch\DBAL\Builders\Column as ColumnBuilder;
+use Stitch\DBAL\Builders\Sorter;
+use Stitch\DBAL\Statements\Queries\Operations\OrderBy;
 use Stitch\DBAL\Statements\Queries\Variables\Selection as VariableSelection;
 use Stitch\DBAL\Statements\Statement;
 
@@ -14,74 +16,63 @@ use Stitch\DBAL\Statements\Statement;
 class Numbered extends Statement
 {
     /**
-     * @var QueryBuilder
+     * @var Builder
      */
-    protected $queryBuilder;
+    protected $builder;
+
+    protected $sorter;
 
     /**
      * Numbered constructor.
-     * @param QueryBuilder $queryBuilder
+     * @param Builder $builder
      */
-    public function __construct(QueryBuilder $queryBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->queryBuilder = $queryBuilder;
+        $this->builder = $builder;
+        $this->sorter = new Sorter();
 
-        parent::__construct();
+        $this->populateSorter($builder);
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->assembler->push(
-            new Component('SELECT *,')
-        )->push(
-            new VariableSelection($this->queryBuilder)
-        )->push(
-            new Component('FROM')
-        )->push(
-            new Subquery(new Unlimited($this->queryBuilder), 'selection')
-        )->push(
-            new Component('ORDER BY')
-        )->push(
-            new Component(implode(', ', array_map(function($item)
-                {
-                    return "{$item['column']->getAlias()} {$item['direction']}";
-                }, $this->sort($this->queryBuilder, $this->queryBuilder->getSorter())))
+        $this->push('SELECT *,')
+            ->push(
+                new VariableSelection($this->builder)
             )
-        );
+            ->push('FROM')
+            ->push(
+                (new Subquery(new Unlimited($this->builder)))->alias('selection')
+            )->push(
+                new OrderBy($this->sorter)
+            );
     }
 
     /**
      * @param $builder
-     * @param $sorter
-     * @return array
      */
-    protected function sort($builder, $sorter)
+    protected function populateSorter($builder)
     {
         $schema = $builder->getSchema();
-        $sort = [];
+        $added = false;
 
-        foreach ($sorter->getItems() as $item) {
+        foreach ($this->builder->getSorter()->getItems() as $item) {
             if ($schema === $item['column']->getSchema()->getTable()) {
-                $sort[] = $item;
+                $this->sorter->add($item['column'], $item['direction']);
+                $added = true;
                 break;
             }
         }
 
-        if (!$sort) {
-            $sort[] = [
-                'column' => $schema->getPrimaryKey(),
-                'direction' => 'ASC'
-            ];
+        if (!$added) {
+            $this->sorter->add(new ColumnBuilder($schema->getPrimaryKey()));
         }
 
         foreach ($builder->getJoins() as $join) {
-            $sort = array_merge($sort, $this->sort($join, $sorter));
+            $this->populateSorter($join);
         }
-
-        return $sort;
     }
-
 }

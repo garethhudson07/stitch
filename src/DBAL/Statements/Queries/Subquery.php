@@ -24,25 +24,34 @@ class Subquery extends Statement
     /**
      * Subquery constructor.
      * @param Statement $statement
-     * @param string $alias
      */
-    public function __construct(Statement $statement, string $alias)
+    public function __construct(Statement $statement)
     {
         $this->statement = $statement;
+    }
+
+    /**
+     * @param string $alias
+     * @return $this
+     */
+    public function alias(string $alias)
+    {
         $this->alias = $alias;
 
-        parent::__construct();
+        return $this;
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->assembler->push(
-            (new Component($this->statement))->isolate()
-        )->push(
-            new Component('AS ' . $this->alias)
+        $this->push(
+            $this->component($this->statement)->isolate()
         );
+
+        if ($this->alias) {
+            $this->push("as {$this->alias}");
+        }
     }
 }
