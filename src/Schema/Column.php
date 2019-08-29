@@ -79,7 +79,7 @@ class Column
     {
         $keyChain = $this->table->getkeyChain();
 
-        if (!$foreignKey = $keyChain->getForeignFrom($this->name)) {
+        if (!$foreignKey = $keyChain->getForeignFrom($this)) {
             $foreignKey = new ForeignKey($this);
             $keyChain->addForeign($foreignKey);
         }

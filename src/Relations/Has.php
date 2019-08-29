@@ -34,11 +34,8 @@ class Has extends Relation
      */
     public function pullKeys()
     {
-        $localTable = $this->localModel->getTable();
-
         $this->foreignKey = $this->getForeignModel()->getTable()->getForeignKeyFor(
-            $localTable->getName(),
-            $localTable->getPrimaryKey()->getName()
+            $this->localModel->getTable()->getPrimaryKey()
         );
 
         return $this;
@@ -73,7 +70,7 @@ class Has extends Relation
      */
     public function make()
     {
-        return new RecordCollection($this);
+        return new RecordCollection($this->getForeignModel());
     }
 
     /**

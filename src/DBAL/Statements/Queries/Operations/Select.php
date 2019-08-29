@@ -37,13 +37,7 @@ class Select extends Statement
     {
         $this->push('SELECT')->push($this->columns);
 
-        $selection = $this->builder->getSelection();
-
-        if (!$selection->count()) {
-            $selection = $this->builder->pullSelection();
-        }
-
-        foreach ($selection->getColumns() as $column) {
+        foreach ($this->builder->resolveSelection()->getColumns() as $column) {
             $this->columns->push(
                 (new Column($column))->path()->alias()
             );

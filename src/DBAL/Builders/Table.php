@@ -86,10 +86,10 @@ class Table
      */
     public function pullColumns()
     {
-        $columns = array_map(function ($column)
+        $columns = array_values(array_map(function ($column)
         {
             return new Column($column);
-        }, $this->schema->getColumns());
+        }, $this->schema->getColumns()));
 
         foreach ($this->joins as $join) {
             $columns = array_merge($columns, $join->pullColumns());

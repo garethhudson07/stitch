@@ -45,6 +45,11 @@ abstract class Join
         $this->apply();
     }
 
+    public function getModel()
+    {
+        return $this->model;
+    }
+
     /**
      * @return Blueprint
      */

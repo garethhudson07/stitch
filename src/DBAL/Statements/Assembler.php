@@ -77,6 +77,10 @@ class Assembler implements Assemblable
      */
     public function getBindings(): array
     {
+        if (!$this->items) {
+            return [];
+        }
+
         return array_merge(...array_map(function (Assemblable $item)
         {
             return $item->getBindings();

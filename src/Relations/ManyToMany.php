@@ -129,11 +129,8 @@ class ManyToMany extends Relation
      */
     protected function pullLocalPivotKey()
     {
-        $localTable = $this->localModel->getTable();
-
         $this->localPivotKey = $this->getPivotTable()->getForeignKeyFor(
-            $localTable->getName(),
-            $localTable->getPrimaryKey()->getName()
+            $this->localModel->getTable()->getPrimaryKey()
         );
 
         return $this;
@@ -144,12 +141,8 @@ class ManyToMany extends Relation
      */
     protected function pullForeignPivotKey()
     {
-        /** @var Table $foreignTable */
-        $foreignTable = $this->getForeignModel()->getTable();
-
         $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFor(
-            $foreignTable->getName(),
-            $foreignTable->getPrimaryKey()->getName()
+            $this->getForeignModel()->getTable()->getPrimaryKey()
         );
 
         return $this;

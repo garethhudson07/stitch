@@ -128,6 +128,18 @@ class Query extends Table
     }
 
     /**
+     * @return Selection
+     */
+    public function resolveSelection()
+    {
+        if ($this->selection->count()) {
+            return $this->selection;
+        }
+
+        return $this->pullSelection();
+    }
+
+    /**
      * @return Expression
      */
     public function getConditions()

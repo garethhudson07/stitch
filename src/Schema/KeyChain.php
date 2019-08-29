@@ -52,10 +52,12 @@ class KeyChain
      * @param string $column
      * @return ForeignKey|null
      */
-    public function getForeignFrom(string $column): ?ForeignKey
+    public function getForeignFrom(Column $column): ?ForeignKey
     {
-        if (array_key_exists($column, $this->foreign)) {
-            return $this->foreign[$column];
+        $key = $column->getName();
+
+        if (array_key_exists($key, $this->foreign)) {
+            return $this->foreign[$key];
         }
 
         return null;
@@ -66,10 +68,13 @@ class KeyChain
      * @param string $column
      * @return ForeignKey|null
      */
-    public function getForeignFor(string $table, string $column): ?ForeignKey
+    public function getForeignFor(Column $column): ?ForeignKey
     {
+        $table = $column->getTable()->getName();
+        $name = $column->getName();
+
         foreach ($this->foreign as $foreign) {
-            if ($foreign->getReferenceTableName() === $table && $foreign->getReferenceColumnName() === $column) {
+            if ($foreign->getReferenceTableName() === $table && $foreign->getReferenceColumnName() === $name) {
                 return $foreign;
             }
         }

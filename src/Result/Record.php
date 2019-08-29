@@ -75,7 +75,10 @@ class Record implements arrayable
      */
     public function extractRelations($raw)
     {
-        foreach ($this->query->getJoins() as $key => $join) {
+        foreach ($this->query->getJoins()->all() as $key => $join) {
+
+
+
             if (!array_key_exists($key, $this->relations)) {
                 $instance = ($join instanceof HasOne) ? new static($join, $raw) : new Set($join);
 
@@ -96,7 +99,7 @@ class Record implements arrayable
     {
         foreach ($this->columns as $column) {
             $name = $column->getName();
-            $alias = $column->getAlias();
+            $alias = "{$this->table->getName()}_{$name}";
 
             if (array_key_exists($alias, $raw)) {
                 $this->data[$name] = $this->table->getColumn($name)->cast($raw[$alias]);

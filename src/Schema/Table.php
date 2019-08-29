@@ -128,7 +128,7 @@ class Table
      * @param string $column
      * @return ForeignKey|null
      */
-    public function getForeignKeyFrom(string $column): ?ForeignKey
+    public function getForeignKeyFrom(Column $column): ?ForeignKey
     {
         return $this->keyChain->getForeignFrom($column);
     }
@@ -138,8 +138,8 @@ class Table
      * @param string $column
      * @return ForeignKey|null
      */
-    public function getForeignKeyFor(string $table, string $column): ?ForeignKey
+    public function getForeignKeyFor(Column $column): ?ForeignKey
     {
-        return $this->keyChain->getForeignFor($table, $column);
+        return $this->keyChain->getForeignFor($column);
     }
 }
