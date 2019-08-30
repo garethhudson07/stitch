@@ -39,7 +39,7 @@ class Select extends Statement
 
         foreach ($this->builder->resolveSelection()->getColumns() as $column) {
             $this->columns->push(
-                (new Column($column))->path()->alias()
+                (new Column($column))->database()->path()->alias()
             );
         }
     }

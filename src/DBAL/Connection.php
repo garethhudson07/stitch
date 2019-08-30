@@ -132,6 +132,14 @@ class Connection
     }
 
     /**
+     * @return string
+     */
+    public function getDatabase()
+    {
+        return $this->database;
+    }
+
+    /**
      * @param string $username
      * @return $this
      */

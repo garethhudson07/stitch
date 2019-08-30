@@ -1,6 +1,8 @@
 <?php
 
 namespace Stitch\Schema;
+use Stitch\DBAL\Connection;
+use Stitch\Stitch;
 
 /**
  * Class Table
@@ -12,6 +14,11 @@ class Table
      * @var string
      */
     protected $name;
+
+    /**
+     * @var string
+     */
+    protected $connection = 'default';
 
     /**
      * @var array
@@ -38,6 +45,17 @@ class Table
     public function name(string $name)
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function connection(string $name)
+    {
+        $this->connection = $name;
 
         return $this;
     }
@@ -92,6 +110,14 @@ class Table
     }
 
     /**
+     * @return Connection
+     */
+    public function getConnection(): Connection
+    {
+        return Stitch::getConnection($this->connection);
+    }
+
+    /**
      * @return KeyChain
      */
     public function getKeyChain()
@@ -125,7 +151,7 @@ class Table
     }
 
     /**
-     * @param string $column
+     * @param Column $column
      * @return ForeignKey|null
      */
     public function getForeignKeyFrom(Column $column): ?ForeignKey
@@ -134,8 +160,7 @@ class Table
     }
 
     /**
-     * @param string $table
-     * @param string $column
+     * @param Column $column
      * @return ForeignKey|null
      */
     public function getForeignKeyFor(Column $column): ?ForeignKey

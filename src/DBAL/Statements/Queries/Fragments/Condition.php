@@ -39,7 +39,7 @@ class Condition extends Statement
         $value = $this->builder->getValue();
 
         $this->push(
-            (new Column($this->builder->getColumn()))->path()
+            (new Column($this->builder->getColumn()))->database()->path()
         );
 
         switch (gettype($value)) {

@@ -16,6 +16,8 @@ class Column extends Statement
      */
     protected $builder;
 
+    protected $database = false;
+
     protected $path = false;
 
     protected $alias = false;
@@ -27,6 +29,16 @@ class Column extends Statement
     public function __construct(Builder $builder)
     {
         $this->builder = $builder;
+    }
+
+    /**
+     * @return $this
+     */
+    public function database()
+    {
+        $this->database = true;
+
+        return $this;
     }
 
     /**
@@ -54,16 +66,26 @@ class Column extends Statement
      */
     public function evaluate()
     {
-        $schema = $this->builder->getSchema();
-        $name = $column = $schema->getName();
-        $table = $schema->getTable()->getName();
+        $columnSchema = $this->builder->getSchema();
+        $tableSchema = $columnSchema->getTable();
+        $name = $column = $columnSchema->getName();
+        $table = $tableSchema->getName();
 
-        if ($this->path) {
-            $this->push("{$table}.{$name}");
+        $fullPath = [];
+
+        if ($this->database) {
+            $fullPath[] = $tableSchema->getConnection()->getDatabase();
         }
 
-        if ($this->path && $this->alias) {
-            $this->push('as');
+        if ($this->path) {
+            $fullPath[] = $table;
+            $fullPath[] = $name;
+
+            $this->push(implode('.', $fullPath));
+
+            if ($this->alias) {
+                $this->push('as');
+            }
         }
 
         if ($this->alias) {

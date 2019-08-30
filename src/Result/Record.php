@@ -3,6 +3,7 @@
 namespace Stitch\Result;
 
 use Stitch\Contracts\Arrayable;
+use Stitch\Queries\Joins\BelongsTo;
 use Stitch\Queries\Query;
 use Stitch\Queries\Joins\HasOne;
 use Stitch\Schema\Table;
@@ -50,7 +51,7 @@ class Record implements arrayable
         $this->table = $query->getModel()->getTable();
         $this->columns = $this->table->getColumns();
 
-        $this->assemble($raw);
+        $this->extract($raw);
     }
 
     /**
@@ -62,25 +63,14 @@ class Record implements arrayable
     }
 
     /**
-     * @param array $raw
-     */
-    protected function assemble(array $raw)
-    {
-        $this->extract($raw)->extractRelations($raw);
-    }
-
-    /**
      * @param $raw
      * @return $this
      */
     public function extractRelations($raw)
     {
         foreach ($this->query->getJoins()->all() as $key => $join) {
-
-
-
             if (!array_key_exists($key, $this->relations)) {
-                $instance = ($join instanceof HasOne) ? new static($join, $raw) : new Set($join);
+                $instance = ($join instanceof HasOne || $join instanceof BelongsTo) ? new static($join, $raw) : new Set($join);
 
                 $this->relations[$key] = $instance->extract($raw);
             } else {
@@ -106,7 +96,7 @@ class Record implements arrayable
             }
         }
 
-        return $this;
+        return $this->extractRelations($raw);
     }
 
     /**

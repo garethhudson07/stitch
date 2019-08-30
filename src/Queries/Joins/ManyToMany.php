@@ -16,16 +16,11 @@ class ManyToMany extends Join
      */
     public function apply()
     {
-        $blueprint = $this->blueprint;
-        $pivotTable = $blueprint->getPivotTable();
-        $primaryPivotKey = $pivotTable->getPrimaryKey();
-        $localPivotKey = $blueprint->getLocalPivotKey();
-        $foreignPivotKey = $blueprint->getForeignPivotKey();
+        $pivotTable = $this->blueprint->getPivotTable();
+        $localPivotKey = $this->blueprint->getLocalPivotKey();
+        $foreignPivotKey = $this->blueprint->getForeignPivotKey();
 
-        $pivotJoinBuilder = (new JoinBuilder(
-            $pivotTable->getName(),
-            $primaryPivotKey ? $primaryPivotKey->getName() : null
-        ))->type('LEFT')
+        $pivotJoinBuilder = (new JoinBuilder($pivotTable))->type('LEFT')
             ->on(
                 "{$pivotTable->getName()}.{$localPivotKey->getLocalColumn()->getName()}",
                 '=',

@@ -2,16 +2,15 @@
 
 namespace Stitch\Relations;
 
-use Stitch\Queries\Joins\Has as Join;
+use Stitch\Queries\Joins\BelongsTo as Join;
 use Stitch\Records\Relations\Collection as RecordCollection;
-use Stitch\Records\Relations\BelongsTo;
 use Stitch\Schema\ForeignKey;
 
 /**
  * Class Has
  * @package Stitch\Relations
  */
-class Has extends Relation
+class BelongsTo extends Relation
 {
     /**
      * @var ForeignKey|null
@@ -24,9 +23,9 @@ class Has extends Relation
      */
     public function foreignKey(string $column)
     {
-        $foreignTable = $this->getForeignModel()->getTable();
+        $localTable = $this->localModel->getTable();
 
-        $this->foreignKey = $foreignTable->getForeignKeyFrom($foreignTable->getColumn($column));
+        $this->foreignKey = $localTable->getForeignKeyFrom($localTable->getColumn($column));
 
         return $this;
     }
@@ -36,8 +35,8 @@ class Has extends Relation
      */
     public function pullKeys()
     {
-        $this->foreignKey = $this->getForeignModel()->getTable()->getForeignKeyFor(
-            $this->localModel->getTable()->getPrimaryKey()
+        $this->foreignKey = $this->localModel->getTable()->getForeignKeyFor(
+            $this->getForeignModel()->getTable()->getPrimaryKey()
         );
 
         return $this;
@@ -72,7 +71,6 @@ class Has extends Relation
      */
     public function make()
     {
-        return new RecordCollection($this->getForeignModel());
     }
 
     /**
@@ -81,6 +79,5 @@ class Has extends Relation
      */
     public function record(array $attributes = [])
     {
-        return (new BelongsTo($this->getForeignModel(), $this))->fill($attributes);
     }
 }

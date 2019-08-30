@@ -4,8 +4,8 @@ namespace Stitch;
 
 use Closure;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
-use Stitch\DBAL\Connection;
 use Stitch\Queries\Query;
+use Stitch\Relations\BelongsTo;
 use Stitch\Relations\Collection as Relations;
 use Stitch\Relations\Has;
 use Stitch\Relations\HasOne;
@@ -21,11 +21,6 @@ use Stitch\Records\Collection as RecordCollection;
  */
 class Model
 {
-    /**
-     * @var string
-     */
-    protected $connection = 'default';
-
     /**
      * @var Table
      */
@@ -72,31 +67,21 @@ class Model
     }
 
     /**
-     * @param string $name
-     * @return $this
-     */
-    public function connection(string $name)
-    {
-        $this->connection = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return Connection
-     */
-    public function getConnection(): Connection
-    {
-        return Stitch::getConnection($this->connection);
-    }
-
-    /**
      * @param array ...$arguments
      * @return Model
      */
     public function hasMany(...$arguments)
     {
         return $this->includeRelation(array_merge([Has::class], $arguments));
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Model
+     */
+    public function belongsTo(...$arguments)
+    {
+        return $this->includeRelation(array_merge([BelongsTo::class], $arguments));
     }
 
     /**

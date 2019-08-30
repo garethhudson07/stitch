@@ -204,7 +204,7 @@ class Query
     {
         return new ResultSet(
             $this,
-            Dispatcher::select($this->model->getConnection(), $this->builder)
+            Dispatcher::select($this->model->getTable()->getConnection(), $this->builder)
         );
     }
 

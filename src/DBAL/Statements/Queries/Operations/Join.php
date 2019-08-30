@@ -31,8 +31,10 @@ class Join extends Statement
      */
     public function evaluate()
     {
+        $schema = $this->builder->getSchema();
+
         $this->push(
-            "{$this->builder->getType()} JOIN {$this->builder->getSchema()->getName()} ON"
+            "{$this->builder->getType()} JOIN {$schema->getConnection()->getDatabase()}.{$schema->getName()} ON"
         );
 
         $this->push(

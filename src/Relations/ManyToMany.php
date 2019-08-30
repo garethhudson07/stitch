@@ -6,6 +6,7 @@ use Stitch\Registry;
 use Stitch\Schema\ForeignKey;
 use Stitch\Schema\Table;
 use Stitch\Queries\Joins\ManyToMany as Query;
+use Stitch\Queries\Joins\ManyToMany as Join;
 use Closure;
 
 /**
@@ -68,7 +69,9 @@ class ManyToMany extends Relation
      */
     public function localPivotKey(string $column)
     {
-        $this->localPivotKey = $this->getPivotTable()->getForeignKeyFrom($column);
+        $this->localPivotKey = $this->getPivotTable()->getForeignKeyFrom(
+            $this->localModel->getTable()->getColumn($column)
+        );
 
         return $this;
     }
@@ -79,7 +82,9 @@ class ManyToMany extends Relation
      */
     public function foreignPivotKey(string $column)
     {
-        $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFrom($column);
+        $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFrom(
+            $this->getForeignModel()->getTable()->getColumn($column)
+        );
 
         return $this;
     }
@@ -146,5 +151,21 @@ class ManyToMany extends Relation
         );
 
         return $this;
+    }
+
+    /**
+     * @return mixed|Join
+     */
+    public function join()
+    {
+        return new Join($this->getForeignModel(), $this->joinBuilder(), $this);
+    }
+
+    public function make()
+    {
+    }
+
+    public function record(array $attributes = [])
+    {
     }
 }

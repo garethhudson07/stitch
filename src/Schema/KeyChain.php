@@ -49,7 +49,7 @@ class KeyChain
     }
 
     /**
-     * @param string $column
+     * @param Column $column
      * @return ForeignKey|null
      */
     public function getForeignFrom(Column $column): ?ForeignKey
@@ -64,8 +64,7 @@ class KeyChain
     }
 
     /**
-     * @param string $table
-     * @param string $column
+     * @param Column $column
      * @return ForeignKey|null
      */
     public function getForeignFor(Column $column): ?ForeignKey
