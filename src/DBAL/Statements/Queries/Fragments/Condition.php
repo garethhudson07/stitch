@@ -50,12 +50,8 @@ class Condition extends Statement
                     in_array($operator, $this::SUPPORTED_METHODS) ? '(' . implode(',', $placeholders) . ')' : implode(' AND ', $placeholders)
                 )))->bindMany($value)
             );
-        } elseif (is_null($value)) {
-            $this->assembler->push(
-                (new Component("$column " . (
-                    $operator === '!=' ? 'IS NOT NULL' : 'IS NULL'
-                )))
-            );
+        } else if (!$value && in_array(strtoupper($operator), ['IS NULL', 'IS NOT NULL'])) {
+            $this->assembler->push(new Component("$column " . $operator));
         } else {
             $this->assembler->push(
                 (new Component("$column $operator ?"))->bind($value)
