@@ -45,7 +45,7 @@ class Expression extends Statement
                 $component = (new Component(
                     new static($item['constraint'])
                 ))->isolate();
-            } elseif ($item['constraint'] instanceOf Raw) {
+            } else if ($item['constraint'] instanceOf Raw) {
                 $component = (new Component(
                     $item['constraint']->getSql()
                 ))->bindMany($item['constraint']->getBindings());
