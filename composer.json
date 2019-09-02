@@ -1,19 +1,14 @@
 {
-  "name": "oilstone/stitch",
-  "description": "Stitch ORM",
+  "name": "garethhudson07/stitch",
+  "description": "STITCH ORM.",
   "keywords": [
     "stitch",
     "orm"
   ],
-  "homepage": "https://github.com/oilstone/stitch",
-  "support": {
-    "issues": "https://github.com/oilstone/stitch/issues"
-  },
   "license": "MIT",
   "authors": [
     {
-      "name": "Online Solutions Ltd.",
-      "email": "support@onlinesolutionsltd.com"
+      "name": "Gareth Hudson"
     }
   ],
   "require": {
@@ -21,7 +16,6 @@
     "ext-pdo": "*",
     "ext-json": "*"
   },
-  "minimum-stability": "stable",
   "autoload": {
     "psr-4": {
       "Stitch\\": "src/"
