@@ -4,8 +4,8 @@ namespace Stitch;
 
 use Closure;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
-use Stitch\DBAL\Connection;
 use Stitch\Queries\Query;
+use Stitch\Relations\BelongsTo;
 use Stitch\Relations\Collection as Relations;
 use Stitch\Relations\Has;
 use Stitch\Relations\HasOne;
@@ -21,11 +21,6 @@ use Stitch\Records\Collection as RecordCollection;
  */
 class Model
 {
-    /**
-     * @var string
-     */
-    protected $connection = 'default';
-
     /**
      * @var Table
      */
@@ -72,31 +67,21 @@ class Model
     }
 
     /**
-     * @param string $name
-     * @return $this
-     */
-    public function connection(string $name)
-    {
-        $this->connection = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return Connection
-     */
-    public function getConnection(): Connection
-    {
-        return Stitch::getConnection($this->connection);
-    }
-
-    /**
      * @param array ...$arguments
      * @return Model
      */
     public function hasMany(...$arguments)
     {
         return $this->includeRelation(array_merge([Has::class], $arguments));
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return Model
+     */
+    public function belongsTo(...$arguments)
+    {
+        return $this->includeRelation(array_merge([BelongsTo::class], $arguments));
     }
 
     /**
@@ -108,21 +93,22 @@ class Model
         $class = $arguments[0];
         $name = $arguments[1];
 
-        if ($arguments[2] instanceof Closure) {
+        if (!array_key_exists(2, $arguments) || $arguments[2] instanceof Closure) {
             $this->registerRelation(
                 $name,
-                function () use ($class, $arguments) {
-                    $relation = new $class($this);
-                    $this->bootRelation($relation, $arguments[2]);
+                function () use ($class, $name, $arguments) {
+                    $relation = new $class($name, $this);
+                    $this->bootRelation($relation, $arguments[2] ?? null);
 
                     return $relation;
                 }
             );
         } else {
             /** @noinspection PhpUndefinedMethodInspection */
-            $relation = (new $class($this))->foreignModel($arguments[2]);
-            $this->bootRelation($relation, $arguments[3] ?? null);
-            $this->addRelation($name, $relation);
+            $relation = (new $class($name, $this))->foreignModel($arguments[2]);
+
+            $this->bootRelation($relation, $arguments[3] ?? null)
+                ->addRelation($relation);
         }
 
         return $this;
@@ -131,19 +117,24 @@ class Model
     /**
      * @param string $name
      * @param Closure $callback
+     * @return $this
      */
     public function registerRelation(string $name, Closure $callback)
     {
         $this->relations->register($name, $callback);
+
+        return $this;
     }
 
     /**
-     * @param string $name
      * @param Relation $relation
+     * @return $this
      */
-    public function addRelation(string $name, Relation $relation)
+    public function addRelation(Relation $relation)
     {
-        $this->relations->add($name, $relation);
+        $this->relations->add($relation);
+
+        return $this;
     }
 
     /**

@@ -2,34 +2,22 @@
 
 namespace Stitch\Queries\Joins;
 
-use Stitch\Queries\Base;
-
 /**
  * Class Has
  * @package Stitch\Queries\Relations
  */
 class Has extends Join
 {
-    /**
-     * @param Base $base
-     * @return $this|mixed
-     */
-    public function apply(Base $base)
+    public function apply()
     {
-        $blueprint = $this->blueprint;
-        $builder = $this->builder;
+        $foreignKey = $this->blueprint->getForeignKey();
+        $foreignTable = $this->blueprint->getForeignModel()->getTable();
 
-        $foreignKey = $blueprint->getForeignKey();
-
-        $builder->type('LEFT')
+        $this->builder->type('LEFT')
             ->on(
-                "{$blueprint->getForeignModel()->getTable()->getName()}.{$foreignKey->getLocalColumn()->getName()}",
+                "{$foreignTable->getConnection()->getDatabase()}.{$foreignTable->getName()}.{$foreignKey->getLocalColumn()->getName()}",
                 '=',
-                "{$foreignKey->getReferenceTableName()}.{$foreignKey->getReferenceColumnName()}"
+                "{$this->blueprint->getLocalModel()->getTable()->getConnection()->getDatabase()}.{$foreignKey->getReferenceTableName()}.{$foreignKey->getReferenceColumnName()}"
             );
-
-        $base->getBuilder()->join($builder);
-
-        return $this;
     }
 }

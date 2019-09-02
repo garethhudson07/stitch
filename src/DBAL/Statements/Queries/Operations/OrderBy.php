@@ -2,9 +2,9 @@
 
 namespace Stitch\DBAL\Statements\Queries\Operations;
 
-use Stitch\DBAL\Builders\Query as QueryBuilder;
+use Stitch\DBAL\Builders\Sorter as Builder;
 use Stitch\DBAL\Statements\Assembler;
-use Stitch\DBAL\Statements\Component;
+use Stitch\DBAL\Statements\Queries\Fragments\Column;
 use Stitch\DBAL\Statements\Statement;
 
 /**
@@ -14,41 +14,37 @@ use Stitch\DBAL\Statements\Statement;
 class OrderBy extends Statement
 {
     /**
-     * @var QueryBuilder
+     * @var Builder
      */
-    protected $queryBuilder;
+    protected $builder;
 
-    /**
-     * @var Assembler
-     */
-    protected $orderAssembler;
+    protected $columns;
 
     /**
      * OrderBy constructor.
-     * @param QueryBuilder $queryBuilder
+     * @param Builder $builder
      */
-    public function __construct(QueryBuilder $queryBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->queryBuilder = $queryBuilder;
-
-        parent::__construct();
+        $this->builder = $builder;
+        $this->columns = (new Assembler())->glue(', ');
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $sorter = $this->queryBuilder->getSorter();
+        if ($this->builder->count()) {
+            $this->push('ORDER BY')->push($this->columns);
 
-        if ($sorter->count()) {
-            $this->assembler->push(
-                new Component('ORDER BY')
-            )->push(
-                new Component(implode(', ', array_map(function ($order) {
-                    return "{$order['column']->getAlias()} {$order['direction']}";
-                }, $sorter->getItems())))
-            );
+            foreach ($this->builder->getItems() as $item) {
+                $column = (new Column($item['column']))->alias();
+
+                $this->columns->push(
+                    "$column {$item['direction']}"
+                );
+            }
         }
     }
 }

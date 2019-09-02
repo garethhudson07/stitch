@@ -79,7 +79,7 @@ class Column
     {
         $keyChain = $this->table->getkeyChain();
 
-        if (!$foreignKey = $keyChain->getForeignFrom($this->name)) {
+        if (!$foreignKey = $keyChain->getForeignFrom($this)) {
             $foreignKey = new ForeignKey($this);
             $keyChain->addForeign($foreignKey);
         }
@@ -112,22 +112,6 @@ class Column
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath()
-    {
-        return "{$this->table->getName()}.{$this->name}";
-    }
-
-    /**
-     * @return string
-     */
-    public function getAlias()
-    {
-        return "{$this->table->getName()}_{$this->name}";
     }
 
     /**

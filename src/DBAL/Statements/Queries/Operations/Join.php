@@ -2,8 +2,7 @@
 
 namespace Stitch\DBAL\Statements\Queries\Operations;
 
-use Stitch\DBAL\Builders\Join as JoinBuilder;
-use Stitch\DBAL\Statements\Component;
+use Stitch\DBAL\Builders\Join as Builder;
 use Stitch\DBAL\Statements\Queries\Fragments\Expression;
 use Stitch\DBAL\Statements\Statement;
 
@@ -14,38 +13,38 @@ use Stitch\DBAL\Statements\Statement;
 class Join extends Statement
 {
     /**
-     * @var JoinBuilder
+     * @var Builder
      */
-    protected $joinBuilder;
+    protected $builder;
 
     /**
      * Join constructor.
-     * @param JoinBuilder $joinBuilder
+     * @param Builder $builder
      */
-    public function __construct(JoinBuilder $joinBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->joinBuilder = $joinBuilder;
-
-        parent::__construct();
+        $this->builder = $builder;
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->assembler->push(
-            new Component("{$this->joinBuilder->getType()} JOIN {$this->joinBuilder->getSchema()->getName()}")
-        )->push(
-            new Component('ON')
+        $schema = $this->builder->getSchema();
+
+        $this->push(
+            "{$this->builder->getType()} JOIN {$schema->getConnection()->getDatabase()}.{$schema->getName()} ON"
         );
 
-        $this->assembler->push(
-            new Expression($this->joinBuilder->getOnConditions())
+        $this->push(
+            new Expression($this->builder->getConditions())
         );
 
-        foreach ($this->joinBuilder->getJoins() as $join) {
-            $this->assembler->push(new static($join));
+        foreach ($this->builder->getJoins() as $join) {
+            $this->assembler->push(
+                new static($join)
+            );
         }
     }
 }

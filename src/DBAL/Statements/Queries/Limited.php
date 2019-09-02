@@ -2,9 +2,10 @@
 
 namespace Stitch\DBAL\Statements\Queries;
 
-use Stitch\DBAL\Builders\Query as QueryBuilder;
-use Stitch\DBAL\Statements\Component;
+use Stitch\DBAL\Builders\Expression as ExpressionBuilder;
+use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Statements\Queries\Operations\Limit;
+use Stitch\DBAL\Statements\Queries\Operations\Where;
 use Stitch\DBAL\Statements\Statement;
 
 /**
@@ -14,27 +15,30 @@ use Stitch\DBAL\Statements\Statement;
 class Limited extends Statement
 {
     /**
-     * @var QueryBuilder
+     * @var Builder
      */
-    protected $queryBuilder;
+    protected $builder;
+
+    protected $conditions;
 
     /**
      * Limited constructor.
-     * @param QueryBuilder $queryBuilder
+     * @param Builder $builder
      */
-    public function __construct(QueryBuilder $queryBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->queryBuilder = $queryBuilder;
+        $this->builder = $builder;
+        $this->conditions = new ExpressionBuilder();
 
-        parent::__construct();
+        $this->populateConditions($builder);
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->queryBuilder->getJoins() ? $this->numbered() : $this->default();
+        $this->builder->getJoins() ? $this->numbered() : $this->default();
     }
 
     /**
@@ -42,36 +46,32 @@ class Limited extends Statement
      */
     protected function numbered()
     {
-        $this->assembler->push(
-            new Component('SELECT * FROM')
-        )->push(
-            new Subquery(new Numbered($this->queryBuilder), 'numbered')
-        )->push(
-            new Component('WHERE')
-        )->push(
-            new Component(implode(' AND ', $this->conditions($this->queryBuilder)))
-        );
+        $this->push('SELECT * FROM')
+            ->push(
+                (new Subquery(
+                    new Numbered($this->builder)
+                ))->alias('numbered')
+            )->push(
+                new Where($this->conditions)
+            );
     }
 
     /**
      * @param $builder
      * @return array
      */
-    protected function conditions($builder)
+    protected function populateConditions($builder)
     {
         $table = $builder->getSchema()->getName();
         $limit = $builder->getLimit();
-        $conditions = [];
 
         if ($limit !== null) {
-            $conditions[] = "{$table}_row_num <= $limit";
+            $this->conditions->andRaw("{$table}_row_num <= $limit");
         }
 
         foreach ($builder->getJoins() as $join) {
-            $conditions = array_merge($conditions, $this->conditions($join));
+            $this->populateConditions($join);
         }
-
-        return $conditions;
     }
 
     /**
@@ -80,9 +80,9 @@ class Limited extends Statement
     protected function default()
     {
         $this->assembler->push(
-            new Unlimited($this->queryBuilder)
+            new Unlimited($this->builder)
         )->push(
-            new Limit($this->queryBuilder)
+            new Limit($this->builder)
         );
     }
 }

@@ -81,13 +81,13 @@ class Component implements Assemblable
      */
     public function __toString(): string
     {
-        return $this->resolve();
+        return $this->getValue();
     }
 
     /**
      * @return string
      */
-    public function resolve()
+    public function getValue()
     {
         return $this->isolate ? "($this->value)" : $this->value;
     }

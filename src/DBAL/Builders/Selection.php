@@ -2,39 +2,13 @@
 
 namespace Stitch\DBAL\Builders;
 
-use Stitch\Schema\Column;
-
 /**
  * Class Selection
  * @package Stitch\DBAL\Builders
  */
 class Selection
 {
-    protected $bindings = [];
-
     protected $columns = [];
-
-    /**
-     * @param string $path
-     * @return $this
-     */
-    public function bind(string $path)
-    {
-        if (!$this->hasBinding($path)) {
-            $this->bindings[] = $path;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string $path
-     * @return bool
-     */
-    public function hasBinding(string $path)
-    {
-        return in_array($path, $this->bindings);
-    }
 
     /**
      * @param Column $column
@@ -55,15 +29,13 @@ class Selection
      */
     public function hasColumn(Column $column)
     {
-        return in_array($column, $this->columns);
-    }
+        foreach ($this->columns as $added) {
+            if ($column->matches($added)) {
+                return true;
+            }
+        }
 
-    /**
-     * @return array
-     */
-    public function getBindings()
-    {
-        return $this->bindings;
+        return in_array($column, $this->columns);
     }
 
     /**
