@@ -28,6 +28,11 @@ class Set extends Collection
     protected $primaryKey;
 
     /**
+     * @var Column
+     */
+    protected $primaryKeyAlias;
+
+    /**
      * @var array
      */
     protected $map = [];
@@ -43,7 +48,10 @@ class Set extends Collection
 
         $table = $query->getModel()->getTable();
         $this->columns = $table->getColumns();
-        $this->primaryKey = $table->getPrimaryKey();
+
+        $primaryKey = $table->getPrimaryKey();
+        $this->primaryKey = $primaryKey->getName();
+        $this->primaryKeyAlias = "{$table->getName()}_{$this->primaryKey}";
 
         $this->assemble($items);
     }
@@ -72,13 +80,13 @@ class Set extends Collection
      */
     public function extract($data)
     {
-        if ($data[$this->primaryKey->getAlias()] !== null) {
+        if ($data[$this->primaryKeyAlias] !== null) {
             if ($item = $this->match($data)) {
                 $item->extractRelations($data);
             } else {
                 $item = new Record($this->query, $data);
                 $this->items[] = $item;
-                $this->map[$item->{$this->primaryKey->getName()}] = count($this->items) - 1;
+                $this->map[$item->{$this->primaryKey}] = count($this->items) - 1;
             }
         }
 
@@ -91,7 +99,7 @@ class Set extends Collection
      */
     public function match($data)
     {
-        if ($item = $this->find($data[$this->primaryKey->getAlias()])) {
+        if ($item = $this->find($data[$this->primaryKeyAlias])) {
             return $item;
         }
 

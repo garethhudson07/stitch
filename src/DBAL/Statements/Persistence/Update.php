@@ -2,9 +2,8 @@
 
 namespace Stitch\DBAL\Statements\Persistence;
 
-use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Builders\Record as RecordBuilder;
+use Stitch\DBAL\Builders\Record as Builder;
 
 /**
  * Class Update
@@ -13,37 +12,31 @@ use Stitch\DBAL\Builders\Record as RecordBuilder;
 class Update extends Statement
 {
     /**
-     * @var RecordBuilder
+     * @var Builder
      */
-    protected $recordBuilder;
+    protected $builder;
 
     /**
      * Insert constructor.
-     * @param RecordBuilder $recordBuilder
+     * @param Builder $builder
      */
-    public function __construct(RecordBuilder $recordBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->recordBuilder = $recordBuilder;
-
-        parent::__construct();
+        $this->builder = $builder;
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->assembler->push(
-            new Component('UPDATE ' . $this->recordBuilder->getTable())
-        )->push(
-            new Component('SET')
-        )->push(
-            (new Component($this->assignments()))->bindMany($this->assignmentValues())
-        )->push(
-            new Component('WHERE')
-        )->push(
-            (new Component($this->condition()))->bind($this->conditionValue())
-        );
+        $this->push("UPDATE {$this->builder->getTable()} SET")
+            ->push(
+                $this->component($this->assignments())->bindMany($this->assignmentValues())
+            )->push('WHERE')
+            ->push(
+                $this->component($this->condition())->bind($this->conditionValue())
+            );
     }
 
     /**
@@ -51,10 +44,10 @@ class Update extends Statement
      */
     protected function assignments()
     {
-        $primaryKey = $this->recordBuilder->getPrimaryKey();
+        $primaryKey = $this->builder->getPrimaryKey();
         $assignments = [];
 
-        foreach ($this->recordBuilder->getAttributes() as $name => $value) {
+        foreach ($this->builder->getAttributes() as $name => $value) {
             if ($name !== $primaryKey) {
                 $assignments[] = "$name = ?";
             }
@@ -68,10 +61,10 @@ class Update extends Statement
      */
     protected function assignmentValues()
     {
-        $primaryKey = $this->recordBuilder->getPrimaryKey();
+        $primaryKey = $this->builder->getPrimaryKey();
         $values = [];
 
-        foreach ($this->recordBuilder->getAttributes() as $name => $value) {
+        foreach ($this->builder->getAttributes() as $name => $value) {
             if ($name !== $primaryKey) {
                 $values[] = $value;
             }
@@ -85,7 +78,7 @@ class Update extends Statement
      */
     protected function condition()
     {
-        return "{$this->recordBuilder->getPrimaryKey()} = ?";
+        return "{$this->builder->getPrimaryKey()} = ?";
     }
 
     /**
@@ -93,6 +86,6 @@ class Update extends Statement
      */
     protected function conditionValue()
     {
-        return $this->recordBuilder->getAttributes()[$this->recordBuilder->getPrimaryKey()];
+        return $this->builder->getAttributes()[$this->builder->getPrimaryKey()];
     }
 }

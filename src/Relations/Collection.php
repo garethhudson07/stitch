@@ -16,9 +16,9 @@ class Collection extends BaseCollection
      * @param Relation $relation
      * @return $this
      */
-    public function add(string $name, Relation $relation)
+    public function add(Relation $relation)
     {
-        $this->items[$name] = $relation;
+        $this->items[$relation->getName()] = $relation;
 
         return $this;
     }

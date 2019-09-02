@@ -2,7 +2,7 @@
 
 namespace Stitch\DBAL\Statements\Queries;
 
-use Stitch\DBAL\Builders\Query as QueryBuilder;
+use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Statements\Queries\Operations\OrderBy;
 use Stitch\DBAL\Statements\Statement;
 
@@ -13,30 +13,28 @@ use Stitch\DBAL\Statements\Statement;
 class Query extends Statement
 {
     /**
-     * @var QueryBuilder
+     * @var Builder
      */
-    protected $queryBuilder;
+    protected $builder;
 
     /**
      * Query constructor.
-     * @param QueryBuilder $queryBuilder
+     * @param Builder $builder
      */
-    public function __construct(QueryBuilder $queryBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->queryBuilder = $queryBuilder;
-
-        parent::__construct();
+        $this->builder = $builder;
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->queryBuilder->limited() ? $this->limited() : $this->unlimited();
+        $this->builder->limited() ? $this->limited() : $this->unlimited();
 
-        $this->assembler->push(
-            new OrderBy($this->queryBuilder)
+        $this->push(
+            new OrderBy($this->builder->getSorter())
         );
     }
 
@@ -45,7 +43,9 @@ class Query extends Statement
      */
     protected function limited()
     {
-        $this->assembler->push(new Limited($this->queryBuilder));
+        $this->push(
+            new Limited($this->builder)
+        );
     }
 
     /**
@@ -53,6 +53,8 @@ class Query extends Statement
      */
     protected function unlimited()
     {
-        $this->assembler->push(new Unlimited($this->queryBuilder));
+        $this->push(
+            new Unlimited($this->builder)
+        );
     }
 }

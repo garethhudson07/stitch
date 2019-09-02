@@ -132,6 +132,14 @@ class Connection
     }
 
     /**
+     * @return string
+     */
+    public function getDatabase()
+    {
+        return $this->database;
+    }
+
+    /**
      * @param string $username
      * @return $this
      */
@@ -178,9 +186,10 @@ class Connection
      */
     public function execute(Statement $statement)
     {
-//        echo $statement;
+//        echo $statement->assembled() . '<br>';
+//        var_dump($statement->getBindings());
 
-        $prepared = $this->get()->prepare($statement->resolve());
+        $prepared = $this->get()->prepare($statement->assembled());
 
         $prepared->execute($statement->getBindings());
 

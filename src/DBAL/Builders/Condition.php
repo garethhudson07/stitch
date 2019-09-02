@@ -42,10 +42,10 @@ class Condition
     }
 
     /**
-     * @param string $column
+     * @param Column $column
      * @return $this
      */
-    public function column(string $column)
+    public function column(Column $column)
     {
         $this->column = $column;
 
