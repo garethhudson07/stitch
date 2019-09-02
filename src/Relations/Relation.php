@@ -36,8 +36,9 @@ abstract class Relation
      * Relation constructor.
      * @param Model $localModel
      */
-    public function __construct(Model $localModel)
+    public function __construct(string $name, Model $localModel)
     {
+        $this->name = $name;
         $this->localModel = $localModel;
     }
 
@@ -76,17 +77,6 @@ abstract class Relation
         }
 
         return null;
-    }
-
-    /**
-     * @param string $name
-     * @return $this
-     */
-    public function name(string $name)
-    {
-        $this->name = $name;
-
-        return $this;
     }
 
     /**
@@ -129,6 +119,10 @@ abstract class Relation
      */
     public function boot()
     {
+        if (!$this->foreignModel && !$this->binding) {
+            $this->binding = $this->name;
+        }
+
         if (!$this->hasKeys()) {
             $this->pullKeys();
         }

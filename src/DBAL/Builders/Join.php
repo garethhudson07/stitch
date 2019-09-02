@@ -20,7 +20,7 @@ class Join extends Table
     /**
      * @var Expression
      */
-    protected $on;
+    protected $conditions;
 
     /**
      * Join constructor.
@@ -30,7 +30,7 @@ class Join extends Table
     {
         parent::__construct($schema);
 
-        $this->on = new Expression();
+        $this->conditions = new Expression();
     }
 
     /**
@@ -52,7 +52,7 @@ class Join extends Table
      */
     public function on(string $left, string $condition, string $right)
     {
-        $this->on->andRaw("$left $condition $right");
+        $this->conditions->andRaw("$left $condition $right");
 
         return $this;
     }
@@ -65,7 +65,7 @@ class Join extends Table
      */
     public function orOn(string $left, string $condition, string $right)
     {
-        $this->on->orRaw("$left $condition $right");
+        $this->conditions->orRaw("$left $condition $right");
 
         return $this;
     }
@@ -81,8 +81,8 @@ class Join extends Table
     /**
      * @return Expression
      */
-    public function getOnConditions()
+    public function getConditions()
     {
-        return $this->on;
+        return $this->conditions;
     }
 }

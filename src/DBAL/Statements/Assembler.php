@@ -30,21 +30,23 @@ class Assembler implements Assemblable
     }
 
     /**
-     * @param Assemblable $item
+     * @param $item
      * @return $this
      */
-    public function unshift(Assemblable $item)
+    public function push($item)
     {
-        array_unshift($this->items, $item);
+        if (!$item instanceof Assemblable) {
+            $item = new Component($item);
+        }
 
-        return $this;
+        return $this->add($item);
     }
 
     /**
      * @param Assemblable $item
      * @return $this
      */
-    public function push(Assemblable $item)
+    public function add(Assemblable $item)
     {
         $this->items[] = $item;
 
@@ -70,15 +72,6 @@ class Assembler implements Assemblable
         return $this;
     }
 
-
-    /**
-     * @return array
-     */
-    public function getItems()
-    {
-        return $this->items;
-    }
-
     /**
      * @return array
      */
@@ -88,7 +81,8 @@ class Assembler implements Assemblable
             return [];
         }
 
-        return array_merge(...array_map(function (Assemblable $item) {
+        return array_merge(...array_map(function (Assemblable $item)
+        {
             return $item->getBindings();
         }, $this->items));
     }
@@ -98,13 +92,13 @@ class Assembler implements Assemblable
      */
     public function __toString(): string
     {
-        return $this->resolve();
+        return $this->assemble();
     }
 
     /**
      * @return string
      */
-    public function resolve()
+    public function assemble()
     {
         return implode($this->glue, $this->items);
     }

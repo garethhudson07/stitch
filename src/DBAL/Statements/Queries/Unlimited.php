@@ -2,7 +2,7 @@
 
 namespace Stitch\DBAL\Statements\Queries;
 
-use Stitch\DBAL\Builders\Query as QueryBuilder;
+use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Statements\Queries\Operations\From;
 use Stitch\DBAL\Statements\Queries\Operations\Join;
 use Stitch\DBAL\Statements\Queries\Operations\Select;
@@ -17,40 +17,38 @@ use Stitch\DBAL\Statements\Statement;
 class Unlimited extends Statement
 {
     /**
-     * @var QueryBuilder
+     * @var Builder
      */
-    protected $queryBuilder;
+    protected $builder;
 
     /**
      * Unlimited constructor.
-     * @param QueryBuilder $queryBuilder
+     * @param Builder $builder
      */
-    public function __construct(QueryBuilder $queryBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->queryBuilder = $queryBuilder;
-
-        parent::__construct();
+        $this->builder = $builder;
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->assembler->push(
-            new Select($this->queryBuilder)
+        $this->push(
+            new Select($this->builder)
         )->push(
-            new From($this->queryBuilder)
+            new From($this->builder)
         );
 
-        foreach ($this->queryBuilder->getJoins() as $join) {
-            $this->assembler->push(
+        foreach ($this->builder->getJoins() as $join) {
+            $this->push(
                 new Join($join)
             );
         }
 
-        $this->assembler->push(
-            new Where($this->queryBuilder)
+        $this->push(
+            new Where($this->builder->getConditions())
         );
     }
 }

@@ -82,32 +82,14 @@ class Table
     }
 
     /**
-     * @param string $path
-     * @return mixed|null
-     */
-    public function pullColumn(string $path)
-    {
-        list($table, $column) = explode('.', $path, 2);
-
-        if ($table === $this->schema->getName()) {
-            return $this->schema->getColumn($column);
-        } else {
-            foreach ($this->joins as $join) {
-                if ($column = $join->pullColumn($path)) {
-                    return $column;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * @return array
      */
     public function pullColumns()
     {
-        $columns = array_values($this->schema->getColumns());
+        $columns = array_values(array_map(function ($column)
+        {
+            return new Column($column);
+        }, $this->schema->getColumns()));
 
         foreach ($this->joins as $join) {
             $columns = array_merge($columns, $join->pullColumns());

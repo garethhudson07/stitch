@@ -33,7 +33,6 @@ class Dispatcher
         );
     }
 
-
     /**
      * @param Connection $connection
      * @param RecordBuilder $builder

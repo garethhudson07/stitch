@@ -2,9 +2,7 @@
 
 namespace Stitch\DBAL\Statements\Queries\Operations;
 
-use Stitch\DBAL\Builders\Query as QueryBuilder;
-use Stitch\DBAL\Statements\Assembler;
-use Stitch\DBAL\Statements\Component;
+use Stitch\DBAL\Builders\Expression as Builder;
 use Stitch\DBAL\Statements\Queries\Fragments\Expression;
 use Stitch\DBAL\Statements\Statement;
 
@@ -15,53 +13,27 @@ use Stitch\DBAL\Statements\Statement;
 class Where extends Statement
 {
     /**
-     * @var QueryBuilder
+     * @var Builder
      */
-    protected $queryBuilder;
-
-    /**
-     * @var Assembler
-     */
-    protected $expressionAssembler;
+    protected $builder;
 
     /**
      * Where constructor.
-     * @param QueryBuilder $queryBuilder
+     * @param Builder $builder
      */
-    public function __construct(QueryBuilder $queryBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->queryBuilder = $queryBuilder;
-        $this->expressionAssembler = (new Assembler())->glue(' AND ');
-
-        parent::__construct();
+        $this->builder = $builder;
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->conditions($this->queryBuilder);
-
-        if ($this->expressionAssembler->count()) {
-            $this->assembler->push(
-                new Component('WHERE')
-            )->push(
-                $this->expressionAssembler
-            );
-        }
-    }
-
-    /**
-     * @param QueryBuilder $queryBuilder
-     */
-    protected function conditions(QueryBuilder $queryBuilder)
-    {
-        $conditions = $queryBuilder->getWhereConditions();
-
-        if ($conditions->count()) {
-            $this->expressionAssembler->push(
-                new Expression($conditions)
+        if ($this->builder->count()) {
+            $this->push('WHERE')->push(
+                new Expression($this->builder)
             );
         }
     }

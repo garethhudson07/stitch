@@ -3,8 +3,7 @@
 namespace Stitch\DBAL\Statements\Queries\Variables;
 
 use Closure;
-use Stitch\DBAL\Builders\Query as QueryBuilder;
-use Stitch\DBAL\Statements\Component;
+use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Statements\Statement;
 
 /**
@@ -14,29 +13,25 @@ use Stitch\DBAL\Statements\Statement;
 class Selection extends Statement
 {
     /**
-     * @var QueryBuilder
+     * @var Builder
      */
-    protected $queryBuilder;
+    protected $builder;
 
     /**
      * Selection constructor.
-     * @param QueryBuilder $queryBuilder
+     * @param Builder $builder
      */
-    public function __construct(QueryBuilder $queryBuilder)
+    public function __construct(Builder $builder)
     {
-        $this->queryBuilder = $queryBuilder;
-
-        parent::__construct();
+        $this->builder = $builder;
     }
 
     /**
      * @return void
      */
-    protected function evaluate()
+    public function evaluate()
     {
-        $this->assembler->push(
-            new Component(implode(', ', $this->variables($this->queryBuilder)))
-        );
+        $this->push(implode(', ', $this->variables($this->builder)));
     }
 
     /**
@@ -84,7 +79,7 @@ class Selection extends Statement
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
+     * @param QueryBuilder $builder
      * @return array
      */
     protected function generateKeys($builder)
