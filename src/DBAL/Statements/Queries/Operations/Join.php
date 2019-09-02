@@ -42,7 +42,7 @@ class Join extends Statement
         );
 
         foreach ($this->builder->getJoins() as $join) {
-            $this->assembler->push(
+            $this->push(
                 new static($join)
             );
         }
