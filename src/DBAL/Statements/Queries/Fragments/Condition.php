@@ -42,12 +42,14 @@ class Condition extends Statement
             (new Column($this->builder->getColumn()))->database()->path()
         );
 
-        switch (gettype($value)) {
-            case 'array':
+        switch ($operator) {
+            case 'IN':
+            case 'NOT IN':
                 $this->compareMany($operator, $value);
                 break;
 
-            case null:
+            case 'IS NULL':
+            case 'IS NOT NULL':
                 $this->compareNull($operator);
                 break;
 
@@ -96,8 +98,6 @@ class Condition extends Statement
      */
     public function compareNull(string $operator)
     {
-        $this->push(
-            $operator === '!=' ? 'IS NOT NULL' : 'IS NULL'
-        );
+        $this->push($operator);
     }
 }
