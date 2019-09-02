@@ -83,14 +83,14 @@ class Condition extends Statement
 
         if (in_array($operator, $this::SUPPORTED_METHODS)) {
             $this->push(
-                $this->component('(' . implode(',', $placeholders) . ')')->bindMany($values)
+                $this->component($operator . ' (' . implode(',', $placeholders) . ')')->bindMany($values)
             );
 
             return;
         }
 
         $this->push(
-            $this->component($operator . implode(' AND ', $placeholders))->bindMany($values)
+            $this->component($operator  . ' ' . implode(' AND ', $placeholders))->bindMany($values)
         );
     }
 
