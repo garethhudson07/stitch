@@ -45,6 +45,7 @@ class Condition extends Statement
         switch ($operator) {
             case 'IN':
             case 'NOT IN':
+            case 'BETWEEN':
                 $this->compareMany($operator, $value);
                 break;
 
@@ -89,7 +90,7 @@ class Condition extends Statement
         }
 
         $this->push(
-            $this->component(implode(' AND ', $placeholders))->bindMany($values)
+            $this->component($operator . implode(' AND ', $placeholders))->bindMany($values)
         );
     }
 
