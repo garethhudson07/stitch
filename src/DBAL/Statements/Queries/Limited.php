@@ -79,7 +79,7 @@ class Limited extends Statement
      */
     protected function default()
     {
-        $this->assembler->push(
+        $this->push(
             new Unlimited($this->builder)
         )->push(
             new Limit($this->builder)

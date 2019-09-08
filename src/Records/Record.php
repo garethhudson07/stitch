@@ -169,7 +169,7 @@ class Record implements Arrayable
         $builder = $this->builder()
             ->primaryKey($this->model->getTable()->getPrimaryKey()->getName());
 
-        Dispatcher::update($this->model->getConnection(), $builder);
+        Dispatcher::update($this->model->getTable()->getConnection(), $builder);
 
         return $this;
     }
@@ -212,7 +212,7 @@ class Record implements Arrayable
      */
     protected function insert()
     {
-        $connection = $this->model->getConnection();
+        $connection = $this->model->getTable()->getConnection();
         $primaryKey = $this->model->getTable()->getPrimaryKey();
 
         Dispatcher::insert($connection, $this->builder());
