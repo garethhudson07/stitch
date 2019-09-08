@@ -36,10 +36,15 @@ class Collection extends BaseCollection
         return $this->push($this->make($attributes));
     }
 
+    /**
+     * @return $this
+     */
     public function save()
     {
         foreach ($this->items as $item) {
             $item->save();
         }
+
+        return $this;
     }
 }

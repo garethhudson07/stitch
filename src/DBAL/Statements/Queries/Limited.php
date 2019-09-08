@@ -36,7 +36,7 @@ class Limited extends Statement
     /**
      * @return void
      */
-    public function evaluate()
+    public function evaluate($syntax)
     {
         $this->builder->getJoins() ? $this->numbered() : $this->default();
     }
@@ -44,9 +44,9 @@ class Limited extends Statement
     /**
      * @return void
      */
-    protected function numbered()
+    protected function numbered($syntax)
     {
-        $this->push('SELECT * FROM')
+        $this->push($syntax->selectSubquery())
             ->push(
                 (new Subquery(
                     new Numbered($this->builder)

@@ -15,7 +15,7 @@ class Collection extends BaseCollection
      */
     public function make(array $attributes = [])
     {
-        $record = $this->factory->record($attributes);
+        $record = parent::make($attributes);
 
         if ($this->associated) {
             $record->associate($this->associated);

@@ -3,9 +3,8 @@
 namespace Stitch\DBAL\Statements\Queries\Operations;
 
 use Stitch\DBAL\Builders\Query as Builder;
-use Stitch\DBAL\Statements\Assembler;
-use Stitch\DBAL\Statements\Queries\Fragments\Column;
 use Stitch\DBAL\Statements\Statement;
+use Stitch\Grammar\Sql;
 
 /**
  * Class Select
@@ -27,7 +26,6 @@ class Select extends Statement
     public function __construct(Builder $builder)
     {
         $this->builder = $builder;
-        $this->columns = (new Assembler())->glue(', ');
     }
 
     /**
@@ -35,12 +33,11 @@ class Select extends Statement
      */
     public function evaluate()
     {
-        $this->push('SELECT')->push($this->columns);
-
-        foreach ($this->builder->resolveSelection()->getColumns() as $column) {
-            $this->columns->push(
-                (new Column($column))->database()->path()->alias()
-            );
-        }
+        $this->push(
+            Sql::selectColumns(array_map(function ($column)
+            {
+                return sql::columnPath($column->getSchema()) . ' ' . Sql::alias(Sql::columnAlias($column->getSchema()));
+            }, $this->builder->resolveSelection()->getColumns()))
+        );
     }
 }

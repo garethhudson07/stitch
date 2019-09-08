@@ -4,6 +4,7 @@ namespace Stitch\DBAL\Statements\Queries;
 
 use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
+use Stitch\Grammar\Sql;
 
 /**
  * Class Subquery
@@ -51,7 +52,9 @@ class Subquery extends Statement
         );
 
         if ($this->alias) {
-            $this->push("as {$this->alias}");
+            $this->push(
+                Sql::alias($this->alias)
+            );
         }
     }
 }

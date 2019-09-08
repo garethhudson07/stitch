@@ -124,24 +124,33 @@ class Record implements Arrayable
     }
 
     /**
-     * @param string $key
+     * @param string $name
      * @return mixed|null
      */
-    public function getRelation(string $key)
+    public function getRelation(string $name)
     {
-        if (array_key_exists($key, $this->relations)) {
-            return $this->relations[$key];
+        if ($this->hasReation($name)) {
+            return $this->relations[$name];
         }
 
-        if ($relation = $this->model->getRelation($key)) {
+        if ($relation = $this->model->getRelation($name)) {
             $relation = $relation->make()->associate($this);
 
-            $this->setRelation($key, $relation);
+            $this->setRelation($name, $relation);
 
             return $relation;
         }
 
         return null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasReation(string $name)
+    {
+        return array_key_exists($name, $this->relations);
     }
 
     /**

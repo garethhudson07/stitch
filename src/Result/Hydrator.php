@@ -30,7 +30,9 @@ class Hydrator
     public static function many(Collection $collection, Set $set)
     {
         foreach ($set as $item) {
-            $collection->push(static::one($collection->make(), $item));
+            $collection->push(
+                static::one($collection->make(), $item)
+            );
         }
 
         return $collection;
