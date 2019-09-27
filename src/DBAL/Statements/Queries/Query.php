@@ -31,30 +31,10 @@ class Query extends Statement
      */
     public function evaluate()
     {
-        $this->builder->limited() ? $this->limited() : $this->unlimited();
-
         $this->push(
+            $this->builder->hasLimit() || $this->builder->hasOffset() ? new Sliced($this->builder) : new Selection($this->builder)
+        )->push(
             new OrderBy($this->builder->getSorter())
-        );
-    }
-
-    /**
-     * @return void
-     */
-    protected function limited()
-    {
-        $this->push(
-            new Limited($this->builder)
-        );
-    }
-
-    /**
-     * @return void
-     */
-    protected function unlimited()
-    {
-        $this->push(
-            new Unlimited($this->builder)
         );
     }
 }

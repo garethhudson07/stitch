@@ -134,7 +134,7 @@ abstract class Join
      * @param int $count
      * @return $this
      */
-    public function setLimit(int $count)
+    public function limit(int $count)
     {
         $this->builder->limit($count);
 
@@ -142,7 +142,17 @@ abstract class Join
     }
 
     /**
-     * @param Base $query
+     * @param int $start
+     * @return $this
+     */
+    public function offset(int $start)
+    {
+        $this->builder->offset($start);
+
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
     abstract public function apply();

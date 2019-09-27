@@ -22,7 +22,7 @@ class Dispatcher
      */
     public static function select(Connection $connection, QueryBuilder $builder)
     {
-        if ($builder->limited() && $builder->getJoins()) {
+        if (($builder->hasLimit() || $builder->hasOffset()) && $builder->getJoins()) {
             $connection->execute(
                 new VariableDeclaration($builder)
             );

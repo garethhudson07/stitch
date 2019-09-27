@@ -12,7 +12,7 @@ use Stitch\DBAL\Statements\Statement;
  * Class Limited
  * @package Stitch\DBAL\Statements\Queries
  */
-class Limited extends Statement
+class Sliced extends Statement
 {
     /**
      * @var Builder
@@ -63,9 +63,15 @@ class Limited extends Statement
     protected function populateConditions($builder)
     {
         $table = $builder->getSchema()->getName();
+        $offset = $builder->getOffset();
         $limit = $builder->getLimit();
 
+        if ($offset !== null) {
+            $this->conditions->andRaw("{$table}_row_num > $offset");
+        }
+
         if ($limit !== null) {
+            $limit += $offset;
             $this->conditions->andRaw("{$table}_row_num <= $limit");
         }
 
@@ -80,7 +86,7 @@ class Limited extends Statement
     protected function default()
     {
         $this->push(
-            new Unlimited($this->builder)
+            new Selection($this->builder)
         )->push(
             new Limit($this->builder)
         );

@@ -14,7 +14,7 @@ use Stitch\DBAL\Statements\Statement;
  * Class Unlimited
  * @package Stitch\DBAL\Statements\Queries
  */
-class Unlimited extends Statement
+class Selection extends Statement
 {
     /**
      * @var Builder

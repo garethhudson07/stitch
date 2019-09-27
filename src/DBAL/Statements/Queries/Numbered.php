@@ -45,7 +45,7 @@ class Numbered extends Statement
             )
             ->push('FROM')
             ->push(
-                (new Subquery(new Unlimited($this->builder)))->alias('selection')
+                (new Subquery(new Selection($this->builder)))->alias('selection')
             )->push(
                 new OrderBy($this->sorter)
             );

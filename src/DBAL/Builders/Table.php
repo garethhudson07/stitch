@@ -20,6 +20,11 @@ class Table
     protected $limit;
 
     /**
+     * @var int
+     */
+    protected $offset;
+
+    /**
      * @var array
      */
     protected $joins = [];
@@ -45,12 +50,12 @@ class Table
     }
 
     /**
-     * @param int $limit
+     * @param int $count
      * @return $this
      */
-    public function limit(int $limit)
+    public function limit(int $count)
     {
-        $this->limit = $limit;
+        $this->limit = $count;
 
         return $this;
     }
@@ -58,14 +63,43 @@ class Table
     /**
      * @return bool
      */
-    public function limited()
+    public function hasLimit()
     {
         if ($this->limit !== null) {
             return true;
         }
 
         foreach ($this->joins as $join) {
-            if ($join->limited()) {
+            if ($join->hasLimit()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $start
+     * @return $this
+     */
+    public function offset(int $start)
+    {
+        $this->offset = $start;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasOffset()
+    {
+        if ($this->offset !== null) {
+            return true;
+        }
+
+        foreach ($this->joins as $join) {
+            if ($join->hasOffset()) {
                 return true;
             }
         }
@@ -112,5 +146,13 @@ class Table
     public function getLimit()
     {
         return $this->limit;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOffset()
+    {
+        return $this->offset;
     }
 }
