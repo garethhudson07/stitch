@@ -2,33 +2,33 @@
 
 namespace Stitch\DBAL\Statements;
 
-use Stitch\DBAL\Statements\Contracts\Assemblable;
+use Stitch\DBAL\Statements\Contracts\HasBindings;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Statement
  * @package Stitch\DBAL\Statements
  */
-abstract class Statement implements Assemblable
+abstract class Statement implements HasBindings
 {
+    protected $syntax;
+
     /**
      * @var Assembler
      */
     protected $assembler;
 
-    protected $assembled;
+    protected $isolate;
 
-    protected $bindings;
+    protected $assembled = [
+        'query' => null,
+        'bindings' => null
+    ];
 
-    /**
-     * @return Assembler
-     */
-    public function getAssembler()
+    public function __construct(Syntax $syntax)
     {
-        if (!$this->assembler) {
-            $this->assembler = new Assembler();
-        }
-
-        return $this->assembler;
+        $this->syntax = $syntax;
+        $this->assembler = new Assembler();
     }
 
     /**
@@ -39,9 +39,9 @@ abstract class Statement implements Assemblable
     /**
      * @return array
      */
-    public function getBindings(): array
+    public function bindings(): array
     {
-        return is_null($this->bindings) ? $this->assemble()->getBindings() : $this->bindings;
+        return is_null($this->assembled['bindings']) ? $this->assemble()->bindings() : $this->assembled['bindings'];
     }
 
     /**
@@ -49,7 +49,7 @@ abstract class Statement implements Assemblable
      */
     public function __toString(): string
     {
-        return $this->assembled();
+        return $this->query();
     }
 
     /**
@@ -59,10 +59,12 @@ abstract class Statement implements Assemblable
     {
         $this->evaluate();
 
-        $assembler = $this->getAssembler();
+        $this->assembled['query'] = $this->isolate ?
+            $this->syntax->isolate($this->assembler->implode()) :
+            $this->assembler->implode();
 
-        $this->assembled = $assembler->assemble();
-        $this->bindings = $assembler->getBindings();
+
+        $this->assembled['bindings'] = $this->assembler->bindings();
 
         return $this;
     }
@@ -70,9 +72,9 @@ abstract class Statement implements Assemblable
     /**
      * @return string
      */
-    public function assembled()
+    public function query()
     {
-        return is_null($this->assembled) ? $this->assemble()->assembled() : $this->assembled;
+        return is_null($this->assembled['query']) ? $this->assemble()->query() : $this->assembled['query'];
     }
 
     /**
@@ -81,17 +83,18 @@ abstract class Statement implements Assemblable
      */
     public function push($item)
     {
-        $this->getAssembler()->push($item);
+        $this->assembler->push($item);
 
         return $this;
     }
 
     /**
-     * @param $value
-     * @return Component
+     * @return $this
      */
-    public function component($value)
+    public function isolate()
     {
-        return new Component($value);
+        $this->isolate = true;
+
+        return $this;
     }
 }

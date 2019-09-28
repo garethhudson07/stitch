@@ -6,7 +6,7 @@ use Stitch\DBAL\Builders\Join as JoinBuilder;
 
 /**
  * Class ManyToMany
- * @package Stitch\Queries\Relations
+ * @package Stitch\Select\Relations
  */
 class ManyToMany extends Join
 {

@@ -11,7 +11,7 @@ use Stitch\DBAL\Builders\JsonPath as JsonPathBuilder;
 
 /**
  * Class Path
- * @package Stitch\Queries\Paths
+ * @package Stitch\Select\Paths
  */
 class Pipeline implements IteratorAggregate, Countable
 {

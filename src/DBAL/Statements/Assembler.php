@@ -2,13 +2,13 @@
 
 namespace Stitch\DBAL\Statements;
 
-use Stitch\DBAL\Statements\Contracts\Assemblable;
+use Stitch\DBAL\Statements\Contracts\HasBindings;
 
 /**
  * Class Assembler
  * @package Stitch\DBAL\Statements
  */
-class Assembler implements Assemblable
+class Assembler implements HasBindings
 {
     /**
      * @var array
@@ -34,19 +34,6 @@ class Assembler implements Assemblable
      * @return $this
      */
     public function push($item)
-    {
-        if (!$item instanceof Assemblable) {
-            $item = new Component($item);
-        }
-
-        return $this->add($item);
-    }
-
-    /**
-     * @param Assemblable $item
-     * @return $this
-     */
-    public function add(Assemblable $item)
     {
         $this->items[] = $item;
 
@@ -75,15 +62,15 @@ class Assembler implements Assemblable
     /**
      * @return array
      */
-    public function getBindings(): array
+    public function bindings(): array
     {
         if (!$this->items) {
             return [];
         }
 
-        return array_merge(...array_map(function (Assemblable $item)
+        return array_merge(...array_map(function ($item)
         {
-            return $item->getBindings();
+            return $item instanceof HasBindings ? $item->bindings() : [];
         }, $this->items));
     }
 
@@ -92,13 +79,13 @@ class Assembler implements Assemblable
      */
     public function __toString(): string
     {
-        return $this->assemble();
+        return $this->implode();
     }
 
     /**
      * @return string
      */
-    public function assemble()
+    public function implode()
     {
         return implode($this->glue, $this->items);
     }

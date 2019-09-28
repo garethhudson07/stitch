@@ -1,17 +1,18 @@
 <?php
 
-namespace Stitch\DBAL\Statements\Queries;
+namespace Stitch\DBAL\Statements\Select;
 
-use Stitch\DBAL\Builders\Query as Builder;
+use Stitch\DBAL\Builders\Table as Builder;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Builders\Sorter;
-use Stitch\DBAL\Statements\Queries\Operations\OrderBy;
-use Stitch\DBAL\Statements\Queries\Variables\Selection as VariableSelection;
+use Stitch\DBAL\Statements\Select\Operations\OrderBy;
+use Stitch\DBAL\Statements\Select\Variables\Selection as VariableSelection;
 use Stitch\DBAL\Statements\Statement;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Numbered
- * @package Stitch\DBAL\Statements\Queries
+ * @package Stitch\DBAL\Statements\Select
  */
 class Numbered extends Statement
 {
@@ -26,12 +27,12 @@ class Numbered extends Statement
      * Numbered constructor.
      * @param Builder $builder
      */
-    public function __construct(Builder $builder)
+    public function __construct(Syntax $syntax, Builder $builder)
     {
+        parent::__construct($syntax);
+
         $this->builder = $builder;
         $this->sorter = new Sorter();
-
-        $this->populateSorter($builder);
     }
 
     /**
@@ -39,22 +40,29 @@ class Numbered extends Statement
      */
     public function evaluate()
     {
-        $this->push('SELECT *,')
+        $this->populateSorter($this->builder);
+
+        $this->push($this->syntax->selectAllAnd())
             ->push(
-                new VariableSelection($this->builder)
+                new VariableSelection($this->syntax, $this->builder)
             )
-            ->push('FROM')
             ->push(
-                (new Subquery(new Unlimited($this->builder)))->alias('selection')
+                $this->syntax->from()
+            )
+            ->push(
+                (new Subquery(
+                    $this->syntax,
+                    new Unlimited($this->syntax, $this->builder)
+                ))->alias('selection')
             )->push(
-                new OrderBy($this->sorter)
+                new OrderBy($this->syntax, $this->sorter)
             );
     }
 
     /**
      * @param $builder
      */
-    protected function populateSorter($builder)
+    protected function populateSorter(Builder $builder)
     {
         $schema = $builder->getSchema();
         $added = false;

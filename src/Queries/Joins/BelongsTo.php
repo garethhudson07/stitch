@@ -4,7 +4,7 @@ namespace Stitch\Queries\Joins;
 
 /**
  * Class Has
- * @package Stitch\Queries\Relations
+ * @package Stitch\Select\Relations
  */
 class BelongsTo extends Join
 {

@@ -1,14 +1,13 @@
 <?php
 
-namespace Stitch\DBAL\Statements\Queries;
+namespace Stitch\DBAL\Statements\Select;
 
-use Stitch\DBAL\Statements\Component;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\Grammar\Sql;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Subquery
- * @package Stitch\DBAL\Statements\Queries
+ * @package Stitch\DBAL\Statements\Select
  */
 class Subquery extends Statement
 {
@@ -26,8 +25,10 @@ class Subquery extends Statement
      * Subquery constructor.
      * @param Statement $statement
      */
-    public function __construct(Statement $statement)
+    public function __construct(Syntax $syntax, Statement $statement)
     {
+        parent::__construct($syntax);
+
         $this->statement = $statement;
     }
 
@@ -48,12 +49,12 @@ class Subquery extends Statement
     public function evaluate()
     {
         $this->push(
-            $this->component($this->statement)->isolate()
+            $this->statement->isolate()
         );
 
         if ($this->alias) {
             $this->push(
-                Sql::alias($this->alias)
+                $this->syntax->alias($this->alias)
             );
         }
     }

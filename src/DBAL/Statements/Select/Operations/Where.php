@@ -1,14 +1,15 @@
 <?php
 
-namespace Stitch\DBAL\Statements\Queries\Operations;
+namespace Stitch\DBAL\Statements\Select\Operations;
 
 use Stitch\DBAL\Builders\Expression as Builder;
-use Stitch\DBAL\Statements\Queries\Fragments\Expression;
+use Stitch\DBAL\Statements\Select\Fragments\Expression;
 use Stitch\DBAL\Statements\Statement;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Where
- * @package Stitch\DBAL\Statements\Queries\Operations
+ * @package Stitch\DBAL\Statements\Select\Operations
  */
 class Where extends Statement
 {
@@ -21,8 +22,10 @@ class Where extends Statement
      * Where constructor.
      * @param Builder $builder
      */
-    public function __construct(Builder $builder)
+    public function __construct(Syntax $syntax, Builder $builder)
     {
+        parent::__construct($syntax);
+
         $this->builder = $builder;
     }
 
@@ -32,8 +35,10 @@ class Where extends Statement
     public function evaluate()
     {
         if ($this->builder->count()) {
-            $this->push('WHERE')->push(
-                new Expression($this->builder)
+            $this->push(
+                $this->syntax->where()
+            )->push(
+                new Expression($this->syntax, $this->builder)
             );
         }
     }

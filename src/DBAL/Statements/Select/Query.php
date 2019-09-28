@@ -1,14 +1,15 @@
 <?php
 
-namespace Stitch\DBAL\Statements\Queries;
+namespace Stitch\DBAL\Statements\Select;
 
 use Stitch\DBAL\Builders\Query as Builder;
-use Stitch\DBAL\Statements\Queries\Operations\OrderBy;
+use Stitch\DBAL\Statements\Select\Operations\OrderBy;
 use Stitch\DBAL\Statements\Statement;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Query
- * @package Stitch\DBAL\Statements\Queries
+ * @package Stitch\DBAL\Statements\Select
  */
 class Query extends Statement
 {
@@ -21,8 +22,10 @@ class Query extends Statement
      * Query constructor.
      * @param Builder $builder
      */
-    public function __construct(Builder $builder)
+    public function __construct(Syntax $syntax, Builder $builder)
     {
+        parent::__construct($syntax);
+
         $this->builder = $builder;
     }
 
@@ -34,7 +37,7 @@ class Query extends Statement
         $this->builder->limited() ? $this->limited() : $this->unlimited();
 
         $this->push(
-            new OrderBy($this->builder->getSorter())
+            new OrderBy($this->syntax, $this->builder->getSorter())
         );
     }
 
@@ -44,7 +47,7 @@ class Query extends Statement
     protected function limited()
     {
         $this->push(
-            new Limited($this->builder)
+            new Limited($this->syntax, $this->builder)
         );
     }
 
@@ -54,7 +57,7 @@ class Query extends Statement
     protected function unlimited()
     {
         $this->push(
-            new Unlimited($this->builder)
+            new Unlimited($this->syntax, $this->builder)
         );
     }
 }

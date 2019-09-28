@@ -1,14 +1,15 @@
 <?php
 
-namespace Stitch\DBAL\Statements\Queries\Operations;
+namespace Stitch\DBAL\Statements\Select\Operations;
 
 use Stitch\DBAL\Builders\Join as Builder;
-use Stitch\DBAL\Statements\Queries\Fragments\Expression;
+use Stitch\DBAL\Statements\Select\Fragments\Expression;
 use Stitch\DBAL\Statements\Statement;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Join
- * @package Stitch\DBAL\Statements\Queries\Operations
+ * @package Stitch\DBAL\Statements\Select\Operations
  */
 class Join extends Statement
 {
@@ -21,8 +22,10 @@ class Join extends Statement
      * Join constructor.
      * @param Builder $builder
      */
-    public function __construct(Builder $builder)
+    public function __construct(Syntax $syntax, Builder $builder)
     {
+        parent::__construct($syntax);
+
         $this->builder = $builder;
     }
 
@@ -31,19 +34,20 @@ class Join extends Statement
      */
     public function evaluate()
     {
-        $schema = $this->builder->getSchema();
-
         $this->push(
-            "{$this->builder->getType()} JOIN {$schema->getConnection()->getDatabase()}.{$schema->getName()} ON"
+            $this->syntax->join(
+                $this->builder->getType(),
+                $this->builder->getSchema()
+            )
         );
 
         $this->push(
-            new Expression($this->builder->getConditions())
+            new Expression($this->syntax, $this->builder->getConditions())
         );
 
         foreach ($this->builder->getJoins() as $join) {
             $this->push(
-                new static($join)
+                new static($this->syntax, $join)
             );
         }
     }

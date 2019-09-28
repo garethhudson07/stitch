@@ -10,7 +10,7 @@ use Stitch\Schema\Table as Schema;
 class Table
 {
     /**
-     * @var string
+     * @var Schema
      */
     protected $schema;
 
@@ -74,7 +74,35 @@ class Table
     }
 
     /**
-     * @return string
+     * @return bool
+     */
+    public function crossDatabase()
+    {
+        $database = $this->schema->getConnection()->getDatabase();
+
+        foreach ($this->joins as $join) {
+            if ($join->getSchema()->getConnection()->getDatabase() !== $database) {
+                return true;
+            }
+
+            if ($join->crossDatabase()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function crossTable()
+    {
+        return (count($this->joins) > 0);
+    }
+
+    /**
+     * @return Schema
      */
     public function getSchema()
     {

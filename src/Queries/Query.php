@@ -13,7 +13,7 @@ use Stitch\Result\Set as ResultSet;
 
 /**
  * Class Query
- * @package Stitch\Queries
+ * @package Stitch\Select
  */
 class Query
 {
@@ -194,7 +194,10 @@ class Query
             return $resultSet;
         }
 
-        return ResultHydrator::hydrate($this->model->collection(), $resultSet);
+        return ResultHydrator::hydrate(
+            $this->model->collection(),
+            $resultSet
+        );
     }
 
     /**
@@ -204,7 +207,10 @@ class Query
     {
         return new ResultSet(
             $this,
-            Dispatcher::select($this->model->getTable()->getConnection(), $this->builder)
+            Dispatcher::select(
+                $this->model->getTable()->getConnection(),
+                $this->builder
+            )
         );
     }
 

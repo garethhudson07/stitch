@@ -4,9 +4,9 @@ namespace Stitch\DBAL;
 
 use PDO;
 use PDOStatement;
-use Stitch\DBAL\Statements\Persistence\Insert as InsertStatement;
-use Stitch\DBAL\Statements\Persistence\Update as UpdateStatement;
-use Stitch\DBAL\Statements\Queries\Query as QueryStatement;
+use Stitch\DBAL\Statements\Persist\Insert as InsertStatement;
+use Stitch\DBAL\Statements\Persist\Update as UpdateStatement;
+use Stitch\DBAL\Statements\Select\Query as QueryStatement;
 use Stitch\DBAL\Statements\Statement;
 
 /**
@@ -186,12 +186,12 @@ class Connection
      */
     public function execute(Statement $statement)
     {
-//        echo $statement->assembled() . '<br>';
-//        var_dump($statement->getBindings());
+        echo $statement->query() . '<br>';
+        var_dump($statement->bindings());
 
-        $prepared = $this->get()->prepare($statement->assembled());
+        $prepared = $this->get()->prepare($statement->query());
 
-        $prepared->execute($statement->getBindings());
+        $prepared->execute($statement->bindings());
 
         return $prepared;
     }

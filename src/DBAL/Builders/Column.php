@@ -6,7 +6,7 @@ use Stitch\Schema\Column as Schema;
 
 /**
  * Class Column
- * @package Stitch\Queries\Paths
+ * @package Stitch\Select\Paths
  */
 class Column
 {

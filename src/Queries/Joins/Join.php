@@ -8,7 +8,7 @@ use Stitch\Relations\Relation as Blueprint;
 
 /**
  * Class Relation
- * @package Stitch\Queries\Relations
+ * @package Stitch\Select\Relations
  */
 abstract class Join
 {

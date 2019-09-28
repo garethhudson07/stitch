@@ -1,13 +1,13 @@
 <?php
 
-namespace Stitch\DBAL\Statements\Persistence;
+namespace Stitch\DBAL\Statements\Persist;
 
 use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Builders\Record as Builder;
 
 /**
  * Class Insert
- * @package Stitch\DBAL\Statements\Persistence
+ * @package Stitch\DBAL\Statements\Persist
  */
 class Insert extends Statement
 {

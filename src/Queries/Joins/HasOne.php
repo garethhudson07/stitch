@@ -6,7 +6,7 @@ use Stitch\Queries\Table;
 
 /**
  * Class HasOne
- * @package Stitch\Queries\Relations
+ * @package Stitch\Select\Relations
  */
 class HasOne extends Has
 {

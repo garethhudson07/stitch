@@ -4,10 +4,11 @@ namespace Stitch\DBAL;
 
 use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
-use Stitch\DBAL\Statements\Persistence\Insert as InsertStatement;
-use Stitch\DBAL\Statements\Persistence\Update as UpdateStatement;
-use Stitch\DBAL\Statements\Queries\Query as QueryStatement;
-use Stitch\DBAL\Statements\Queries\Variables\Declaration as VariableDeclaration;
+use Stitch\DBAL\Statements\Persist\Insert as InsertStatement;
+use Stitch\DBAL\Statements\Persist\Update as UpdateStatement;
+use Stitch\DBAL\Statements\Select\Query as QueryStatement;
+use Stitch\DBAL\Statements\Select\Variables\Declaration as VariableDeclaration;
+use Stitch\DBAL\Syntax\Select as SelectSyntax;
 
 /**
  * Class Dispatcher
@@ -22,14 +23,16 @@ class Dispatcher
      */
     public static function select(Connection $connection, QueryBuilder $builder)
     {
-        if ($builder->limited() && $builder->getJoins()) {
+        $syntax = (new SelectSyntax())->analyse($builder);
+
+        if ($builder->limited() && $builder->crossTable()) {
             $connection->execute(
-                new VariableDeclaration($builder)
+                new VariableDeclaration($syntax, $builder)
             );
         }
 
         return $connection->select(
-            new QueryStatement($builder)
+            new QueryStatement($syntax, $builder)
         );
     }
 
@@ -40,7 +43,9 @@ class Dispatcher
      */
     public static function insert(Connection $connection, RecordBuilder $builder)
     {
-        $connection->insert(new InsertStatement($builder));
+        $connection->insert(
+            new InsertStatement($builder)
+        );
     }
 
     /**
@@ -49,6 +54,8 @@ class Dispatcher
      */
     public static function update(Connection $connection, RecordBuilder $builder)
     {
-        $connection->update(new UpdateStatement($builder));
+        $connection->update(
+            new UpdateStatement($builder)
+        );
     }
 }

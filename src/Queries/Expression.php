@@ -7,7 +7,7 @@ use Stitch\DBAL\Builders\Expression as Builder;
 
 /**
  * Class Expression
- * @package Stitch\Queries
+ * @package Stitch\Select
  */
 class Expression
 {
