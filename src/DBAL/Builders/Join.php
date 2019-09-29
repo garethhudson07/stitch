@@ -3,6 +3,7 @@
 namespace Stitch\DBAL\Builders;
 
 use Stitch\Schema\Table as Schema;
+use Stitch\Schema\Column as ColumnSchema;
 
 /**
  * Class Join
@@ -10,12 +11,14 @@ use Stitch\Schema\Table as Schema;
  */
 class Join extends Table
 {
-    protected $primaryKey;
-
     /**
      * @var string
      */
     protected $type;
+
+    protected $localKey;
+
+    protected $foreignKey;
 
     /**
      * @var Expression
@@ -45,27 +48,67 @@ class Join extends Table
     }
 
     /**
-     * @param string $left
-     * @param string $condition
-     * @param string $right
+     * @param ColumnSchema $column
      * @return $this
      */
-    public function on(string $left, string $condition, string $right)
+    public function localKey(ColumnSchema $column)
     {
-        $this->conditions->andRaw("$left $condition $right");
+        $this->localKey = $column;
 
         return $this;
     }
 
     /**
-     * @param string $left
-     * @param string $condition
-     * @param string $right
+     * @param ColumnSchema $column
      * @return $this
      */
-    public function orOn(string $left, string $condition, string $right)
+    public function foreignKey(ColumnSchema $column)
     {
-        $this->conditions->orRaw("$left $condition $right");
+        $this->foreignKey = $column;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed ...$arguments
+     * @return $this
+     */
+    public function on(...$arguments)
+    {
+        $this->conditions->and(...$arguments);
+
+        return $this;
+    }
+
+    /**
+     * @param mixed ...$arguments
+     * @return $this
+     */
+    public function onRaw(...$arguments)
+    {
+        $this->conditions->andRaw(...$arguments);
+
+        return $this;
+    }
+
+    /**
+     * @param mixed ...$arguments
+     * @return $this
+     */
+    public function orOn(...$arguments)
+    {
+        $this->conditions->or(...$arguments);
+
+        return $this;
+    }
+
+    /**
+     * @param mixed ...$arguments
+     * @return $this
+     */
+    public function orOnRaw(...$arguments)
+    {
+        $this->conditions->orRaw(...$arguments);
 
         return $this;
     }
@@ -76,6 +119,22 @@ class Join extends Table
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLocalKey()
+    {
+        return $this->localKey;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getForeignKey()
+    {
+        return $this->foreignKey;
     }
 
     /**

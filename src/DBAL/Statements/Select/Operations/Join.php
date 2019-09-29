@@ -37,13 +37,19 @@ class Join extends Statement
         $this->push(
             $this->syntax->join(
                 $this->builder->getType(),
-                $this->builder->getSchema()
+                $this->builder->getSchema(),
+                $this->builder->getForeignKey(),
+                $this->builder->getLocalKey()
             )
         );
 
-        $this->push(
-            new Expression($this->syntax, $this->builder->getConditions())
-        );
+        $conditions = $this->builder->getConditions();
+
+        if ($conditions->count()) {
+            $this->push(
+                new Expression($this->syntax, $conditions)
+            );
+        }
 
         foreach ($this->builder->getJoins() as $join) {
             $this->push(

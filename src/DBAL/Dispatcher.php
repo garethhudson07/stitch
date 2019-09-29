@@ -25,7 +25,7 @@ class Dispatcher
     {
         $syntax = (new SelectSyntax())->analyse($builder);
 
-        if ($builder->limited() && $builder->crossTable()) {
+        if (($builder->hasLimit() || $builder->hasOffset()) && $builder->crossTable()) {
             $connection->execute(
                 new VariableDeclaration($syntax, $builder)
             );

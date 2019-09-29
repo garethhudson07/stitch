@@ -175,9 +175,26 @@ class Query
         if (count($arguments) > 1) {
             $this->joins->get(
                 $this->parsePipeline($arguments[0])
-            )->setLimit($arguments[1]);
+            )->limit($arguments[1]);
         } else {
             $this->builder->limit($arguments[0]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return $this
+     */
+    public function offset(...$arguments)
+    {
+        if (count($arguments) > 1) {
+            $this->joins->get(
+                $this->parsePipeline($arguments[0])
+            )->offset($arguments[1]);
+        } else {
+            $this->builder->offset($arguments[0]);
         }
 
         return $this;

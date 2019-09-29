@@ -43,7 +43,7 @@ class Collection
      */
     public function add(string $name, Join $join)
     {
-        $this->builder->join($join->getBuilder());
+        $join->apply($this->builder);
 
         $this->items[$name] = $join;
 

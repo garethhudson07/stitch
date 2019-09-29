@@ -2,7 +2,7 @@
 
 namespace Stitch\Queries\Joins;
 
-use Stitch\Queries\Table;
+use Stitch\DBAL\Builders\Table as TableBuilder;
 
 /**
  * Class HasOne
@@ -10,8 +10,8 @@ use Stitch\Queries\Table;
  */
 class HasOne extends Has
 {
-    public function apply()
+    public function apply(TableBuilder $tableBuilder)
     {
-        parent::apply()->limit(1);
+        parent::apply($tableBuilder)->limit(1);
     }
 }

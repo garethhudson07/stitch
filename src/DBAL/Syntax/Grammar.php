@@ -101,6 +101,14 @@ class Grammar
     /**
      * @return string
      */
+    public static function greaterThan()
+    {
+        return '>';
+    }
+
+    /**
+     * @return string
+     */
     public static function lessThanOrEqual()
     {
         return '<=';

@@ -69,8 +69,14 @@ class ManyToMany extends Relation
      */
     public function localPivotKey(string $column)
     {
-        $this->localPivotKey = $this->getPivotTable()->getForeignKeyFrom(
+        $schema = $this->localPivotKey = $this->getPivotTable()->getForeignKeyFrom(
             $this->localModel->getTable()->getColumn($column)
+        );
+
+        $this->localPivotKey = $schema->getLocalColumn();
+
+        $this->localKey = $this->localModel->getTable()->getColumn(
+            $schema->getReferenceColumnName()
         );
 
         return $this;
@@ -82,8 +88,50 @@ class ManyToMany extends Relation
      */
     public function foreignPivotKey(string $column)
     {
-        $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFrom(
+        $schema = $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFrom(
             $this->getForeignModel()->getTable()->getColumn($column)
+        );
+
+        $this->foreignPivotKey = $schema->getLocalColumn();
+
+        $this->foreignKey = $this->foreignModel->getTable()->getColumn(
+            $schema->getReferenceColumnName()
+        );
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    protected function pullLocalKeys()
+    {
+        $schema = $this->localPivotKey = $this->getPivotTable()->getForeignKeyFor(
+            $this->localModel->getTable()->getPrimaryKey()
+        );
+
+        $this->localPivotKey = $schema->getLocalColumn();
+
+        $this->localKey = $this->localModel->getTable()->getColumn(
+            $schema->getReferenceColumnName()
+        );
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    protected function pullForeignKeys()
+    {
+        $schema = $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFor(
+            $this->getForeignModel()->getTable()->getPrimaryKey()
+        );
+
+        $this->foreignPivotKey = $schema->getLocalColumn();
+
+        $this->foreignKey = $this->foreignModel->getTable()->getColumn(
+            $schema->getReferenceColumnName()
         );
 
         return $this;
@@ -118,7 +166,7 @@ class ManyToMany extends Relation
      */
     public function hasKeys()
     {
-        return ($this->localPivotKey !== null && $this->foreignPivotKey !== null);
+        return ($this->localPivotKey && $this->foreignPivotKey);
     }
 
     /**
@@ -126,31 +174,7 @@ class ManyToMany extends Relation
      */
     public function pullKeys()
     {
-        return $this->pullLocalPivotKey()->pullForeignPivotKey();
-    }
-
-    /**
-     * @return $this
-     */
-    protected function pullLocalPivotKey()
-    {
-        $this->localPivotKey = $this->getPivotTable()->getForeignKeyFor(
-            $this->localModel->getTable()->getPrimaryKey()
-        );
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function pullForeignPivotKey()
-    {
-        $this->foreignPivotKey = $this->getPivotTable()->getForeignKeyFor(
-            $this->getForeignModel()->getTable()->getPrimaryKey()
-        );
-
-        return $this;
+        return $this->pullLocalKeys()->pullForeignKeys();
     }
 
     /**

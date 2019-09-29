@@ -3,6 +3,7 @@
 namespace Stitch\Queries\Joins;
 
 use Stitch\DBAL\Builders\Join as Builder;
+use Stitch\DBAL\Builders\Table as TableBuilder;
 use Stitch\Model;
 use Stitch\Relations\Relation as Blueprint;
 
@@ -41,8 +42,6 @@ abstract class Join
         $this->builder = $builder;
         $this->blueprint = $blueprint;
         $this->joins = new Collection($builder);
-
-        $this->apply();
     }
 
     public function getModel()
@@ -134,7 +133,7 @@ abstract class Join
      * @param int $count
      * @return $this
      */
-    public function setLimit(int $count)
+    public function limit(int $count)
     {
         $this->builder->limit($count);
 
@@ -142,8 +141,18 @@ abstract class Join
     }
 
     /**
-     * @param Base $query
+     * @param int $start
+     * @return $this
+     */
+    public function offset(int $start)
+    {
+        $this->builder->offset($start);
+
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
-    abstract public function apply();
+    abstract public function apply(TableBuilder $tableBuilder);
 }

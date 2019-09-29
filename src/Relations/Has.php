@@ -14,9 +14,15 @@ use Stitch\Schema\ForeignKey;
 class Has extends Relation
 {
     /**
-     * @var ForeignKey|null
+     * @param string $name
+     * @return $this
      */
-    protected $foreignKey;
+    public function localKey(string $name)
+    {
+        $this->localKey = $this->localModel->getTable()->getColumn($name);
+
+        return $this;
+    }
 
     /**
      * @param string $column
@@ -26,7 +32,9 @@ class Has extends Relation
     {
         $foreignTable = $this->getForeignModel()->getTable();
 
-        $this->foreignKey = $foreignTable->getForeignKeyFrom($foreignTable->getColumn($column));
+        $this->foreignKey = $foreignTable->getForeignKeyFrom(
+            $foreignTable->getColumn($column)
+        )->getLocalColumn();
 
         return $this;
     }
@@ -36,19 +44,17 @@ class Has extends Relation
      */
     public function pullKeys()
     {
-        $this->foreignKey = $this->getForeignModel()->getTable()->getForeignKeyFor(
-            $this->localModel->getTable()->getPrimaryKey()
-        );
+        if (!$this->localKey) {
+            $this->localKey = $this->localModel->getTable()->getPrimaryKey();
+        }
+
+        if (!$this->foreignKey) {
+            $this->foreignKey = $this->getForeignModel()->getTable()->getForeignKeyFor(
+                $this->localKey
+            )->getLocalColumn();
+        }
 
         return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getForeignKey()
-    {
-        return $this->foreignKey;
     }
 
     /**
@@ -56,7 +62,7 @@ class Has extends Relation
      */
     public function hasKeys()
     {
-        return $this->foreignKey !== null;
+        return ($this->localKey && $this->foreignKey);
     }
 
     /**

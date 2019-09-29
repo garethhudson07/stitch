@@ -194,13 +194,16 @@ class Select
      * @param TableSchema $table
      * @return string
      */
-    public function join(string $type, TableSchema $table)
+    public function join(string $type, TableSchema $table, ColumnSchema $foreignKey, ColumnSchema $localKey)
     {
         return $this->implode(
             $type,
             Lexicon::join(),
             $this->tablePath($table),
-            Lexicon::on()
+            Lexicon::on(),
+            $this->columnPath($foreignKey),
+            Grammar::equal(),
+            $this->columnPath($localKey)
         );
     }
 
@@ -335,6 +338,20 @@ class Select
         return $this->implode(
             $left,
             Grammar::lessThanOrEqual(),
+            $right
+        );
+    }
+
+    /**
+     * @param $left
+     * @param $right
+     * @return string
+     */
+    public function greaterThan($left, $right)
+    {
+        return $this->implode(
+            $left,
+            Grammar::greaterThan(),
             $right
         );
     }

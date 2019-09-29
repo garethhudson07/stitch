@@ -53,13 +53,14 @@ class Selection extends Statement
         $countColumn = $this->syntax->rowNumberColumn($schema);
         $countVariable = $this->syntax->variable($countColumn);
         $pkColumn = $this->syntax->primaryKeyAlias($schema);
+        $pkVariable = $this->syntax->variable($pkColumn);
 
         foreach ($builder->getJoins() as $join) {
             $variables = array_merge($variables, $this->variables($join, $builder));
         }
 
         $value = $this->syntax->ternary(
-            $this->syntax->equal($this->syntax->variable($pkColumn), $pkColumn),
+            $this->syntax->equal($pkVariable, $pkColumn),
             $countVariable,
             function() use ($parent, $countVariable)
             {
@@ -79,6 +80,7 @@ class Selection extends Statement
         );
 
         $variables[] = $this->syntax->assign($countVariable, $value) . ' ' . $this->syntax->alias($countColumn);
+        $variables[] = $this->syntax->assign($pkVariable, $pkColumn);
 
         return $variables;
     }

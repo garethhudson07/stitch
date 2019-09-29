@@ -186,7 +186,7 @@ class Connection
      */
     public function execute(Statement $statement)
     {
-        echo $statement->query() . '<br>';
+        echo $statement . '<br>';
         var_dump($statement->bindings());
 
         $prepared = $this->get()->prepare($statement->query());

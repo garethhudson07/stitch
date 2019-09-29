@@ -69,13 +69,20 @@ class Limited extends Statement
     protected function conditions(Builder $builder, ExpressionBuilder $conditions)
     {
         $limit = $builder->getLimit();
+        $offset = $builder->getOffset();
+        $column = $this->syntax->rowNumberColumn($builder->getSchema());
+
+        if ($offset !== null) {
+            $conditions->andRaw(
+                $this->syntax->greaterThan($column, $limit)
+            );
+        }
 
         if ($limit !== null) {
+            $limit += $offset;
+
             $conditions->andRaw(
-                $this->syntax->lessThanOrEqual(
-                    $this->syntax->rowNumberColumn($builder->getSchema()),
-                    $limit
-                )
+                $this->syntax->lessThanOrEqual($column, $limit)
             );
         }
 

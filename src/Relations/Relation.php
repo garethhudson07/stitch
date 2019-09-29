@@ -17,10 +17,14 @@ abstract class Relation
      */
     protected $localModel;
 
+    protected $localKey;
+
     /**
      * @var Model
      */
     protected $foreignModel;
+
+    protected $foreignKey;
 
     /**
      * @var string
@@ -51,6 +55,14 @@ abstract class Relation
     }
 
     /**
+     * @return mixed
+     */
+    public function getLocalKey()
+    {
+        return $this->localKey;
+    }
+
+    /**
      * @param Model $model
      * @return $this
      */
@@ -77,6 +89,14 @@ abstract class Relation
         }
 
         return null;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getForeignKey()
+    {
+        return $this->foreignKey;
     }
 
     /**

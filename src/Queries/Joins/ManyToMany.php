@@ -3,6 +3,7 @@
 namespace Stitch\Queries\Joins;
 
 use Stitch\DBAL\Builders\Join as JoinBuilder;
+use Stitch\DBAL\Builders\Table as TableBuilder;
 
 /**
  * Class ManyToMany
@@ -11,29 +12,20 @@ use Stitch\DBAL\Builders\Join as JoinBuilder;
 class ManyToMany extends Join
 {
     /**
-     * @param Base $query
-     * @return $this
+     * @param TableBuilder $tableBuilder
      */
-    public function apply()
+    public function apply(TableBuilder $tableBuilder)
     {
-        $pivotTable = $this->blueprint->getPivotTable();
-        $localPivotKey = $this->blueprint->getLocalPivotKey();
-        $foreignPivotKey = $this->blueprint->getForeignPivotKey();
-
-        $pivotJoinBuilder = (new JoinBuilder($pivotTable))->type('LEFT')
-            ->on(
-                "{$pivotTable->getName()}.{$localPivotKey->getLocalColumn()->getName()}",
-                '=',
-                "{$localPivotKey->getReferenceTableName()}.{$localPivotKey->getReferenceColumnName()}"
-            );
+        $pivotJoinBuilder = (new JoinBuilder($this->blueprint->getPivotTable()))
+            ->type('LEFT')
+            ->localKey($this->blueprint->getLocalKey())
+            ->foreignKey($this->blueprint->getLocalPivotKey());
 
         $this->builder->type('LEFT')
-            ->on(
-                "{$foreignPivotKey->getReferenceTableName()}.{$foreignPivotKey->getReferenceColumnName()}",
-                '=',
-                "{$pivotTable->getName()}.{$foreignPivotKey->getLocalColumn()->getName()}"
-            );
+            ->localKey($this->blueprint->getForeignPivotKey())
+            ->foreignKey($this->blueprint->getForeignKey());
 
         $pivotJoinBuilder->join($this->builder);
+        $tableBuilder->join($pivotJoinBuilder);
     }
 }
