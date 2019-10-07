@@ -9,7 +9,7 @@ use Stitch\Queries\Query;
  * Class Record
  * @package Stitch\Result
  */
-class Record implements arrayable
+class Record implements Arrayable
 {
     /**
      * @var Query
