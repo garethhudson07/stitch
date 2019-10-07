@@ -21,10 +21,8 @@ class Dispatcher
      * @param QueryBuilder $builder
      * @return mixed
      */
-    public static function select(Connection $connection, QueryBuilder $builder)
+    public static function select(Connection $connection, QueryBuilder $builder, SelectSyntax $syntax)
     {
-        $syntax = (new SelectSyntax())->analyse($builder);
-
         if (($builder->hasLimit() || $builder->hasOffset()) && $builder->crossTable()) {
             $connection->execute(
                 new VariableDeclaration($syntax, $builder)

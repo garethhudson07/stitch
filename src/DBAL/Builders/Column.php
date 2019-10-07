@@ -2,7 +2,7 @@
 
 namespace Stitch\DBAL\Builders;
 
-use Stitch\Schema\Column as Schema;
+use Stitch\DBAL\Schema\Column as Schema;
 
 /**
  * Class Column

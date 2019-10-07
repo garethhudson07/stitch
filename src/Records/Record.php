@@ -6,7 +6,7 @@ use Stitch\Contracts\Arrayable;
 use Stitch\Model;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
 use Stitch\DBAL\Dispatcher;
-use Stitch\Schema\Column;
+use Stitch\DBAL\Schema\Column;
 
 /**
  * Class Record

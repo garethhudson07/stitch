@@ -3,8 +3,8 @@
 namespace Stitch\Relations;
 
 use Stitch\Registry;
-use Stitch\Schema\ForeignKey;
-use Stitch\Schema\Table;
+use Stitch\DBAL\Schema\ForeignKey;
+use Stitch\DBAL\Schema\Table;
 use Stitch\Queries\Joins\ManyToMany as Query;
 use Stitch\Queries\Joins\ManyToMany as Join;
 use Closure;

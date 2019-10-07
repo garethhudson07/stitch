@@ -1,10 +1,10 @@
 <?php
 
-namespace Stitch\Schema;
+namespace Stitch\DBAL\Schema;
 
 /**
  * Class ForeignKey
- * @package Stitch\Schema
+ * @package Stitch\DBAL\Schema
  */
 class ForeignKey
 {

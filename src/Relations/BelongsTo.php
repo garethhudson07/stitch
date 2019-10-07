@@ -4,7 +4,7 @@ namespace Stitch\Relations;
 
 use Stitch\Queries\Joins\BelongsTo as Join;
 use Stitch\Records\Relations\Collection as RecordCollection;
-use Stitch\Schema\ForeignKey;
+use Stitch\DBAL\Schema\ForeignKey;
 
 /**
  * Class Has

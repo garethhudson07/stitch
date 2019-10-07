@@ -8,8 +8,10 @@ use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\Queries\Joins\Collection as Joins;
 use Stitch\DBAL\Dispatcher;
 use Stitch\Records\Record;
+use Stitch\Result\Blueprint as ResultBlueprint;
 use Stitch\Result\Hydrator as ResultHydrator;
 use Stitch\Result\Set as ResultSet;
+use Stitch\DBAL\Syntax\Select as SelectSyntax;
 
 /**
  * Class Query
@@ -222,11 +224,16 @@ class Query
      */
     protected function getResultSet(): ResultSet
     {
-        return new ResultSet(
-            $this,
+        $syntax = (new SelectSyntax)->analyse($this->builder);
+
+        return (new ResultBlueprint($this))->map(
+            $this->builder->resolveSelection(),
+            $syntax
+        )->newSet()->assemble(
             Dispatcher::select(
                 $this->model->getTable()->getConnection(),
-                $this->builder
+                $this->builder,
+                $syntax
             )
         );
     }

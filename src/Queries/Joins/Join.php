@@ -44,6 +44,9 @@ abstract class Join
         $this->joins = new Collection($builder);
     }
 
+    /**
+     * @return Model
+     */
     public function getModel()
     {
         return $this->model;
@@ -72,62 +75,6 @@ abstract class Join
     {
         return $this->joins;
     }
-
-    /**
-     * @param array ...$arguments
-     * @return Query
-     */
-//    public function on(...$arguments)
-//    {
-//        return $this->applyOn('on', $arguments);
-//    }
-
-    /**
-     * @param array ...$arguments
-     * @return Query
-     */
-//    public function orOn(...$arguments)
-//    {
-//        return $this->applyOn('orOn', $arguments);
-//    }
-
-    /**
-     * @param $type
-     * @param array $arguments
-     * @return $this
-     */
-//    protected function applyOn($type, array $arguments)
-//    {
-//        if ($arguments[1] instanceof Closure) {
-//            $expression = new Expression($this);
-//            $arguments[1]($expression);
-//
-//            $this->getRelation(PathFactory::split($arguments[0]))->getBuilder()->{$type}($expression);
-//
-//            return $this;
-//        }
-//
-//        $path = array_shift($arguments);
-//
-//        if (count($arguments) == 1) {
-//            $operator = '=';
-//            $value = $arguments[0];
-//        } else {
-//            list($operator, $value) = $arguments;
-//        }
-//
-//        $this->apply($path, function (Query $query, string $column) use ($type, $operator, $value)
-//        {
-//            $query->addCondition(
-//                $type,
-//                $column,
-//                $operator,
-//                $value
-//            );
-//        });
-//
-//        return $this;
-//    }
 
     /**
      * @param int $count
