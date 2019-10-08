@@ -129,7 +129,7 @@ class Record implements Arrayable
      */
     public function getRelation(string $name)
     {
-        if ($this->hasReation($name)) {
+        if ($this->hasRelation($name)) {
             return $this->relations[$name];
         }
 
@@ -148,7 +148,7 @@ class Record implements Arrayable
      * @param string $name
      * @return bool
      */
-    public function hasReation(string $name)
+    public function hasRelation(string $name)
     {
         return array_key_exists($name, $this->relations);
     }
