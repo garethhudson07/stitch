@@ -55,6 +55,17 @@ abstract class Relation
     }
 
     /**
+     * @param string $name
+     * @return $this
+     */
+    public function localKey(string $name)
+    {
+        $this->localKey = $this->localModel->getTable()->getColumn($name);
+
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
     public function getLocalKey()
@@ -89,6 +100,17 @@ abstract class Relation
         }
 
         return null;
+    }
+
+    /**
+     * @param string $column
+     * @return $this
+     */
+    public function foreignKey(string $column)
+    {
+        $this->foreignKey = $this->getForeignModel()->getTable()->getColumn($column);
+
+        return $this;
     }
 
     /**
@@ -151,6 +173,14 @@ abstract class Relation
     }
 
     /**
+     * @return bool
+     */
+    public function hasKeys()
+    {
+        return ($this->localKey && $this->foreignKey);
+    }
+
+    /**
      * @return mixed
      */
     abstract public function join();
@@ -159,11 +189,6 @@ abstract class Relation
      * @return mixed
      */
     abstract public function make();
-
-    /**
-     * @return mixed
-     */
-    abstract public function hasKeys();
 
     /**
      * @return mixed

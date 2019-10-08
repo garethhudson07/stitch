@@ -2,23 +2,26 @@
 
 namespace Stitch\Queries\Joins;
 
+use Stitch\DBAL\Builders\Table as TableBuilder;
+use Stitch\DBAL\Builders\Column as ColumnBuilder;
+
 /**
  * Class Has
  * @package Stitch\Select\Relations
  */
 class BelongsTo extends Join
 {
-    public function apply()
+    /**
+     * @param TableBuilder $tableBuilder
+     */
+    public function apply(TableBuilder $tableBuilder)
     {
-        $foreignKey = $this->blueprint->getForeignKey();
-        $foreignTable = $this->blueprint->getForeignModel()->getTable();
-        $localTable = $this->blueprint->getLocalModel()->getTable();
-
         $this->builder->type('LEFT')
             ->on(
-                "{$foreignTable->getConnection()->getDatabase()}.{$foreignKey->getReferenceTableName()}.{$foreignKey->getReferenceColumnName()}",
-                '=',
-                "{$localTable->getConnection()->getDatabase()}.{$localTable->getName()}.{$foreignKey->getLocalColumn()->getName()}"
-            )->limit(1);
+                new ColumnBuilder($this->blueprint->getForeignKey()),
+                new ColumnBuilder($this->blueprint->getLocalKey())
+            );
+
+        $tableBuilder->join($this->builder);
     }
 }

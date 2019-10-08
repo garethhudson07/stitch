@@ -13,49 +13,21 @@ use Stitch\DBAL\Schema\ForeignKey;
 class BelongsTo extends Relation
 {
     /**
-     * @var ForeignKey|null
-     */
-    protected $foreignKey;
-
-    /**
-     * @param string $column
-     * @return $this
-     */
-    public function foreignKey(string $column)
-    {
-        $localTable = $this->localModel->getTable();
-
-        $this->foreignKey = $localTable->getForeignKeyFrom($localTable->getColumn($column));
-
-        return $this;
-    }
-
-    /**
      * @return $this
      */
     public function pullKeys()
     {
-        $this->foreignKey = $this->localModel->getTable()->getForeignKeyFor(
-            $this->getForeignModel()->getTable()->getPrimaryKey()
-        );
+        if (!$this->foreignKey) {
+            $this->foreignKey = $this->getForeignModel()->getTable()->getPrimaryKey();
+        }
+
+        if (!$this->localKey) {
+            $this->localKey = $this->localModel->getTable()->getForeignKeyFor(
+                $this->foreignKey
+            )->getLocalColumn();
+        }
 
         return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getForeignKey()
-    {
-        return $this->foreignKey;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasKeys()
-    {
-        return $this->foreignKey !== null;
     }
 
     /**

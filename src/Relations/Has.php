@@ -14,32 +14,6 @@ use Stitch\DBAL\Schema\ForeignKey;
 class Has extends Relation
 {
     /**
-     * @param string $name
-     * @return $this
-     */
-    public function localKey(string $name)
-    {
-        $this->localKey = $this->localModel->getTable()->getColumn($name);
-
-        return $this;
-    }
-
-    /**
-     * @param string $column
-     * @return $this
-     */
-    public function foreignKey(string $column)
-    {
-        $foreignTable = $this->getForeignModel()->getTable();
-
-        $this->foreignKey = $foreignTable->getForeignKeyFrom(
-            $foreignTable->getColumn($column)
-        )->getLocalColumn();
-
-        return $this;
-    }
-
-    /**
      * @return $this
      */
     public function pullKeys()
@@ -55,14 +29,6 @@ class Has extends Relation
         }
 
         return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasKeys()
-    {
-        return ($this->localKey && $this->foreignKey);
     }
 
     /**
