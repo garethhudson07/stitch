@@ -4,6 +4,7 @@ namespace Stitch\Queries\Joins;
 
 use Stitch\DBAL\Builders\Join as JoinBuilder;
 use Stitch\DBAL\Builders\Table as TableBuilder;
+use Stitch\DBAL\Builders\Column as ColumnBuilder;
 
 /**
  * Class ManyToMany
@@ -18,12 +19,16 @@ class ManyToMany extends Join
     {
         $pivotJoinBuilder = (new JoinBuilder($this->blueprint->getPivotTable()))
             ->type('LEFT')
-            ->localKey($this->blueprint->getLocalKey())
-            ->foreignKey($this->blueprint->getLocalPivotKey());
+            ->on(
+                new ColumnBuilder($this->blueprint->getLocalPivotKey()),
+                new ColumnBuilder($this->blueprint->getLocalKey())
+            );
 
         $this->builder->type('LEFT')
-            ->localKey($this->blueprint->getForeignPivotKey())
-            ->foreignKey($this->blueprint->getForeignKey());
+            ->on(
+                new ColumnBuilder($this->blueprint->getForeignKey()),
+                new ColumnBuilder($this->blueprint->getForeignPivotKey())
+            );
 
         $pivotJoinBuilder->join($this->builder);
         $tableBuilder->join($pivotJoinBuilder);

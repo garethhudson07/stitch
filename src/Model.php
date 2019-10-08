@@ -11,7 +11,7 @@ use Stitch\Relations\Has;
 use Stitch\Relations\HasOne;
 use Stitch\Relations\ManyToMany;
 use Stitch\Relations\Relation;
-use Stitch\Schema\Table;
+use Stitch\DBAL\Schema\Table;
 use Stitch\Records\Record;
 use Stitch\Records\Collection as RecordCollection;
 

@@ -3,31 +3,18 @@
 namespace Stitch\Result;
 
 use Stitch\Contracts\Arrayable;
-use Stitch\Queries\Joins\BelongsTo;
 use Stitch\Queries\Query;
-use Stitch\Queries\Joins\HasOne;
-use Stitch\Schema\Table;
 
 /**
  * Class Record
  * @package Stitch\Result
  */
-class Record implements arrayable
+class Record implements Arrayable
 {
     /**
      * @var Query
      */
-    protected $query;
-
-    /**
-     * @var Table
-     */
-    protected $table;
-
-    /**
-     * @var array
-     */
-    protected $columns;
+    protected $blueprint;
 
     /**
      * @var array
@@ -44,35 +31,20 @@ class Record implements arrayable
      * @param $query
      * @param array $raw
      */
-    public function __construct($query, array $raw)
+    public function __construct(Blueprint $blueprint)
     {
-        $this->query = $query;
-
-        $this->table = $query->getModel()->getTable();
-        $this->columns = $this->table->getColumns();
-
-        $this->extract($raw);
-    }
-
-    /**
-     * @return Query
-     */
-    public function getQuery()
-    {
-        return $this->query;
+        $this->blueprint = $blueprint;
     }
 
     /**
      * @param $raw
      * @return $this
      */
-    public function extractRelations($raw)
+    public function extractRelations(array $raw)
     {
-        foreach ($this->query->getJoins()->all() as $key => $join) {
+        foreach ($this->blueprint->relations() as $key => $relation) {
             if (!array_key_exists($key, $this->relations)) {
-                $instance = ($join instanceof HasOne || $join instanceof BelongsTo) ? new static($join, $raw) : new Set($join);
-
-                $this->relations[$key] = $instance->extract($raw);
+                $this->relations[$key] = $relation->newResult()->extract($raw);
             } else {
                 $this->relations[$key]->extract($raw);
             }
@@ -85,14 +57,13 @@ class Record implements arrayable
      * @param array $raw
      * @return $this
      */
-    protected function extract(array $raw)
+    public function extract(array $raw)
     {
-        foreach ($this->columns as $column) {
-            $name = $column->getName();
-            $alias = "{$this->table->getName()}_{$name}";
-
-            if (array_key_exists($alias, $raw)) {
-                $this->data[$name] = $this->table->getColumn($name)->cast($raw[$alias]);
+        foreach ($this->blueprint->columnMap() as $map) {
+            if (array_key_exists($map['alias'], $raw)) {
+                $this->data[$map['schema']->getName()] = $map['schema']->cast(
+                    $raw[$map['alias']]
+                );
             }
         }
 
@@ -122,6 +93,11 @@ class Record implements arrayable
     public function getRelations()
     {
         return $this->relations;
+    }
+
+    public function hydrate()
+    {
+
     }
 
     /**

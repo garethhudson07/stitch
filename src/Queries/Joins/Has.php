@@ -3,6 +3,7 @@
 namespace Stitch\Queries\Joins;
 
 use Stitch\DBAL\Builders\Table as TableBuilder;
+use Stitch\DBAL\Builders\Column as ColumnBuilder;
 
 /**
  * Class Has
@@ -16,8 +17,10 @@ class Has extends Join
     public function apply(TableBuilder $tableBuilder)
     {
         $this->builder->type('LEFT')
-            ->localKey($this->blueprint->getLocalKey())
-            ->foreignKey($this->blueprint->getForeignKey());
+            ->on(
+                new ColumnBuilder($this->blueprint->getForeignKey()),
+                new ColumnBuilder($this->blueprint->getLocalKey())
+            );
 
         $tableBuilder->join($this->builder);
     }

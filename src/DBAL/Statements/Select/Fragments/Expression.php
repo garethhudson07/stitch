@@ -3,11 +3,11 @@
 namespace Stitch\DBAL\Statements\Select\Fragments;
 
 use Stitch\DBAL\Builders\Expression as Builder;
+use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Builders\Raw;
 use Stitch\DBAL\Statements\Binder;
 use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Syntax\Select as Syntax;
-
 /**
  * Class Expression
  * @package Stitch\DBAL\Statements\Select\Fragments
@@ -50,21 +50,9 @@ class Expression extends Statement
                         ->many($item['constraint']->getBindings())
                 );
             } else {
-                $value = $item['constraint']->getValue();
-
-                $binder = new Binder(
-                    $this->syntax->condition(
-                        $item['constraint']->getColumn()->getSchema(),
-                        $item['constraint']->getOperator(),
-                        $value
-                    )
+                $this->push(
+                    new Condition($this->syntax, $item['constraint'])
                 );
-
-                if (!is_null($value)) {
-                    $binder->add($value);
-                }
-
-                $this->push($binder);
             }
         }
     }

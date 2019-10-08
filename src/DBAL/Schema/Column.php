@@ -1,10 +1,10 @@
 <?php
 
-namespace Stitch\Schema;
+namespace Stitch\DBAL\Schema;
 
 /**
  * Class Column
- * @package Stitch\Schema
+ * @package Stitch\DBAL\Schema
  */
 class Column
 {
@@ -59,6 +59,14 @@ class Column
         $this->table->getkeyChain()->setPrimary($this);
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPrimary()
+    {
+        return $this->table->getPrimaryKey() === $this;
     }
 
     /**

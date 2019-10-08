@@ -3,8 +3,6 @@
 namespace Stitch\Result;
 
 use stitch\Collection;
-use Stitch\DBAL\Builders\Column;
-use Stitch\Queries\Query;
 
 /**
  * Class Set
@@ -13,24 +11,9 @@ use Stitch\Queries\Query;
 class Set extends Collection
 {
     /**
-     * @var Query
+     * @var Blueprint
      */
-    protected $query;
-
-    /**
-     * @var array
-     */
-    protected $columns;
-
-    /**
-     * @var Column
-     */
-    protected $primaryKey;
-
-    /**
-     * @var Column
-     */
-    protected $primaryKeyAlias;
+    protected $blueprint;
 
     /**
      * @var array
@@ -42,52 +25,18 @@ class Set extends Collection
      * @param $query
      * @param array $items
      */
-    public function __construct($query, array $items = [])
+    public function __construct(Blueprint $blueprint)
     {
-        $this->query = $query;
-
-        $table = $query->getModel()->getTable();
-        $this->columns = $table->getColumns();
-
-        $primaryKey = $table->getPrimaryKey();
-        $this->primaryKey = $primaryKey->getName();
-        $this->primaryKeyAlias = "{$table->getName()}_{$this->primaryKey}";
-
-        $this->assemble($items);
-    }
-
-    /**
-     * @return Query
-     */
-    public function getQuery()
-    {
-        return $this->query;
+        $this->blueprint = $blueprint;
     }
 
     /**
      * @param $items
      */
-    protected function assemble($items)
+    public function assemble(array $raw)
     {
-        foreach ($items as $item) {
+        foreach ($raw as $item) {
             $this->extract($item);
-        }
-    }
-
-    /**
-     * @param $data
-     * @return $this
-     */
-    public function extract($data)
-    {
-        if ($data[$this->primaryKeyAlias] !== null) {
-            if ($item = $this->match($data)) {
-                $item->extractRelations($data);
-            } else {
-                $item = new Record($this->query, $data);
-                $this->items[] = $item;
-                $this->map[$item->{$this->primaryKey}] = count($this->items) - 1;
-            }
         }
 
         return $this;
@@ -95,27 +44,42 @@ class Set extends Collection
 
     /**
      * @param $data
-     * @return bool|mixed
+     * @return $this
      */
-    public function match($data)
+    public function extract(array $raw)
     {
-        if ($item = $this->find($data[$this->primaryKeyAlias])) {
-            return $item;
+        $primaryKeyMap = $this->blueprint->primaryKeyMap();
+
+        if ($raw[$primaryKeyMap['alias']] !== null) {
+            if ($item = $this->find($raw[$primaryKeyMap['alias']])) {
+                $item->extractRelations($raw);
+            } else {
+                $item = $this->blueprint->newRecord()->extract($raw);
+                $this->items[] = $item;
+                $this->map[$item->{$primaryKeyMap['schema']->getName()}] = count($this->items) - 1;
+            }
         }
 
-        return false;
+        return $this;
     }
 
     /**
      * @param $primaryKey
      * @return bool|mixed
      */
-    public function find($primaryKey)
+    public function find(int $primaryKey)
     {
         if (array_key_exists($primaryKey, $this->map)) {
             return $this->items[$this->map[$primaryKey]];
         }
 
         return false;
+    }
+
+    public function hydrate()
+    {
+//        foreach ($this->items as $item) {
+//            $
+//        }
     }
 }

@@ -3,7 +3,7 @@
 namespace Stitch;
 
 use Closure;
-use Stitch\Schema\Table;
+use Stitch\DBAL\Schema\Table;
 
 /**
  * Class Factory

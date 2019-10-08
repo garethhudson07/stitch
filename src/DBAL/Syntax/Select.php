@@ -4,8 +4,8 @@ namespace Stitch\DBAL\Syntax;
 
 use Closure;
 use Stitch\DBAL\Builders\Table as TableBuilder;
-use Stitch\Schema\Table as TableSchema;
-use Stitch\Schema\Column as ColumnSchema;
+use Stitch\DBAL\Schema\Table as TableSchema;
+use Stitch\DBAL\Schema\Column as ColumnSchema;
 
 class Select
 {
@@ -194,16 +194,13 @@ class Select
      * @param TableSchema $table
      * @return string
      */
-    public function join(string $type, TableSchema $table, ColumnSchema $foreignKey, ColumnSchema $localKey)
+    public function join(string $type, TableSchema $table)
     {
         return $this->implode(
             $type,
             Lexicon::join(),
             $this->tablePath($table),
-            Lexicon::on(),
-            $this->columnPath($foreignKey),
-            Grammar::equal(),
-            $this->columnPath($localKey)
+            Lexicon::on()
         );
     }
 
@@ -308,7 +305,7 @@ class Select
 
             default:
                 $pieces[] = $operator;
-                $pieces[] = Grammar::placeholder();
+                $pieces[] = $value instanceOf ColumnSchema ? $this->columnPath($value) : Grammar::placeholder();
         }
 
         return $this->implode(...$pieces);

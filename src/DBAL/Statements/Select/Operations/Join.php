@@ -37,9 +37,7 @@ class Join extends Statement
         $this->push(
             $this->syntax->join(
                 $this->builder->getType(),
-                $this->builder->getSchema(),
-                $this->builder->getForeignKey(),
-                $this->builder->getLocalKey()
+                $this->builder->getSchema()
             )
         );
 

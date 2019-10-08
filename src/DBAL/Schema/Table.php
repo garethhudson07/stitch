@@ -1,12 +1,12 @@
 <?php
 
-namespace Stitch\Schema;
+namespace Stitch\DBAL\Schema;
 use Stitch\DBAL\Connection;
 use Stitch\Stitch;
 
 /**
  * Class Table
- * @package Stitch\Schema
+ * @package Stitch\DBAL\Schema
  */
 class Table
 {

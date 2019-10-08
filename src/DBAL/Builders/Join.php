@@ -2,8 +2,7 @@
 
 namespace Stitch\DBAL\Builders;
 
-use Stitch\Schema\Table as Schema;
-use Stitch\Schema\Column as ColumnSchema;
+use Stitch\DBAL\Schema\Table as Schema;
 
 /**
  * Class Join
@@ -15,10 +14,6 @@ class Join extends Table
      * @var string
      */
     protected $type;
-
-    protected $localKey;
-
-    protected $foreignKey;
 
     /**
      * @var Expression
@@ -43,28 +38,6 @@ class Join extends Table
     public function type(string $type)
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * @param ColumnSchema $column
-     * @return $this
-     */
-    public function localKey(ColumnSchema $column)
-    {
-        $this->localKey = $column;
-
-        return $this;
-    }
-
-    /**
-     * @param ColumnSchema $column
-     * @return $this
-     */
-    public function foreignKey(ColumnSchema $column)
-    {
-        $this->foreignKey = $column;
 
         return $this;
     }
@@ -119,22 +92,6 @@ class Join extends Table
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLocalKey()
-    {
-        return $this->localKey;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getForeignKey()
-    {
-        return $this->foreignKey;
     }
 
     /**
