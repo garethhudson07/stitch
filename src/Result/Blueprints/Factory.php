@@ -46,9 +46,9 @@ class Factory
     /**
      * @return mixed
      */
-    public function activeRecord()
+    public function activeRecord(array $attributes = [])
     {
-        return $this->recordFactory->record();
+        return $this->recordFactory->record($attributes);
     }
 
     /**
