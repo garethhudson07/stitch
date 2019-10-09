@@ -3,6 +3,7 @@
 namespace Stitch\Result\Blueprints;
 
 use Stitch\DBAL\Builders\Selection;
+use Stitch\DBAL\Schema\Table;
 use Stitch\DBAL\Syntax\Select as SelectSyntax;
 
 class ColumnMap

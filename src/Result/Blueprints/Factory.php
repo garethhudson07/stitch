@@ -1,29 +1,27 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Gareth
- * Date: 09/10/2019
- * Time: 14:25
- */
 
 namespace Stitch\Result\Blueprints;
 
 use Stitch\Relations\Relation;
+use Stitch\Result\Record;
 use Stitch\Result\Set;
 
 class Factory
 {
+    protected $blueprint;
+
     protected $recordFactory;
 
-    public function __construct($recordFactory)
+    public function __construct(Blueprint $blueprint, $recordFactory)
     {
+        $this->blueprint = $blueprint;
         $this->recordFactory = $recordFactory;
     }
 
     public function result()
     {
         if ($this->recordFactory instanceof Relation) {
-            return $this->recordFactory->associatesOne() ? $this->resultRecord() : $this->resultSet()
+            return $this->recordFactory->associatesOne() ? $this->resultRecord() : $this->resultSet();
         }
 
         return $this->resultSet();
@@ -34,7 +32,7 @@ class Factory
      */
     public function resultSet()
     {
-        return new Set($this);
+        return new Set($this->blueprint);
     }
 
     /**
@@ -42,6 +40,22 @@ class Factory
      */
     public function resultRecord()
     {
-        return new Record($this);
+        return new Record($this->blueprint);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function activeRecord()
+    {
+        return $this->recordFactory->record();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function activeRecordCollection()
+    {
+        return $this->recordFactory->collection();
     }
 }

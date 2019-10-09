@@ -49,13 +49,13 @@ class Set extends Collection
      */
     public function extract(array $raw)
     {
-        $primaryKeyMap = $this->blueprint->primaryKeyMap();
+        $primaryKeyMap = $this->blueprint->columnMap()->primaryKey();
 
         if ($raw[$primaryKeyMap['alias']] !== null) {
             if ($item = $this->find($raw[$primaryKeyMap['alias']])) {
                 $item->extractRelations($raw);
             } else {
-                $item = $this->blueprint->newRecord()->extract($raw);
+                $item = $this->blueprint->factory()->resultRecord()->extract($raw);
                 $this->items[] = $item;
                 $this->map[$item->{$primaryKeyMap['schema']->getName()}] = count($this->items) - 1;
             }
@@ -77,9 +77,12 @@ class Set extends Collection
         return false;
     }
 
+    /**
+     * @return mixed
+     */
     public function hydrate()
     {
-        $collection = $this->blueprint->activeRecordCollection();
+        $collection = $this->blueprint->factory()->activeRecordCollection();
 
         foreach ($this->items as $item) {
             $collection->push(

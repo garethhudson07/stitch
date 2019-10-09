@@ -218,7 +218,7 @@ class Query
     {
         $syntax = (new SelectSyntax)->analyse($this->builder);
 
-        return ResultBlueprint::make($this, $syntax)->resultSet()->assemble(
+        return ResultBlueprint::make($this, $syntax)->factory()->resultSet()->assemble(
             Dispatcher::select(
                 $this->model->getTable()->getConnection(),
                 $this->builder,

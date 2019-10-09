@@ -187,15 +187,23 @@ abstract class Relation
     {
         return new Join(
             $this->getForeignModel(),
-            new JoinBuilder($this->foreignModel->getTable()),
+            $this->joinBuilder(),
             $this
         );
     }
 
     /**
+     * @return JoinBuilder
+     */
+    public function joinBuilder()
+    {
+        return new JoinBuilder($this->foreignModel->getTable());
+    }
+
+    /**
      * @return RecordCollection
      */
-    public function make()
+    public function collection()
     {
         return new RecordCollection($this->getForeignModel());
     }

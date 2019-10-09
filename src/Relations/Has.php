@@ -2,7 +2,7 @@
 
 namespace Stitch\Relations;
 
-use Stitch\Records\Relations\BelongsTo;
+use Stitch\Records\Relations\BelongsTo as Record;
 
 /**
  * Class Has
@@ -30,11 +30,11 @@ class Has extends Relation
 
     /**
      * @param array $attributes
-     * @return BelongsTo
+     * @return Record
      */
     public function record(array $attributes = [])
     {
-        return (new BelongsTo(
+        return (new Record(
             $this->getForeignModel(),
             $this
         ))->fill($attributes);

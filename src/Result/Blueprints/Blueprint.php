@@ -3,15 +3,14 @@
 namespace Stitch\Result\Blueprints;
 
 use Stitch\DBAL\Builders\Selection;
+use Stitch\DBAL\Schema\Table;
 use Stitch\DBAL\Syntax\Select as SelectSyntax;
 use Stitch\Queries\Joins\Collection as Joins;
 use Stitch\Queries\Query;
-use Stitch\Result\Record;
-use Stitch\Result\Set;
 
-abstract class Blueprint
+class Blueprint
 {
-    protected $recordFactory;
+    protected $factory;
 
     protected $columnMap;
 
@@ -23,7 +22,7 @@ abstract class Blueprint
      */
     public function __construct($recordFactory)
     {
-        $this->recordFactory = $recordFactory;
+        $this->factory = new Factory($this, $recordFactory);
     }
 
     /**
@@ -55,9 +54,14 @@ abstract class Blueprint
         $this->columnMap = (new ColumnMap($table))->build($selection, $syntax);
 
         foreach ($joins->all() as $key => $join) {
-            $this->joins[$key] = (new static(
-                $join->getBlueprint()
-            ))->map($table, $selection, $joins, $syntax);
+            $relation = $join->getRelation();
+
+            $this->joins[$key] = (new static($relation))->map(
+                $relation->getForeignModel()->getTable(),
+                $selection,
+                $join->getJoins(),
+                $syntax
+            );
         }
 
         return $this;
@@ -80,31 +84,10 @@ abstract class Blueprint
     }
 
     /**
-     * @return Set
+     * @return Factory
      */
-    public function resultSet()
+    public function factory()
     {
-        return new Set($this);
+        return $this->factory;
     }
-
-    /**
-     * @return Record
-     */
-    public function resultRecord()
-    {
-        return new Record($this);
-    }
-
-    public function activeRecord()
-    {
-
-    }
-
-    abstract public function getSchema();
-
-    abstract public function getJoins();
-
-    abstract public function result();
-    
-    abstract public function activeRecordCollection();
 }
