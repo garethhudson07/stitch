@@ -4,7 +4,9 @@ namespace Stitch\Relations;
 
 use Stitch\DBAL\Builders\Join as JoinBuilder;
 use Stitch\Model;
+use Stitch\Queries\Joins\Join;
 use Stitch\Registry;
+use Stitch\Records\Relations\Collection as RecordCollection;
 
 /**
  * Class Relation
@@ -12,6 +14,11 @@ use Stitch\Registry;
  */
 abstract class Relation
 {
+    /**
+     * @var string
+     */
+    protected $name;
+
     /**
      * @var Model
      */
@@ -29,15 +36,16 @@ abstract class Relation
     /**
      * @var string
      */
-    protected $name;
+    protected $binding;
 
     /**
      * @var string
      */
-    protected $binding;
+    protected $associate = 'many';
 
     /**
      * Relation constructor.
+     * @param string $name
      * @param Model $localModel
      */
     public function __construct(string $name, Model $localModel)
@@ -149,14 +157,6 @@ abstract class Relation
     }
 
     /**
-     * @return JoinBuilder
-     */
-    protected function joinBuilder()
-    {
-        return new JoinBuilder($this->foreignModel->getTable());
-    }
-
-    /**
      * @return $this
      */
     public function boot()
@@ -181,14 +181,40 @@ abstract class Relation
     }
 
     /**
-     * @return mixed
+     * @return Join
      */
-    abstract public function join();
+    public function join()
+    {
+        return new Join(
+            $this->getForeignModel(),
+            new JoinBuilder($this->foreignModel->getTable()),
+            $this
+        );
+    }
 
     /**
-     * @return mixed
+     * @return RecordCollection
      */
-    abstract public function make();
+    public function make()
+    {
+        return new RecordCollection($this->getForeignModel());
+    }
+
+    /**
+     * @return bool
+     */
+    public function associatesMany()
+    {
+        return $this->associate === 'many';
+    }
+
+    /**
+     * @return bool
+     */
+    public function associatesOne()
+    {
+        return $this->associate === 'one';
+    }
 
     /**
      * @return mixed

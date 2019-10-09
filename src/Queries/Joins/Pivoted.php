@@ -10,24 +10,24 @@ use Stitch\DBAL\Builders\Column as ColumnBuilder;
  * Class ManyToMany
  * @package Stitch\Select\Relations
  */
-class ManyToMany extends Join
+class Pivoted extends Join
 {
     /**
      * @param TableBuilder $tableBuilder
      */
     public function apply(TableBuilder $tableBuilder)
     {
-        $pivotJoinBuilder = (new JoinBuilder($this->blueprint->getPivotTable()))
+        $pivotJoinBuilder = (new JoinBuilder($this->relation->getPivotTable()))
             ->type('LEFT')
             ->on(
-                new ColumnBuilder($this->blueprint->getLocalPivotKey()),
-                new ColumnBuilder($this->blueprint->getLocalKey())
+                new ColumnBuilder($this->relation->getLocalPivotKey()),
+                new ColumnBuilder($this->relation->getLocalKey())
             );
 
         $this->builder->type('LEFT')
             ->on(
-                new ColumnBuilder($this->blueprint->getForeignKey()),
-                new ColumnBuilder($this->blueprint->getForeignPivotKey())
+                new ColumnBuilder($this->relation->getForeignKey()),
+                new ColumnBuilder($this->relation->getForeignPivotKey())
             );
 
         $pivotJoinBuilder->join($this->builder);

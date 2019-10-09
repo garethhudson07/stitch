@@ -4,14 +4,15 @@ namespace Stitch\Queries\Joins;
 
 use Stitch\DBAL\Builders\Join as Builder;
 use Stitch\DBAL\Builders\Table as TableBuilder;
+use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\Model;
-use Stitch\Relations\Relation as Blueprint;
+use Stitch\Relations\Relation;
 
 /**
  * Class Relation
  * @package Stitch\Select\Relations
  */
-abstract class Join
+class Join
 {
     /**
      * @var Model
@@ -21,9 +22,9 @@ abstract class Join
     protected $builder;
 
     /**
-     * @var Blueprint
+     * @var Relation
      */
-    protected $blueprint;
+    protected $relation;
 
     /**
      * @var array
@@ -31,16 +32,16 @@ abstract class Join
     protected $joins;
 
     /**
-     * Relation constructor.
+     * Join constructor.
      * @param Model $model
      * @param Builder $builder
-     * @param Blueprint $blueprint
+     * @param Relation $relation
      */
-    public function __construct(Model $model, Builder $builder, Blueprint $blueprint)
+    public function __construct(Model $model, Builder $builder, Relation $relation)
     {
         $this->model = $model;
         $this->builder = $builder;
-        $this->blueprint = $blueprint;
+        $this->relation = $relation;
         $this->joins = new Collection($builder);
     }
 
@@ -53,11 +54,11 @@ abstract class Join
     }
 
     /**
-     * @return Blueprint
+     * @return Relation
      */
-    public function getBlueprint()
+    public function getRelation()
     {
-        return $this->blueprint;
+        return $this->relation;
     }
 
     /**
@@ -99,7 +100,16 @@ abstract class Join
     }
 
     /**
-     * @return mixed
+     * @param TableBuilder $tableBuilder
      */
-    abstract public function apply(TableBuilder $tableBuilder);
+    public function apply(TableBuilder $tableBuilder)
+    {
+        $this->builder->type('LEFT')
+            ->on(
+                new ColumnBuilder($this->relation->getForeignKey()),
+                new ColumnBuilder($this->relation->getLocalKey())
+            );
+
+        $tableBuilder->join($this->builder);
+    }
 }

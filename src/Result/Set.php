@@ -3,6 +3,7 @@
 namespace Stitch\Result;
 
 use stitch\Collection;
+use Stitch\Result\Blueprints\Blueprint;
 
 /**
  * Class Set
@@ -22,8 +23,7 @@ class Set extends Collection
 
     /**
      * Set constructor.
-     * @param $query
-     * @param array $items
+     * @param Blueprint $blueprint
      */
     public function __construct(Blueprint $blueprint)
     {
@@ -31,7 +31,8 @@ class Set extends Collection
     }
 
     /**
-     * @param $items
+     * @param array $raw
+     * @return $this
      */
     public function assemble(array $raw)
     {
@@ -43,7 +44,7 @@ class Set extends Collection
     }
 
     /**
-     * @param $data
+     * @param array $raw
      * @return $this
      */
     public function extract(array $raw)
@@ -78,8 +79,14 @@ class Set extends Collection
 
     public function hydrate()
     {
-//        foreach ($this->items as $item) {
-//            $
-//        }
+        $collection = $this->blueprint->activeRecordCollection();
+
+        foreach ($this->items as $item) {
+            $collection->push(
+                $item->hydrate()
+            );
+        }
+
+        return $collection;
     }
 }

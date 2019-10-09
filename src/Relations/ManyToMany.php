@@ -5,8 +5,7 @@ namespace Stitch\Relations;
 use Stitch\Registry;
 use Stitch\DBAL\Schema\ForeignKey;
 use Stitch\DBAL\Schema\Table;
-use Stitch\Queries\Joins\ManyToMany as Query;
-use Stitch\Queries\Joins\ManyToMany as Join;
+use Stitch\Queries\Joins\Pivoted as Join;
 use Closure;
 
 /**
@@ -154,14 +153,6 @@ class ManyToMany extends Relation
     }
 
     /**
-     * @return string
-     */
-    public function queryClass()
-    {
-        return Query::class;
-    }
-
-    /**
      * @return bool
      */
     public function hasKeys()
@@ -183,13 +174,5 @@ class ManyToMany extends Relation
     public function join()
     {
         return new Join($this->getForeignModel(), $this->joinBuilder(), $this);
-    }
-
-    public function make()
-    {
-    }
-
-    public function record(array $attributes = [])
-    {
     }
 }

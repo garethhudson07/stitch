@@ -53,7 +53,7 @@ class Model
      * @param array $attributes
      * @return Record
      */
-    public function make(array $attributes = [])
+    public function record(array $attributes = [])
     {
         return (new Record($this))->fill($attributes);
     }

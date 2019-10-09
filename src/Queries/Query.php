@@ -8,8 +8,7 @@ use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\Queries\Joins\Collection as Joins;
 use Stitch\DBAL\Dispatcher;
 use Stitch\Records\Record;
-use Stitch\Result\Blueprint as ResultBlueprint;
-use Stitch\Result\Hydrator as ResultHydrator;
+use Stitch\Result\Blueprints\Blueprint as ResultBlueprint;
 use Stitch\Result\Set as ResultSet;
 use Stitch\DBAL\Syntax\Select as SelectSyntax;
 
@@ -102,7 +101,7 @@ class Query
     }
 
     /**
-     * @param array ...$relations
+     * @param mixed ...$pipelines
      * @return $this
      */
     public function with(...$pipelines)
@@ -209,14 +208,7 @@ class Query
     {
         $resultSet = $this->getResultSet();
 
-        if (!$this->hydrate) {
-            return $resultSet;
-        }
-
-        return ResultHydrator::hydrate(
-            $this->model->collection(),
-            $resultSet
-        );
+        return $this->hydrate ? $resultSet->hydrate() : $resultSet;
     }
 
     /**
@@ -226,10 +218,7 @@ class Query
     {
         $syntax = (new SelectSyntax)->analyse($this->builder);
 
-        return (new ResultBlueprint($this))->map(
-            $this->builder->resolveSelection(),
-            $syntax
-        )->newSet()->assemble(
+        return ResultBlueprint::make($this, $syntax)->resultSet()->assemble(
             Dispatcher::select(
                 $this->model->getTable()->getConnection(),
                 $this->builder,

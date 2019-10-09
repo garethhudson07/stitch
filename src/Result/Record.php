@@ -4,6 +4,7 @@ namespace Stitch\Result;
 
 use Stitch\Contracts\Arrayable;
 use Stitch\Queries\Query;
+use Stitch\Result\Blueprints\Blueprint;
 
 /**
  * Class Record
@@ -28,8 +29,7 @@ class Record implements Arrayable
 
     /**
      * Record constructor.
-     * @param $query
-     * @param array $raw
+     * @param Blueprint $blueprint
      */
     public function __construct(Blueprint $blueprint)
     {
@@ -95,9 +95,18 @@ class Record implements Arrayable
         return $this->relations;
     }
 
+    /**
+     * @return mixed
+     */
     public function hydrate()
     {
+        $activeRecord = $this->blueprint->activeRecord()->fill($this->data);
 
+        foreach ($this->relations as $name => $relation) {
+            $activeRecord->setRelation($name, $relation->hydrate());
+        }
+
+        return $activeRecord;
     }
 
     /**
