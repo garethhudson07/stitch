@@ -144,6 +144,10 @@ class Model
      */
     protected function bootRelation(Relation $relation, ?Closure $callback = null)
     {
+        if (!$relation->getForeignModel() && !$relation->getBinding()) {
+            $relation->bind($relation->getName());
+        }
+
         if ($callback) {
             $callback($relation);
         }

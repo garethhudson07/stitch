@@ -14,7 +14,13 @@ class BelongsTo extends Relation
     public function pullKeys()
     {
         if (!$this->foreignKey) {
-            $this->foreignKey = $this->getForeignModel()->getTable()->getPrimaryKey();
+            if ($this->localKey) {
+                $this->foreignKey = $this->getForeignModel()->getTable()->getColumn(
+                    $this->localModel->getTable()->getForeignKeyFrom($this->localKey)->getReferenceColumnName()
+                );
+            } else {
+                $this->foreignKey = $this->getForeignModel()->getTable()->getPrimaryKey();
+            }
         }
 
         if (!$this->localKey) {

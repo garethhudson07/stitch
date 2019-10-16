@@ -116,6 +116,8 @@ abstract class Relation
      */
     public function foreignKey(string $column)
     {
+        echo $column;
+
         $this->foreignKey = $this->getForeignModel()->getTable()->getColumn($column);
 
         return $this;
@@ -161,10 +163,6 @@ abstract class Relation
      */
     public function boot()
     {
-        if (!$this->foreignModel && !$this->binding) {
-            $this->binding = $this->name;
-        }
-
         if (!$this->hasKeys()) {
             $this->pullKeys();
         }
