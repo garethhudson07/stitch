@@ -16,7 +16,13 @@ class Has extends Relation
     public function pullKeys()
     {
         if (!$this->localKey) {
-            $this->localKey = $this->localModel->getTable()->getPrimaryKey();
+            if ($this->foreignKey) {
+                $this->localKey = $this->localModel->getTable()->getColumn(
+                    $this->getForeignModel()->getTable()->getForeignKeyFrom($this->foreignKey)->getReferenceColumnName()
+                );
+            } else {
+                $this->localKey = $this->localModel->getTable()->getPrimaryKey();
+            }
         }
 
         if (!$this->foreignKey) {
