@@ -4,7 +4,6 @@ namespace Stitch\Result;
 
 use Stitch\Contracts\Arrayable;
 use Stitch\Queries\Query;
-use Stitch\Result\Blueprints\Blueprint;
 
 /**
  * Class Record

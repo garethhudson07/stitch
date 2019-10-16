@@ -3,7 +3,6 @@
 namespace Stitch\Result;
 
 use stitch\Collection;
-use Stitch\Result\Blueprints\Blueprint;
 
 /**
  * Class Set

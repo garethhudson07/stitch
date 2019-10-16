@@ -26,11 +26,11 @@ class BelongsTo extends Record
     }
 
     /**
-     * @param Record $associated
+     * @param Record $record
      */
-    public function associate(Record $associated)
+    public function associate(Record $record)
     {
-        $this->associated = $associated;
+        $this->associated = $record;
     }
 
     /**

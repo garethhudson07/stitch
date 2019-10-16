@@ -8,7 +8,7 @@ use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\Queries\Joins\Collection as Joins;
 use Stitch\DBAL\Dispatcher;
 use Stitch\Records\Record;
-use Stitch\Result\Blueprints\Blueprint as ResultBlueprint;
+use Stitch\Result\Blueprint as ResultBlueprint;
 use Stitch\Result\Set as ResultSet;
 use Stitch\DBAL\Syntax\Select as SelectSyntax;
 

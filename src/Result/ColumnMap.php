@@ -1,6 +1,6 @@
 <?php
 
-namespace Stitch\Result\Blueprints;
+namespace Stitch\Result;
 
 use Stitch\DBAL\Builders\Selection;
 use Stitch\DBAL\Schema\Table;

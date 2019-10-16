@@ -7,13 +7,11 @@ use Stitch\Records\Record;
 
 class Collection extends BaseCollection
 {
-    protected $associated;
-
     /**
      * @param array $attributes
      * @return mixed
      */
-    public function make(array $attributes = [])
+    public function record(array $attributes = [])
     {
         $record = parent::make($attributes);
 
@@ -25,15 +23,13 @@ class Collection extends BaseCollection
     }
 
     /**
-     * @param Record $associated
+     * @param Record $record
      * @return $this
      */
-    public function associate(Record $associated)
+    public function associate(Record $record)
     {
-        $this->associated = $associated;
-
         foreach ($this->items as $item) {
-            $item->associate($associated);
+            $item->associate($record);
         }
 
         return $this;

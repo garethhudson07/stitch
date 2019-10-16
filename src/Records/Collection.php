@@ -22,9 +22,9 @@ class Collection extends BaseCollection
      * @param array $attributes
      * @return Record
      */
-    public function make(array $attributes = [])
+    public function record(array $attributes = [])
     {
-        return $this->model->make($attributes);
+        return $this->model->record($attributes);
     }
 
     /**
@@ -33,7 +33,7 @@ class Collection extends BaseCollection
      */
     public function new(array $attributes)
     {
-        return $this->push($this->make($attributes));
+        return $this->push($this->record($attributes));
     }
 
     /**

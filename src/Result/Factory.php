@@ -1,10 +1,8 @@
 <?php
 
-namespace Stitch\Result\Blueprints;
+namespace Stitch\Result;
 
 use Stitch\Relations\Relation;
-use Stitch\Result\Record;
-use Stitch\Result\Set;
 
 class Factory
 {

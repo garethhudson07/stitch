@@ -203,7 +203,10 @@ class Model
      */
     public function find(string $id)
     {
-        return $this->query()->where($this->table->getPrimaryKey()->getName(), $id)->first();
+        return $this->query()->where(
+            $this->table->getPrimaryKey()->getName(),
+            $id
+        )->first();
     }
 
     /**
