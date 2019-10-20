@@ -10,7 +10,7 @@ use Stitch\DBAL\Dispatcher;
 use Stitch\Records\Record;
 use Stitch\Result\Blueprint as ResultBlueprint;
 use Stitch\Result\Set as ResultSet;
-use Stitch\DBAL\Syntax\Select as SelectSyntax;
+use Stitch\DBAL\Syntax\Select\Select as SelectSyntax;
 
 /**
  * Class Query

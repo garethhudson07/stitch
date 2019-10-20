@@ -7,7 +7,7 @@ use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Builders\Raw;
 use Stitch\DBAL\Statements\Binder;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Syntax\Select\Select as Syntax;
 /**
  * Class Expression
  * @package Stitch\DBAL\Statements\Select\Fragments

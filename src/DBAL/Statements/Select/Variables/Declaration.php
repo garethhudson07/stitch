@@ -4,7 +4,7 @@ namespace Stitch\DBAL\Statements\Select\Variables;
 
 use Stitch\DBAL\Builders\Table as Builder;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Syntax\Select\Select as Syntax;
 
 /**
  * Class Declaration
@@ -47,6 +47,13 @@ class Declaration extends Statement
      */
     protected function variables(Builder $builder)
     {
+        $table = $this->syntax->table($builder);
+        $table->column($schema)->path();
+        $table->column($schema)->alias();
+        $table->primaryKey()->alias();
+
+
+
         $schema = $builder->getSchema();
 
         $variables[] = $this->syntax->assign(

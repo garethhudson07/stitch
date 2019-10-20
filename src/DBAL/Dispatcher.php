@@ -8,7 +8,7 @@ use Stitch\DBAL\Statements\Persist\Insert as InsertStatement;
 use Stitch\DBAL\Statements\Persist\Update as UpdateStatement;
 use Stitch\DBAL\Statements\Select\Query as QueryStatement;
 use Stitch\DBAL\Statements\Select\Variables\Declaration as VariableDeclaration;
-use Stitch\DBAL\Syntax\Select as SelectSyntax;
+use Stitch\DBAL\Syntax\Select\Select as SelectSyntax;
 
 /**
  * Class Dispatcher

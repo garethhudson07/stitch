@@ -8,7 +8,7 @@ use Stitch\DBAL\Builders\Sorter;
 use Stitch\DBAL\Statements\Select\Operations\OrderBy;
 use Stitch\DBAL\Statements\Select\Variables\Selection as VariableSelection;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Syntax\Select\Select as Syntax;
 
 /**
  * Class Numbered

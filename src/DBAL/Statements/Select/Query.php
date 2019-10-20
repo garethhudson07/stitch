@@ -5,7 +5,7 @@ namespace Stitch\DBAL\Statements\Select;
 use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Statements\Select\Operations\OrderBy;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Syntax\Select\Select as Syntax;
 
 /**
  * Class Query

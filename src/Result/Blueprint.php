@@ -4,7 +4,7 @@ namespace Stitch\Result;
 
 use Stitch\DBAL\Builders\Selection;
 use Stitch\DBAL\Schema\Table;
-use Stitch\DBAL\Syntax\Select as SelectSyntax;
+use Stitch\DBAL\Syntax\Select\Select as SelectSyntax;
 use Stitch\Queries\Joins\Collection as Joins;
 use Stitch\Queries\Query;
 

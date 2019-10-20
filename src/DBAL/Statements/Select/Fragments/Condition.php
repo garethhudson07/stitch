@@ -6,7 +6,7 @@ use Stitch\DBAL\Builders\Condition as Builder;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Statements\Binder;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Syntax\Select\Select as Syntax;
 /**
  * Class Condition
  * @package Stitch\DBAL\Statements\Select\Fragments

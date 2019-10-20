@@ -3,7 +3,7 @@
 namespace Stitch\DBAL\Statements;
 
 use Stitch\DBAL\Statements\Contracts\HasBindings;
-use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Syntax\Select\Select as Syntax;
 
 /**
  * Class Statement

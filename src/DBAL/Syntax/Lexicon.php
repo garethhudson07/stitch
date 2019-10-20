@@ -7,7 +7,7 @@ class Lexicon
     /**
      * @return string
      */
-    public static function select()
+    public static function select(): string
     {
         return 'SELECT';
     }
@@ -15,7 +15,7 @@ class Lexicon
     /**
      * @return string
      */
-    public static function from()
+    public static function from(): string
     {
         return 'FROM';
     }
@@ -23,7 +23,7 @@ class Lexicon
     /**
      * @return string
      */
-    public static function join()
+    public static function join(): string
     {
         return 'JOIN';
     }
@@ -31,7 +31,7 @@ class Lexicon
     /**
      * @return string
      */
-    public static function on()
+    public static function on(): string
     {
         return 'ON';
     }
@@ -39,7 +39,7 @@ class Lexicon
     /**
      * @return string
      */
-    public static function where()
+    public static function where(): string
     {
         return 'WHERE';
     }
@@ -47,7 +47,7 @@ class Lexicon
     /**
      * @return string
      */
-    public static function alias()
+    public static function alias(): string
     {
         return "AS";
     }
@@ -55,7 +55,7 @@ class Lexicon
     /**
      * @return string
      */
-    public static function set()
+    public static function set(): string
     {
         return 'SET';
     }
@@ -63,7 +63,7 @@ class Lexicon
     /**
      * @return string
      */
-    public static function and()
+    public static function and(): string
     {
         return 'AND';
     }
@@ -71,7 +71,7 @@ class Lexicon
     /**
      * @return string
      */
-    public static function null()
+    public static function null(): string
     {
         return 'IS NULL';
     }
@@ -79,31 +79,26 @@ class Lexicon
     /**
      * @return string
      */
-    public static function notNull()
+    public static function notNull(): string
     {
         return 'IS NOT NULL';
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public static function in()
+    public static function methods(): array
     {
-        return 'IN';
+        return [
+            'IN',
+            'NOT IN'
+        ];
     }
 
     /**
      * @return string
      */
-    public static function notIn()
-    {
-        return 'NOT IN';
-    }
-
-    /**
-     * @return string
-     */
-    public static function limit()
+    public static function limit(): string
     {
         return 'LIMIT';
     }
@@ -111,7 +106,7 @@ class Lexicon
     /**
      * @return string
      */
-    public static function orderBy()
+    public static function orderBy(): string
     {
         return 'ORDER BY';
     }

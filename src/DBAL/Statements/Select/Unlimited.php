@@ -7,7 +7,7 @@ use Stitch\DBAL\Statements\Select\Operations\Join;
 use Stitch\DBAL\Statements\Select\Operations\Select;
 use Stitch\DBAL\Statements\Select\Operations\Where;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Syntax\Select\Select as Syntax;
 
 
 /**

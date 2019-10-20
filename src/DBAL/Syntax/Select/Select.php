@@ -1,114 +1,116 @@
 <?php
 
-namespace Stitch\DBAL\Syntax;
+namespace Stitch\DBAL\Syntax\Select;
 
 use Closure;
+use Stitch\DBAL\Syntax\Lexicon;
+use Stitch\DBAL\Syntax\Grammar;
 use Stitch\DBAL\Builders\Table as TableBuilder;
 use Stitch\DBAL\Schema\Table as TableSchema;
 use Stitch\DBAL\Schema\Column as ColumnSchema;
 
 class Select
 {
-    protected $crossDatabase;
+//    protected $crossDatabase;
+//
+//    protected $crossTable;
+//
+//    protected $methods;
 
-    protected $crossTable;
-
-    protected $methods;
-
-    /**
-     * Select constructor.
-     */
-    public function __construct()
-    {
-        $this->methods[] = Lexicon::in();
-        $this->methods[] = Lexicon::notIn();
-    }
+//    /**
+//     * Select constructor.
+//     */
+//    public function __construct()
+//    {
+//        $this->methods[] = Lexicon::in();
+//        $this->methods[] = Lexicon::notIn();
+//    }
 
     /**
      * @param TableBuilder $builder
      * @return $this
      */
-    public function analyse(TableBuilder $builder)
-    {
-        $this->crossDatabase = $builder->crossDatabase();
-        $this->crossTable = $builder->crossTable();
+//    public function analyse(TableBuilder $builder)
+//    {
+//        $this->crossDatabase = $builder->crossDatabase();
+//        $this->crossTable = $builder->crossTable();
+//
+//        return $this;
+//    }
 
-        return $this;
-    }
-
-    /**
-     * @param $schema
-     * @return array
-     */
-    protected function tablePathPieces(TableSchema $schema)
-    {
-        $pieces = [];
-
-        if ($this->crossDatabase) {
-            $pieces[] = $schema->getConnection()->getDatabase();
-        }
-
-        $pieces[] = $schema->getName();
-
-        return $pieces;
-    }
-
-    /**
-     * @param TableSchema $schema
-     * @return string
-     */
-    public function tablePath(TableSchema $schema)
-    {
-        return Grammar::path(
-            $this->tablePathPieces($schema)
-        );
-    }
-
-    /**
-     * @param TableSchema $schema
-     * @return string
-     */
-    public function tableAlias(TableSchema $schema)
-    {
-        return Grammar::alias(
-            $this->tablePathPieces($schema)
-        );
-    }
-
-    /**
-     * @param $schema
-     * @return array
-     */
-    public function columnPathPieces(ColumnSchema $schema)
-    {
-        $pieces = $this->crossTable ? $this->tablePathPieces($schema->getTable()) : [];
-
-        $pieces[] = $schema->getName();
-
-        return $pieces;
-    }
-
-    /**
-     * @param ColumnSchema $schema
-     * @return string
-     */
-    public function columnPath(ColumnSchema $schema)
-    {
-        return Grammar::path(
-            $this->columnPathPieces($schema)
-        );
-    }
-
-    /**
-     * @param ColumnSchema $schema
-     * @return string
-     */
-    public function columnAlias(ColumnSchema $schema)
-    {
-        return Grammar::alias(
-            $this->columnPathPieces($schema)
-        );
-    }
+//    /**
+//     * @param $schema
+//     * @return array
+//     */
+//    protected function tablePathPieces(TableSchema $schema)
+//    {
+//        $pieces = [];
+//
+//        if ($this->crossDatabase) {
+//            $pieces[] = $schema->getConnection()->getDatabase();
+//        }
+//
+//        $pieces[] = $schema->getName();
+//
+//        return $pieces;
+//    }
+//
+//    /**
+//     * @param TableSchema $schema
+//     * @return string
+//     */
+//    public function tablePath(TableSchema $schema)
+//    {
+//        return Grammar::path(
+//            $this->tablePathPieces($schema)
+//        );
+//    }
+//
+//    /**
+//     * @param TableSchema $schema
+//     * @return string
+//     */
+//    public function tableAlias(TableSchema $schema)
+//    {
+//        return Grammar::alias(
+//            $this->tablePathPieces($schema)
+//        );
+//    }
+//
+//    /**
+//     * @param $schema
+//     * @return array
+//     */
+//    public function columnPathPieces(ColumnSchema $schema)
+//    {
+//        $pieces = $this->crossTable ? $this->tablePathPieces($schema->getTable()) : [];
+//
+//        $pieces[] = $schema->getName();
+//
+//        return $pieces;
+//    }
+//
+//    /**
+//     * @param ColumnSchema $schema
+//     * @return string
+//     */
+//    public function columnPath(ColumnSchema $schema)
+//    {
+//        return Grammar::path(
+//            $this->columnPathPieces($schema)
+//        );
+//    }
+//
+//    /**
+//     * @param ColumnSchema $schema
+//     * @return string
+//     */
+//    public function columnAlias(ColumnSchema $schema)
+//    {
+//        return Grammar::alias(
+//            $this->columnPathPieces($schema)
+//        );
+//    }
 
     /**
      * @param TableSchema $schema
@@ -279,37 +281,37 @@ class Select
         );
     }
 
-    /**
-     * @param ColumnSchema $column
-     * @param $operator
-     * @param $value
-     * @return string
-     */
-    public function condition(ColumnSchema $column, $operator, $value)
-    {
-        $pieces = [$this->columnPath($column)];
-
-        switch (gettype($value)) {
-            case 'array':
-                if (in_array($operator, $this->methods)) {
-                    $pieces[] = Grammar::method($operator, Grammar::placeholders($value));
-                } else {
-                    $pieces[] = $operator;
-                    $pieces[] = implode(' ' . Lexicon::and() . ' ', $value);
-                }
-                break;
-
-            case null:
-                $pieces[] = $operator === Grammar::notEqual() ? Lexicon::notNull() : Lexicon::null();
-                break;
-
-            default:
-                $pieces[] = $operator;
-                $pieces[] = $value instanceOf ColumnSchema ? $this->columnPath($value) : Grammar::placeholder();
-        }
-
-        return $this->implode(...$pieces);
-    }
+//    /**
+//     * @param ColumnSchema $column
+//     * @param $operator
+//     * @param $value
+//     * @return string
+//     */
+//    public function condition(ColumnSchema $column, $operator, $value)
+//    {
+//        $pieces = [$this->columnPath($column)];
+//
+//        switch (gettype($value)) {
+//            case 'array':
+//                if (in_array($operator, $this->methods)) {
+//                    $pieces[] = Grammar::method($operator, Grammar::placeholders($value));
+//                } else {
+//                    $pieces[] = $operator;
+//                    $pieces[] = implode(' ' . Lexicon::and() . ' ', $value);
+//                }
+//                break;
+//
+//            case null:
+//                $pieces[] = $operator === Grammar::notEqual() ? Lexicon::notNull() : Lexicon::null();
+//                break;
+//
+//            default:
+//                $pieces[] = $operator;
+//                $pieces[] = $value instanceOf ColumnSchema ? $this->columnPath($value) : Grammar::placeholder();
+//        }
+//
+//        return $this->implode(...$pieces);
+//    }
 
     /**
      * @param $left

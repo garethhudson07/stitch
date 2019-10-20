@@ -5,7 +5,7 @@ namespace Stitch\DBAL\Statements\Select\Operations;
 use Stitch\DBAL\Builders\Expression as Builder;
 use Stitch\DBAL\Statements\Select\Fragments\Expression;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Syntax\Select\Select as Syntax;
 
 /**
  * Class Where
