@@ -47,6 +47,11 @@ class Declaration extends Statement
      */
     protected function variables(Builder $builder)
     {
+        $scope = $this->syntax->scope($builder);
+        $scope->table();
+        $scope->column($schema);
+
+
         $table = $this->syntax->table($builder);
         $table->column($schema)->path();
         $table->column($schema)->alias();

@@ -3,16 +3,16 @@
 namespace Stitch\DBAL\Syntax\Select;
 
 use Stitch\DBAL\Syntax\Grammar;
-use Stitch\DBAL\Builders\Column as Builder;
 use Stitch\DBAL\Schema\Column as Schema;
 use Stitch\DBAL\Syntax\Lexicon;
 
-
 class Column
 {
-    protected $table;
+    protected $context;
 
-    protected $builder;
+    protected $schema;
+
+    protected $table;
 
     protected $pieces = [];
 
@@ -22,12 +22,14 @@ class Column
 
     /**
      * Column constructor.
-     * @param Builder $builder
+     * @param Context $context
+     * @param Schema $schema
      * @param Table $table
      */
-    public function __construct(Builder $builder, Table $table)
+    public function __construct(Context $context, Schema $schema, Table $table)
     {
-        $this->builder = $builder;
+        $this->context = $context;
+        $this->schema = $schema;
         $this->table = $table;
     }
 
@@ -37,10 +39,11 @@ class Column
     public function pieces(): array
     {
         if (!$this->pieces) {
-            $this->pieces = [
-                $this->table->pieces(),
-                $this->builder->getSchema()->getName()
-            ];
+            if ($this->context->crossTable()) {
+                $this->pieces = $this->table->pieces();
+            }
+
+            $this->pieces[] = $this->schema->getName();
         }
 
         return $this->pieces;
@@ -65,36 +68,4 @@ class Column
             $this->pieces()
         );
     }
-
-    /**
-     * @param $operator
-     * @param $value
-     * @return string
-     */
-    public function condition($operator, $value): string
-    {
-        $pieces = [$this->pieces()];
-
-        switch (gettype($value)) {
-            case 'array':
-                if (in_array($operator, Lexicon::methods())) {
-                    $pieces[] = Grammar::method($operator, Grammar::placeholders($value));
-                } else {
-                    $pieces[] = $operator;
-                    $pieces[] = implode(' ' . Lexicon::and() . ' ', $value);
-                }
-                break;
-
-            case null:
-                $pieces[] = $operator === Grammar::notEqual() ? Lexicon::notNull() : Lexicon::null();
-                break;
-
-            default:
-                $pieces[] = $operator;
-                $pieces[] = $value instanceOf Schema ? $this->columnPath($value) : Grammar::placeholder();
-        }
-
-        return implode(' ', $pieces);
-    }
-
 }

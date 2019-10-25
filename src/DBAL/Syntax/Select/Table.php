@@ -2,14 +2,18 @@
 
 namespace Stitch\DBAL\Syntax\Select;
 
-use Stitch\DBAL\Builders\Table as Builder;
+use Stitch\DBAL\Schema\Table as Schema;
 use Stitch\DBAL\Syntax\Grammar;
 
 class Table
 {
-    protected $builder;
+    protected $context;
+
+    protected $schema;
 
     protected $suffix = '';
+
+    protected $columns = [];
 
     protected $pieces = [];
 
@@ -17,9 +21,10 @@ class Table
 
     protected $alias;
 
-    public function __construct(Builder $builder)
+    public function __construct(Context $context, Schema $schema)
     {
-        $this->builder = $builder;
+        $this->context = $context;
+        $this->schema = $schema;
     }
 
     /**
@@ -39,12 +44,11 @@ class Table
     public function pieces(): array
     {
         if (!$this->pieces) {
-            $schema = $this->builder->getSchema();
+            if ($this->context->crossDatabase()) {
+               $this->pieces[] = $this->schema->getConnection()->getDatabase();
+            }
 
-            $this->pieces = [
-                $schema->getConnection()->getDatabase(),
-                "{$schema->getName()}$this->suffix"
-            ];
+            $this->pieces[] = "{$this->schema->getName()}$this->suffix";
         }
 
         return $this->pieces;

@@ -19,7 +19,8 @@ class Condition extends Statement
     protected $builder;
 
     /**
-     * Expression constructor.
+     * Condition constructor.
+     * @param Syntax $syntax
      * @param Builder $builder
      */
     public function __construct(Syntax $syntax, Builder $builder)

@@ -2,41 +2,23 @@
 
 namespace Stitch\DBAL\Syntax\Select;
 
+use Stitch\Collection;
 use Stitch\DBAL\Builders\Table as Builder;
-use Stitch\DBAL\Schema\Table as Schema;
 
-class Tables
+class Map extends Collection
 {
-    protected $items = [];
-
-    protected $keys;
+    protected $locations = [];
 
     /**
      * @param Builder $builder
-     * @return mixed
-     */
-    public static function make(Builder $builder)
-    {
-        return (new static())->push($builder);
-    }
-
-    /**
-     * @param Builder $builder
+     * @param Table $table
      * @return $this
      */
-    public function push(Builder $builder)
+    public function add(Builder $builder, Table $table)
     {
-        $table = new Table($builder);
+        $this->push($table);
 
-        if ($occurrences = $this->occurrences($builder)) {
-            $table->suffix('_' . ($occurrences + 1));
-        }
-
-        $this->items[] = $table;
-
-        foreach ($builder->getJoins() as $join) {
-            $this->push($join);
-        }
+        $this->locations
 
         return $this;
     }
@@ -45,7 +27,7 @@ class Tables
      * @param Builder $builder
      * @return null
      */
-    public function find(Builder $builder)
+    public function match(Builder $builder)
     {
         foreach ($this->items as $item) {
             if ($item->getBuilder() === $builder) {
@@ -57,7 +39,7 @@ class Tables
     }
 
     /**
-     * @param Builder $schema
+     * @param Builder $builder
      * @return int
      */
     public function occurrences(Builder $builder)
