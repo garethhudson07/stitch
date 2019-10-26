@@ -101,13 +101,22 @@ class Query
     }
 
     /**
+     * @param string $pipeline
+     * @return mixed
+     */
+    public function resolvePipeline(string $pipeline)
+    {
+        return $this->parsePipeline($pipeline)->resolve($this);
+    }
+
+    /**
      * @param mixed ...$pipelines
      * @return $this
      */
     public function with(...$pipelines)
     {
         foreach ($pipelines as $pipeline) {
-            $this->joins->push(
+            $this->joins->resolve(
                 $this->parsePipeline($pipeline)
             );
         }
@@ -123,7 +132,7 @@ class Query
     {
         foreach ($pipelines as $pipeline) {
             $this->builder->select(
-                $this->parsePipeline($pipeline)->last()
+                $this->resolvePipeline($pipeline)
             );
         }
 
@@ -138,7 +147,7 @@ class Query
     public function orderBy(string $pipeline, string $direction = 'ASC')
     {
         $this->builder->orderBy(
-            $this->parsePipeline($pipeline)->last(),
+            $this->resolvePipeline($pipeline),
             $direction
         );
 
@@ -174,7 +183,7 @@ class Query
     public function limit(...$arguments)
     {
         if (count($arguments) > 1) {
-            $this->joins->get(
+            $this->joins->pull(
                 $this->parsePipeline($arguments[0])
             )->limit($arguments[1]);
         } else {
@@ -191,7 +200,7 @@ class Query
     public function offset(...$arguments)
     {
         if (count($arguments) > 1) {
-            $this->joins->get(
+            $this->joins->pull(
                 $this->parsePipeline($arguments[0])
             )->offset($arguments[1]);
         } else {

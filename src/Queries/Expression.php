@@ -46,7 +46,7 @@ class Expression
             return $this;
         }
 
-        $arguments[0] = $this->query->parsePipeline($arguments[0])->last();
+        $arguments[0] = $this->query->resolvePipeline($arguments[0]);
 
         $this->builder->{$method}(...$arguments);
 

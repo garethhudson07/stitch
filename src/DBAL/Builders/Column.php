@@ -15,6 +15,8 @@ class Column
      */
     protected $schema;
 
+    protected $table;
+
     protected $jsonPath;
 
     /**
@@ -27,10 +29,21 @@ class Column
     }
 
     /**
+     * @param Table $table
+     * @return $this
+     */
+    public function table(Table $table)
+    {
+        $this->table = $table;
+
+        return $this;
+    }
+
+    /**
      * @param JsonPath $path
      * @return $this
      */
-    public function setJsonPath(JsonPath $path)
+    public function jsonPath(JsonPath $path)
     {
         $this->jsonPath = $path;
 
@@ -66,16 +79,4 @@ class Column
             && $schema->getTable()->getName() === $this->schema->getTable()->getName()
         );
     }
-
-//    /**
-//     * @return string
-//     */
-//    public function resolve(): string
-//    {
-//        if ($this->jsonPath && $this->schema->getType() === 'json') {
-//            return "{$this->schema->getName()} -> '{$this->jsonPath->resolve()}'";
-//        }
-//
-//        return $this->schema->getName();
-//    }
 }

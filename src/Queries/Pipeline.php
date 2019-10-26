@@ -8,6 +8,7 @@ use IteratorAggregate;
 use Stitch\Model;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Builders\JsonPath as JsonPathBuilder;
+use Stitch\Relations\Relation;
 
 /**
  * Class Path
@@ -48,19 +49,9 @@ class Pipeline implements IteratorAggregate, Countable
             $relations = $model->getRelations();
 
             if (!$relations->has($piece)) {
-                $columnBuilder = new ColumnBuilder(
-                    $model->getTable()->getColumn($piece)
+                $instance->push(
+                    array_slice($pieces, $key)
                 );
-
-                if (count($pieces) > ($key + 1)) {
-                    $columnBuilder->setJsonPath(
-                        (new JsonPathBuilder())->merge(
-                            array_slice($pieces, $key + 1)
-                        )
-                    );
-                }
-
-                $instance->push($columnBuilder);
 
                 break;
             }
@@ -75,11 +66,44 @@ class Pipeline implements IteratorAggregate, Countable
     }
 
     /**
+     * @param Query $query
+     * @return ColumnBuilder
+     */
+    public function resolve(Query $query)
+    {
+        $columnPieces = $this->last();
+
+        if ($this->count() > 1) {
+            $model = $this->penultimate()->getForeignModel();
+            $join = $query->getJoins()->resolve($this->before($this->count() - 1));
+            $tableBuilder = $join->getBuilder();
+        } else {
+            $model = $query->getModel();
+            $tableBuilder = $query->getBuilder();
+        }
+
+        $columnBuilder = (new ColumnBuilder(
+            $model->getTable()->getColumn(array_shift($columnPieces))
+        ))->table($tableBuilder);
+
+        if (count($columnPieces) > 0) {
+            $columnBuilder->jsonPath(
+                (new JsonPathBuilder())->merge($columnPieces)
+            );
+        }
+
+        return $columnBuilder;
+    }
+
+    /**
      * @param $pipe
+     * @return $this
      */
     public function push($pipe)
     {
         $this->pipes[] = $pipe;
+
+        return $this;
     }
 
     /**
@@ -104,6 +128,14 @@ class Pipeline implements IteratorAggregate, Countable
     public function last()
     {
         return $this->pipes[count($this->pipes) - 1] ?? null;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function penultimate()
+    {
+        return $this->pipes[count($this->pipes) - 2] ?? null;
     }
 
     /**

@@ -20,7 +20,7 @@ class Collection
      * @param Pipeline $pipeline
      * @return mixed
      */
-    public function push(Pipeline $pipeline)
+    public function resolve(Pipeline $pipeline)
     {
         $relation = $pipeline->first();
         $name = $relation->getName();
@@ -54,12 +54,12 @@ class Collection
      * @param Pipeline $pipeline
      * @return mixed
      */
-    public function get(Pipeline $pipeline)
+    public function pull(Pipeline $pipeline)
     {
         $join = $this->items[$pipeline->first()->getName()];
 
         if ($pipeline->count() > 1) {
-            return $join->getJoins()->get($pipeline->after(0));
+            return $join->getJoins()->pull($pipeline->after(0));
         }
 
         return $join;
