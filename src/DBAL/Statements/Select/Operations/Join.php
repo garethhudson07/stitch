@@ -5,7 +5,8 @@ namespace Stitch\DBAL\Statements\Select\Operations;
 use Stitch\DBAL\Builders\Join as Builder;
 use Stitch\DBAL\Statements\Select\Fragments\Expression;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Join
@@ -18,15 +19,18 @@ class Join extends Statement
      */
     protected $builder;
 
+    protected $paths;
+
     /**
      * Join constructor.
      * @param Builder $builder
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(Builder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
     }
 
     /**
@@ -35,9 +39,9 @@ class Join extends Statement
     public function evaluate()
     {
         $this->push(
-            $this->syntax->join(
+            Syntax::join(
                 $this->builder->getType(),
-                $this->builder->getSchema()
+                $this->paths->table($this->builder)
             )
         );
 
@@ -45,13 +49,13 @@ class Join extends Statement
 
         if ($conditions->count()) {
             $this->push(
-                new Expression($this->syntax, $conditions)
+                new Expression($conditions, $this->paths)
             );
         }
 
         foreach ($this->builder->getJoins() as $join) {
             $this->push(
-                new static($this->syntax, $join)
+                new static($join, $this->paths)
             );
         }
     }

@@ -4,7 +4,7 @@ namespace Stitch\DBAL\Statements\Select\Operations;
 
 use Stitch\DBAL\Builders\Table as Builder;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Limit
@@ -21,9 +21,9 @@ class Limit extends Statement
      * Limit constructor.
      * @param Builder $builder
      */
-    public function __construct(Syntax $limit, Builder $builder)
+    public function __construct(Builder $builder)
     {
-        parent::__construct($limit);
+        parent::__construct();
 
         $this->builder = $builder;
     }
@@ -37,7 +37,7 @@ class Limit extends Statement
 
         if ($limit) {
             $this->push(
-                $this->syntax->limit($limit)
+                Syntax::limit($limit)
             );
         }
     }

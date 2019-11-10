@@ -3,6 +3,7 @@
 namespace Stitch\Queries;
 
 use Stitch\Collection;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
 use Stitch\Model;
 use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\Queries\Joins\Collection as Joins;
@@ -10,7 +11,6 @@ use Stitch\DBAL\Dispatcher;
 use Stitch\Records\Record;
 use Stitch\Result\Blueprint as ResultBlueprint;
 use Stitch\Result\Set as ResultSet;
-use Stitch\DBAL\Syntax\Select\Select as SelectSyntax;
 
 /**
  * Class Query
@@ -225,14 +225,10 @@ class Query
      */
     protected function getResultSet(): ResultSet
     {
-        $syntax = (new SelectSyntax)->analyse($this->builder);
+        $paths = new PathResolver();
 
-        return ResultBlueprint::make($this, $syntax)->factory()->resultSet()->assemble(
-            Dispatcher::select(
-                $this->model->getTable()->getConnection(),
-                $this->builder,
-                $syntax
-            )
+        return ResultBlueprint::make($this, $paths)->resultSet()->assemble(
+            Dispatcher::select($this->builder, $paths)
         );
     }
 

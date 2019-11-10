@@ -7,7 +7,8 @@ use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Builders\Raw;
 use Stitch\DBAL\Statements\Binder;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
+use Stitch\DBAL\Syntax\Select as Syntax;
 /**
  * Class Expression
  * @package Stitch\DBAL\Statements\Select\Fragments
@@ -19,15 +20,18 @@ class Expression extends Statement
      */
     protected $builder;
 
+    protected $paths;
+
     /**
      * Expression constructor.
      * @param Builder $builder
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(Builder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
     }
 
     /**
@@ -42,7 +46,7 @@ class Expression extends Statement
 
             if ($item['constraint'] instanceOf Builder) {
                 $this->push(
-                    (new static($this->syntax, $item['constraint']))->isolate()
+                    (new static($item['constraint'], $this->paths))->isolate()
                 );
             } elseif ($item['constraint'] instanceOf Raw) {
                 $this->push(
@@ -51,7 +55,7 @@ class Expression extends Statement
                 );
             } else {
                 $this->push(
-                    new Condition($this->syntax, $item['constraint'])
+                    new Condition($item['constraint'], $this->paths)
                 );
             }
         }

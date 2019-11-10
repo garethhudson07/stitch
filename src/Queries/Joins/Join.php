@@ -106,8 +106,12 @@ class Join
     {
         $this->builder->type('LEFT')
             ->on(
-                new ColumnBuilder($this->relation->getForeignKey()),
-                new ColumnBuilder($this->relation->getLocalKey())
+                (new ColumnBuilder(
+                    $this->relation->getForeignKey()
+                ))->table($this->builder),
+                (new ColumnBuilder(
+                    $this->relation->getLocalKey()
+                ))->table($tableBuilder)
             );
 
         $tableBuilder->join($this->builder);

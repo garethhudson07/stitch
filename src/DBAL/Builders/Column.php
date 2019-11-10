@@ -51,14 +51,6 @@ class Column
     }
 
     /**
-     * @return mixed
-     */
-    public function getJsonPath()
-    {
-        return $this->jsonPath;
-    }
-
-    /**
      * @return Schema
      */
     public function getSchema()
@@ -67,16 +59,27 @@ class Column
     }
 
     /**
+     * @return mixed
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getJsonPath()
+    {
+        return $this->jsonPath;
+    }
+
+    /**
      * @param Column $column
      * @return bool
      */
     public function matches(Column $column)
     {
-        $schema = $column->getSchema();
-
-        return (
-            $this->schema->getName() === $schema->getName()
-            && $schema->getTable()->getName() === $this->schema->getTable()->getName()
-        );
+        return ($this->schema === $column->getSchema() && $this->table === $column->getTable());
     }
 }

@@ -24,33 +24,15 @@ class Grammar
      * @param array $pieces
      * @return string
      */
-    public static function path(array $pieces)
+    public static function qualifier()
     {
-        return implode('.', $pieces);
-    }
-
-    /**
-     * @param array $pieces
-     * @return string
-     */
-    public static function alias(array $pieces)
-    {
-        return implode('_', $pieces);
-    }
-
-    /**
-     * @param array $columns
-     * @return string
-     */
-    public static function list(array $columns)
-    {
-        return implode(static::listDelimeter(), $columns);
+        return '.';
     }
 
     /**
      * @return string
      */
-    public static function listDelimeter()
+    public static function listDelimiter()
     {
         return ', ';
     }
@@ -58,9 +40,18 @@ class Grammar
     /**
      * @return string
      */
-    public static function variable()
+    public static function variable(string $name): string
     {
-        return '@';
+        return "@$name";
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    public static function escape($value)
+    {
+        return "`$value`";
     }
 
     /**
@@ -77,7 +68,7 @@ class Grammar
     /**
      * @return string
      */
-    public static function assign()
+    public static function assignment()
     {
         return ":=";
     }
@@ -147,17 +138,5 @@ class Grammar
     public static function placeholder()
     {
         return '?';
-    }
-
-    /**
-     * @param array $values
-     * @return string
-     */
-    public static function placeholders(array $values)
-    {
-        return implode(
-            ', ',
-            array_fill(0, count($values), static::placeholder())
-        );
     }
 }

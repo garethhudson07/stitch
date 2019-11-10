@@ -5,7 +5,8 @@ namespace Stitch\DBAL\Statements\Select\Operations;
 use Stitch\DBAL\Builders\Expression as Builder;
 use Stitch\DBAL\Statements\Select\Fragments\Expression;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Where
@@ -18,15 +19,18 @@ class Where extends Statement
      */
     protected $builder;
 
+    protected $paths;
+
     /**
      * Where constructor.
      * @param Builder $builder
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(Builder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
     }
 
     /**
@@ -36,9 +40,9 @@ class Where extends Statement
     {
         if ($this->builder->count()) {
             $this->push(
-                $this->syntax->where()
+                Syntax::where()
             )->push(
-                new Expression($this->syntax, $this->builder)
+                new Expression($this->builder, $this->paths)
             );
         }
     }

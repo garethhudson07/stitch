@@ -48,15 +48,15 @@ class Set extends Collection
      */
     public function extract(array $raw)
     {
-        $primaryKeyMap = $this->blueprint->columnMap()->primaryKey();
+        $primaryKey = $this->blueprint->table()->primaryKey();
 
-        if ($raw[$primaryKeyMap['alias']] !== null) {
-            if ($item = $this->find($raw[$primaryKeyMap['alias']])) {
+        if ($raw[$primaryKey->alias()] !== null) {
+            if ($item = $this->find($raw[$primaryKey->alias()])) {
                 $item->extractRelations($raw);
             } else {
-                $item = $this->blueprint->factory()->resultRecord()->extract($raw);
+                $item = $this->blueprint->resultRecord()->extract($raw);
                 $this->items[] = $item;
-                $this->map[$item->{$primaryKeyMap['schema']->getName()}] = count($this->items) - 1;
+                $this->map[$item->{$primaryKey->name()}] = count($this->items) - 1;
             }
         }
 
@@ -81,7 +81,7 @@ class Set extends Collection
      */
     public function hydrate()
     {
-        $collection = $this->blueprint->factory()->activeRecordCollection();
+        $collection = $this->blueprint->activeRecordCollection();
 
         foreach ($this->items as $item) {
             $collection->push(

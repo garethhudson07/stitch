@@ -5,7 +5,8 @@ namespace Stitch\DBAL\Statements\Select\Operations;
 use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Where
@@ -18,15 +19,18 @@ class Select extends Statement
      */
     protected $builder;
 
+    protected $paths;
+
     /**
      * Where constructor.
      * @param Builder $builder
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(Builder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
     }
 
     /**
@@ -34,28 +38,25 @@ class Select extends Statement
      */
     public function evaluate()
     {
-        if ($this->builder->crossTable()) {
-            $this->push(
-                $this->syntax->selectColumns(
-                    array_map(function (ColumnBuilder $column)
-                    {
-                        $schema = $column->getSchema();
+        $selection = $this->builder->getSelection();
 
-                        return implode(' ', [
-                            $this->syntax->columnPath($schema),
-                            $this->syntax->alias(
-                                $this->syntax->columnAlias($schema)
-                            )
-                        ]);
-                    }, $this->builder->resolveSelection()->getColumns())
-                )
+        if (!$selection->count() && !count($this->builder->getJoins())) {
+            $this->push(
+                Syntax::selectAll()
             );
 
             return;
         }
 
         $this->push(
-            $this->syntax->selectAll()
+            Syntax::selectColumns(
+                array_map(function (ColumnBuilder $column)
+                {
+                    $path = $this->paths->column($column);
+
+                    return $path->qualifiedName() . ' ' . Syntax::alias($path->alias());
+                }, $this->builder->resolveSelection()->getColumns())
+            )
         );
     }
 }

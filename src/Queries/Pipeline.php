@@ -71,6 +71,8 @@ class Pipeline implements IteratorAggregate, Countable
      */
     public function resolve(Query $query)
     {
+        echo 'resolve';
+
         $columnPieces = $this->last();
 
         if ($this->count() > 1) {

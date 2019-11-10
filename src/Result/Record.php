@@ -41,9 +41,9 @@ class Record implements Arrayable
      */
     public function extractRelations(array $raw)
     {
-        foreach ($this->blueprint->joins() as $key => $blueprint) {
+        foreach ($this->blueprint->relations() as $key => $blueprint) {
             if (!array_key_exists($key, $this->relations)) {
-                $this->relations[$key] = $blueprint->factory()->result()->extract($raw);
+                $this->relations[$key] = $blueprint->result()->extract($raw);
             } else {
                 $this->relations[$key]->extract($raw);
             }
@@ -58,10 +58,10 @@ class Record implements Arrayable
      */
     public function extract(array $raw)
     {
-        foreach ($this->blueprint->columnMap()->all() as $map) {
-            if (array_key_exists($map['alias'], $raw)) {
-                $this->data[$map['schema']->getName()] = $map['schema']->cast(
-                    $raw[$map['alias']]
+        foreach ($this->blueprint->columns() as $column) {
+            if (array_key_exists($column->alias(), $raw)) {
+                $this->data[$column->name()] = $column->getSchema()->cast(
+                    $raw[$column->alias()]
                 );
             }
         }
@@ -99,7 +99,7 @@ class Record implements Arrayable
      */
     public function hydrate()
     {
-        $activeRecord = $this->blueprint->factory()->activeRecord($this->data);
+        $activeRecord = $this->blueprint->activeRecord($this->data);
 
         foreach ($this->relations as $name => $relation) {
             $activeRecord->setRelation($name, $relation->hydrate());

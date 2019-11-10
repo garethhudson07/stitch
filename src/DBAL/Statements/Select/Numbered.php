@@ -2,13 +2,15 @@
 
 namespace Stitch\DBAL\Statements\Select;
 
-use Stitch\DBAL\Builders\Table as Builder;
+use Stitch\DBAL\Builders\Table as TableBuilder;
+use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Builders\Sorter;
 use Stitch\DBAL\Statements\Select\Operations\OrderBy;
 use Stitch\DBAL\Statements\Select\Variables\Selection as VariableSelection;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Numbered
@@ -17,21 +19,24 @@ use Stitch\DBAL\Syntax\Select\Select as Syntax;
 class Numbered extends Statement
 {
     /**
-     * @var Builder
+     * @var QueryBuilder
      */
     protected $builder;
+
+    protected $paths;
 
     protected $sorter;
 
     /**
      * Numbered constructor.
-     * @param Builder $builder
+     * @param QueryBuilder $builder
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(QueryBuilder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
         $this->sorter = new Sorter();
     }
 
@@ -42,27 +47,26 @@ class Numbered extends Statement
     {
         $this->populateSorter($this->builder);
 
-        $this->push($this->syntax->selectAllAnd())
+        $this->push(Syntax::selectAllAnd())
             ->push(
-                new VariableSelection($this->syntax, $this->builder)
+                new VariableSelection($this->builder, $this->paths)
             )
             ->push(
-                $this->syntax->from()
+                Syntax::from()
             )
             ->push(
                 (new Subquery(
-                    $this->syntax,
-                    new Unlimited($this->syntax, $this->builder)
+                    new Unlimited($this->builder, $this->paths)
                 ))->alias('selection')
             )->push(
-                new OrderBy($this->syntax, $this->sorter)
+                new OrderBy($this->sorter, $this->paths)
             );
     }
 
     /**
      * @param $builder
      */
-    protected function populateSorter(Builder $builder)
+    protected function populateSorter(TableBuilder $builder)
     {
         $schema = $builder->getSchema();
         $added = false;

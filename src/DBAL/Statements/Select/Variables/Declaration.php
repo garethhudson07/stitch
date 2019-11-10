@@ -4,7 +4,8 @@ namespace Stitch\DBAL\Statements\Select\Variables;
 
 use Stitch\DBAL\Builders\Table as Builder;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
 
 /**
  * Class Declaration
@@ -17,16 +18,19 @@ class Declaration extends Statement
      */
     protected $builder;
 
+    protected $paths;
+
     /**
      * Declaration constructor.
-     * @param Syntax $syntax
      * @param Builder $builder
+     * @param PathResolver $paths
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(Builder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
     }
 
     /**
@@ -35,7 +39,7 @@ class Declaration extends Statement
     public function evaluate()
     {
         $this->push(
-            $this->syntax->setVariables(
+            Syntax::setVariables(
                 $this->variables($this->builder)
             )
         );
@@ -47,30 +51,19 @@ class Declaration extends Statement
      */
     protected function variables(Builder $builder)
     {
-        $scope = $this->syntax->scope($builder);
-        $scope->table();
-        $scope->column($schema);
+        $table = $this->paths->table($builder);
 
 
-        $table = $this->syntax->table($builder);
-        $table->column($schema)->path();
-        $table->column($schema)->alias();
-        $table->primaryKey()->alias();
-
-
-
-        $schema = $builder->getSchema();
-
-        $variables[] = $this->syntax->assign(
-            $this->syntax->variable(
-                $this->syntax->primaryKeyAlias($schema)
+        $variables[] = Syntax::assign(
+            Syntax::variable(
+                $table->primaryKey()->alias()
             ),
             null
         );
 
-        $variables[] = $this->syntax->assign(
-            $this->syntax->variable(
-                $this->syntax->rowNumberColumn($schema)
+        $variables[] = Syntax::assign(
+            Syntax::variable(
+                Syntax::rowNumber($table)
             ),
             0
         );

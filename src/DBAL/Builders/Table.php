@@ -60,23 +60,23 @@ class Table
         return $this;
     }
 
-//    /**
-//     * @return bool
-//     */
-//    public function hasLimit()
-//    {
-//        if ($this->limit !== null) {
-//            return true;
-//        }
-//
-//        foreach ($this->joins as $join) {
-//            if ($join->hasLimit()) {
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
+    /**
+     * @return bool
+     */
+    public function hasLimit()
+    {
+        if ($this->limit !== null) {
+            return true;
+        }
+
+        foreach ($this->joins as $join) {
+            if ($join->hasLimit()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * @param int $start
@@ -89,51 +89,23 @@ class Table
         return $this;
     }
 
-//    /**
-//     * @return bool
-//     */
-//    public function hasOffset()
-//    {
-//        if ($this->offset !== null) {
-//            return true;
-//        }
-//
-//        foreach ($this->joins as $join) {
-//            if ($join->hasOffset()) {
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
+    /**
+     * @return bool
+     */
+    public function hasOffset()
+    {
+        if ($this->offset !== null) {
+            return true;
+        }
 
-//    /**
-//     * @return bool
-//     */
-//    public function crossDatabase()
-//    {
-//        $database = $this->schema->getConnection()->getDatabase();
-//
-//        foreach ($this->joins as $join) {
-//            if ($join->getSchema()->getConnection()->getDatabase() !== $database) {
-//                return true;
-//            }
-//
-//            if ($join->crossDatabase()) {
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
+        foreach ($this->joins as $join) {
+            if ($join->hasOffset()) {
+                return true;
+            }
+        }
 
-//    /**
-//     * @return bool
-//     */
-//    public function crossTable()
-//    {
-//        return (count($this->joins) > 0);
-//    }
+        return false;
+    }
 
     /**
      * @return Schema
@@ -150,7 +122,7 @@ class Table
     {
         $columns = array_values(array_map(function ($column)
         {
-            return new Column($column);
+            return (new Column($column))->table($this);
         }, $this->schema->getColumns()));
 
         foreach ($this->joins as $join) {

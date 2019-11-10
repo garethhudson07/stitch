@@ -3,11 +3,13 @@
 namespace Stitch\DBAL\Statements\Select;
 
 use Stitch\DBAL\Builders\Expression as ExpressionBuilder;
-use Stitch\DBAL\Builders\Table as Builder;
+use Stitch\DBAL\Builders\Query as QueryBuilder;
+use Stitch\DBAL\Builders\Table as TableBuilder;
 use Stitch\DBAL\Statements\Select\Operations\Limit;
 use Stitch\DBAL\Statements\Select\Operations\Where;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
 
 /**
  * Class Limited
@@ -16,19 +18,22 @@ use Stitch\DBAL\Syntax\Select\Select as Syntax;
 class Limited extends Statement
 {
     /**
-     * @var Builder
+     * @var QueryBuilder
      */
     protected $builder;
 
+    protected $paths;
+
     /**
      * Limited constructor.
-     * @param Builder $builder
+     * @param QueryBuilder $builder
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(QueryBuilder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
     }
 
     /**
@@ -44,37 +49,36 @@ class Limited extends Statement
      */
     protected function numbered()
     {
-        $this->push($this->syntax->selectSubquery())
+        $this->push(Syntax::selectSubquery())
             ->push(
                 (new Subquery(
-                    $this->syntax,
-                    new Numbered($this->syntax, $this->builder)
+                    new Numbered($this->builder, $this->paths)
                 ))->alias('numbered')
             )->push(
                 new Where(
-                    $this->syntax,
                     $this->conditions(
                         $this->builder,
                         new ExpressionBuilder()
-                    )
+                    ),
+                    $this->paths
                 )
             );
     }
 
     /**
-     * @param Builder $builder
+     * @param TableBuilder $builder
      * @param ExpressionBuilder $conditions
      * @return ExpressionBuilder
      */
-    protected function conditions(Builder $builder, ExpressionBuilder $conditions)
+    protected function conditions(TableBuilder $builder, ExpressionBuilder $conditions)
     {
         $limit = $builder->getLimit();
         $offset = $builder->getOffset();
-        $column = $this->syntax->rowNumberColumn($builder->getSchema());
+        $column = Syntax::rowNumber($this->paths->table($builder));
 
         if ($offset !== null) {
             $conditions->andRaw(
-                $this->syntax->greaterThan($column, $limit)
+                Syntax::greaterThan($column, $limit)
             );
         }
 
@@ -82,7 +86,7 @@ class Limited extends Statement
             $limit += $offset;
 
             $conditions->andRaw(
-                $this->syntax->lessThanOrEqual($column, $limit)
+                Syntax::lessThanOrEqual($column, $limit)
             );
         }
 
@@ -99,9 +103,9 @@ class Limited extends Statement
     protected function default()
     {
         $this->push(
-            new Unlimited($this->syntax, $this->builder)
+            new Unlimited($this->builder, $this->paths)
         )->push(
-            new Limit($this->syntax, $this->builder)
+            new Limit($this->builder)
         );
     }
 }

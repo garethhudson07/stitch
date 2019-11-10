@@ -2,92 +2,130 @@
 
 namespace Stitch\Result;
 
-use Stitch\DBAL\Builders\Selection;
-use Stitch\DBAL\Schema\Table;
-use Stitch\DBAL\Syntax\Select\Select as SelectSyntax;
 use Stitch\Queries\Joins\Collection as Joins;
 use Stitch\Queries\Query;
+use Stitch\Relations\Relation;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
+use Stitch\DBAL\Paths\Table;
 
 class Blueprint
 {
+    protected $table;
+
     protected $factory;
 
     protected $columnMap;
 
-    protected $joins = [];
+    protected $relations = [];
 
     /**
      * Blueprint constructor.
-     * @param $recordFactory
+     * @param Table $table
+     * @param $factory
      */
-    public function __construct($recordFactory)
+    public function __construct(Table $table, $factory)
     {
-        $this->factory = new Factory($this, $recordFactory);
+        $this->table = $table;
+        $this->factory = $factory;
     }
 
     /**
      * @param Query $query
-     * @param SelectSyntax $syntax
+     * @param PathResolver $paths
      * @return Blueprint
      */
-    public static function make(Query $query, SelectSyntax $syntax)
+    public static function make(Query $query, PathResolver $paths)
     {
-        $model = $query->getModel();
+        $instance = (new static(
+            $paths->table($query->getBuilder()),
+            $query->getModel()
+        ))->resolveJoins($query->getJoins(), $paths);
 
-        return (new static($model))->map(
-            $model->getTable(),
-            $query->getBuilder()->resolveSelection(),
-            $query->getJoins(),
-            $syntax
-        );
+        return $instance;
     }
 
     /**
-     * @param Table $table
-     * @param Selection $selection
      * @param Joins $joins
-     * @param SelectSyntax $syntax
+     * @param PathResolver $paths
      * @return $this
      */
-    public function map(Table $table, Selection $selection, Joins $joins, SelectSyntax $syntax)
+    public function resolveJoins(Joins $joins, PathResolver $paths)
     {
-        $this->columnMap = (new ColumnMap($table))->build($selection, $syntax);
-
         foreach ($joins->all() as $key => $join) {
-            $relation = $join->getRelation();
-
-            $this->joins[$key] = (new static($relation))->map(
-                $relation->getForeignModel()->getTable(),
-                $selection,
-                $join->getJoins(),
-                $syntax
-            );
+            $this->relations[$key] = (new static(
+                $paths->table($join->getBuilder()),
+                $join->getRelation()
+            ))->resolveJoins($join->getJoins(), $paths);
         }
 
         return $this;
     }
 
     /**
-     * @return array
+     * @return Table
      */
-    public function joins()
+    public function table()
     {
-        return $this->joins;
+        return $this->table;
     }
 
     /**
      * @return array
      */
-    public function columnMap()
+    public function columns()
     {
-        return $this->columnMap;
+        return $this->table->getColumns();
     }
 
     /**
-     * @return Factory
+     * @return array
      */
-    public function factory()
+    public function relations()
     {
-        return $this->factory;
+        return $this->relations;
+    }
+
+    /**
+     * @return Record|Set
+     */
+    public function result()
+    {
+        if ($this->factory instanceof Relation) {
+            return $this->factory->associatesOne() ? $this->resultRecord() : $this->resultSet();
+        }
+
+        return $this->resultSet();
+    }
+
+    /**
+     * @return Set
+     */
+    public function resultSet()
+    {
+        return new Set($this);
+    }
+
+    /**
+     * @return Record
+     */
+    public function resultRecord()
+    {
+        return new Record($this);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function activeRecord(array $attributes = [])
+    {
+        return $this->factory->record($attributes);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function activeRecordCollection()
+    {
+        return $this->factory->collection();
     }
 }

@@ -3,7 +3,7 @@
 namespace Stitch\DBAL\Statements;
 
 use Stitch\DBAL\Statements\Contracts\HasBindings;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Statement
@@ -11,8 +11,6 @@ use Stitch\DBAL\Syntax\Select\Select as Syntax;
  */
 abstract class Statement implements HasBindings
 {
-    protected $syntax;
-
     /**
      * @var Assembler
      */
@@ -20,14 +18,12 @@ abstract class Statement implements HasBindings
 
     protected $isolate;
 
-    protected $assembled = [
-        'query' => null,
-        'bindings' => null
-    ];
+    protected $query;
 
-    public function __construct(Syntax $syntax)
+    protected $bindings;
+
+    public function __construct()
     {
-        $this->syntax = $syntax;
         $this->assembler = new Assembler();
     }
 
@@ -37,11 +33,32 @@ abstract class Statement implements HasBindings
     abstract public function evaluate();
 
     /**
+     * @return $this
+     */
+    protected function assemble()
+    {
+        $this->evaluate();
+
+        $this->query = $this->isolate ?
+            Syntax::parentheses($this->assembler->implode()) :
+            $this->assembler->implode();
+
+
+        $this->bindings = $this->assembler->bindings();
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function bindings(): array
     {
-        return is_null($this->assembled['bindings']) ? $this->assemble()->bindings() : $this->assembled['bindings'];
+        if (is_null($this->bindings)) {
+            $this->assemble();
+        }
+
+        return $this->bindings;
     }
 
     /**
@@ -53,28 +70,15 @@ abstract class Statement implements HasBindings
     }
 
     /**
-     * @return $this
-     */
-    protected function assemble()
-    {
-        $this->evaluate();
-
-        $this->assembled['query'] = $this->isolate ?
-            $this->syntax->isolate($this->assembler->implode()) :
-            $this->assembler->implode();
-
-
-        $this->assembled['bindings'] = $this->assembler->bindings();
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function query()
     {
-        return is_null($this->assembled['query']) ? $this->assemble()->query() : $this->assembled['query'];
+        if (is_null($this->query)) {
+            $this->assemble();
+        }
+
+        return $this->query;
     }
 
     /**

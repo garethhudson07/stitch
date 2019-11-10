@@ -5,7 +5,8 @@ namespace Stitch\DBAL\Statements\Select\Operations;
 use Stitch\DBAL\Builders\Sorter as Builder;
 use Stitch\DBAL\Statements\Assembler;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class OrderBy
@@ -18,17 +19,20 @@ class OrderBy extends Statement
      */
     protected $builder;
 
+    protected $paths;
+
     protected $columns;
 
     /**
      * OrderBy constructor.
      * @param Builder $builder
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(Builder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
         $this->columns = (new Assembler())->glue(', ');
     }
 
@@ -39,14 +43,14 @@ class OrderBy extends Statement
     {
         if ($this->builder->count()) {
             $this->push(
-                $this->syntax->orderBy()
+                Syntax::orderBy()
             )->push(
                 $this->columns
             );
 
             foreach ($this->builder->getItems() as $item) {
                 $this->columns->push(
-                    $this->syntax->columnAlias($item['column']->getSchema()) . ' ' . $item['direction']
+                    "{$this->paths->column($item['column'])->alias()} {$item['direction']}"
                 );
             }
         }

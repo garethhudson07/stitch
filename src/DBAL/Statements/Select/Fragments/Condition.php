@@ -6,7 +6,8 @@ use Stitch\DBAL\Builders\Condition as Builder;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Statements\Binder;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
+use Stitch\DBAL\Syntax\Select as Syntax;
 /**
  * Class Condition
  * @package Stitch\DBAL\Statements\Select\Fragments
@@ -18,16 +19,20 @@ class Condition extends Statement
      */
     protected $builder;
 
+    protected $paths;
+
     /**
      * Condition constructor.
-     * @param Syntax $syntax
      * @param Builder $builder
+     * @param PathResolver $paths
+     * @internal param Syntax $syntax
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(Builder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
     }
 
     /**
@@ -35,17 +40,17 @@ class Condition extends Statement
      */
     public function evaluate()
     {
-        $column = $this->builder->getColumn()->getSchema();
+        $column = $this->paths->column($this->builder->getColumn());
         $operator = $this->builder->getOperator();
         $value = $this->builder->getValue();
 
         if ($value instanceof ColumnBuilder) {
-            $this->push($this->syntax->condition($column, $operator, $value->getSchema()));
+            $this->push(Syntax::condition($column, $operator, $this->paths->column($value)));
 
             return;
         }
 
-        $syntax = $this->syntax->condition($column, $operator, $value);
+        $syntax = Syntax::condition($column, $operator, $value);
 
         if (!is_null($value)) {
             $syntax = (new Binder($syntax))->add($value);

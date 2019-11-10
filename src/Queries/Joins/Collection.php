@@ -2,10 +2,11 @@
 
 namespace Stitch\Queries\Joins;
 
+use Stitch\Collection as BaseCollection;
 use Stitch\DBAL\Builders\Table as Builder;
 use Stitch\Queries\Pipeline;
 
-class Collection
+class Collection extends BaseCollection
 {
     protected $items = [];
 

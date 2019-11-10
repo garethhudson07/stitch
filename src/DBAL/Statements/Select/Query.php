@@ -5,7 +5,7 @@ namespace Stitch\DBAL\Statements\Select;
 use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Statements\Select\Operations\OrderBy;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
 
 /**
  * Class Query
@@ -18,15 +18,18 @@ class Query extends Statement
      */
     protected $builder;
 
+    protected $paths;
+
     /**
      * Query constructor.
      * @param Builder $builder
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(Builder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
     }
 
     /**
@@ -36,10 +39,10 @@ class Query extends Statement
     {
         $this->push(
             $this->builder->hasLimit() || $this->builder->hasOffset() ?
-                new Limited($this->syntax, $this->builder) :
-                new Unlimited($this->syntax, $this->builder)
+                new Limited($this->builder, $this->paths) :
+                new Unlimited($this->builder, $this->paths)
         )->push(
-            new OrderBy($this->syntax, $this->builder->getSorter())
+            new OrderBy($this->builder->getSorter(), $this->paths)
         );
     }
 }

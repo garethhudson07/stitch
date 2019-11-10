@@ -3,7 +3,7 @@
 namespace Stitch\DBAL\Statements\Select;
 
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
  * Class Subquery
@@ -25,9 +25,9 @@ class Subquery extends Statement
      * Subquery constructor.
      * @param Statement $statement
      */
-    public function __construct(Syntax $syntax, Statement $statement)
+    public function __construct(Statement $statement)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->statement = $statement;
     }
@@ -54,7 +54,7 @@ class Subquery extends Statement
 
         if ($this->alias) {
             $this->push(
-                $this->syntax->alias($this->alias)
+                Syntax::alias($this->alias)
             );
         }
     }

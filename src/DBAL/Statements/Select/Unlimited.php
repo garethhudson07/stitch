@@ -7,7 +7,8 @@ use Stitch\DBAL\Statements\Select\Operations\Join;
 use Stitch\DBAL\Statements\Select\Operations\Select;
 use Stitch\DBAL\Statements\Select\Operations\Where;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
+use Stitch\DBAL\Syntax\Select as Syntax;
 
 
 /**
@@ -21,15 +22,18 @@ class Unlimited extends Statement
      */
     protected $builder;
 
+    protected $paths;
+
     /**
      * Unlimited constructor.
      * @param Builder $builder
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(Builder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
     }
 
     /**
@@ -38,21 +42,21 @@ class Unlimited extends Statement
     public function evaluate()
     {
         $this->push(
-            new Select($this->syntax, $this->builder)
+            new Select($this->builder, $this->paths)
         )->push(
-            $this->syntax->from()
+            Syntax::from()
         )->push(
-            $this->syntax->tablePath($this->builder->getSchema())
+            $this->paths->table($this->builder)->qualifiedName()
         );
 
         foreach ($this->builder->getJoins() as $join) {
             $this->push(
-                new Join($this->syntax, $join)
+                new Join($join, $this->paths)
             );
         }
 
         $this->push(
-            new Where($this->syntax, $this->builder->getConditions())
+            new Where($this->builder->getConditions(), $this->paths)
         );
     }
 }

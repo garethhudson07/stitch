@@ -4,7 +4,8 @@ namespace Stitch\DBAL\Statements\Select\Variables;
 
 use Stitch\DBAL\Builders\Table as Builder;
 use Stitch\DBAL\Statements\Statement;
-use Stitch\DBAL\Syntax\Select\Select as Syntax;
+use Stitch\DBAL\Syntax\Select as Syntax;
+use Stitch\DBAL\Paths\Resolver as PathResolver;
 
 /**
  * Class Selection
@@ -17,16 +18,18 @@ class Selection extends Statement
      */
     protected $builder;
 
+    protected $paths;
+
     /**
      * Selection constructor.
-     * @param Syntax $syntax
      * @param Builder $builder
      */
-    public function __construct(Syntax $syntax, Builder $builder)
+    public function __construct(Builder $builder, PathResolver $paths)
     {
-        parent::__construct($syntax);
+        parent::__construct();
 
         $this->builder = $builder;
+        $this->paths = $paths;
     }
 
     /**
@@ -35,52 +38,53 @@ class Selection extends Statement
     public function evaluate()
     {
         $this->push(
-            $this->syntax->list(
+            Syntax::list(
                 $this->variables($this->builder)
             )
         );
     }
 
     /**
-     * @param $builder
-     * @param null $parent
+     * @param Builder $builder
+     * @param Builder|null $parent
      * @return array
      */
-    protected function variables(Builder $builder, Builder $parent = null)
+    protected function variables(Builder $builder, Builder $parent = null): array
     {
         $variables = [];
-        $schema = $builder->getSchema();
-        $countColumn = $this->syntax->rowNumberColumn($schema);
-        $countVariable = $this->syntax->variable($countColumn);
-        $pkColumn = $this->syntax->primaryKeyAlias($schema);
-        $pkVariable = $this->syntax->variable($pkColumn);
+
+        $table = $this->paths->table($builder);
+        $countColumn = Syntax::rowNumber($table);
+        $countVariable = Syntax::variable($countColumn);
+        $pkColumn = $table->primaryKey()->alias();
+        $pkVariable = Syntax::variable($pkColumn);
 
         foreach ($builder->getJoins() as $join) {
             $variables = array_merge($variables, $this->variables($join, $builder));
         }
 
-        $value = $this->syntax->ternary(
-            $this->syntax->equal($pkVariable, $pkColumn),
+        $value = Syntax::ternary(
+            Syntax::equal($pkVariable, $pkColumn),
             $countVariable,
             function() use ($parent, $countVariable)
             {
                 if ($parent) {
-                    $parentPkColumn = $this->syntax->primaryKeyAlias($parent->getSchema());
+                    $parentPkColumn = $this->paths->table($parent)->primaryKey()->alias();
 
-                    return $this->syntax->ternary(
-                        $this->syntax->equal($parentPkColumn, $this->syntax->variable($parentPkColumn)),
-                        $this->syntax->add($countVariable, 1),
+                    return Syntax::ternary(
+                        Syntax::equal($parentPkColumn, Syntax::variable($parentPkColumn)),
+                        Syntax::add($countVariable, 1),
                         '1'
                     );
                 } else {
-                    return $this->syntax->add($countVariable, 1);
+                    return Syntax::add($countVariable, 1);
                 }
             },
             $countColumn
         );
 
-        $variables[] = $this->syntax->assign($countVariable, $value) . ' ' . $this->syntax->alias($countColumn);
-        $variables[] = $this->syntax->assign($pkVariable, $pkColumn);
+        $variables[] = Syntax::assign($countVariable, $value) . ' ' . Syntax::alias($countColumn);
+        $variables[] = Syntax::assign($pkVariable, $pkColumn);
 
         return $variables;
     }
