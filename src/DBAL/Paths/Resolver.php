@@ -11,14 +11,6 @@ class Resolver
     protected $tables = [];
 
     /**
-     * @return static
-     */
-    public static function make()
-    {
-        return new static();
-    }
-
-    /**
      * @param TableBuilder $builder
      * @return mixed|Table
      */

@@ -10,13 +10,21 @@ class Components
 
     protected $parent;
 
-    protected $resolved;
+    protected $assembled = '';
 
+    /**
+     * Components constructor.
+     * @param string $glue
+     */
     public function __construct(string $glue)
     {
         $this->glue = $glue;
     }
 
+    /**
+     * @param Components $parent
+     * @return $this
+     */
     public function inherit(Components $parent)
     {
         $this->parent = $parent;
@@ -32,15 +40,28 @@ class Components
         return implode($this->glue, $this->all());
     }
 
-    public function resolve()
+    /**
+     * @return string
+     */
+    public function assemble()
     {
-        if (!$this->resolved) {
-            $this->resolved = $this->implode();
-        }
+        $this->assembled = $this->implode();
 
-        return $this->resolved;
+        return $this;
     }
 
+    /**
+     * @return mixed
+     */
+    public function assembled()
+    {
+        return $this->assembled;
+    }
+
+    /**
+     * @param $item
+     * @return $this
+     */
     public function push($item)
     {
         $this->items[] = $item;
@@ -48,6 +69,9 @@ class Components
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function all(): array
     {
         return array_merge(
@@ -56,13 +80,11 @@ class Components
         );
     }
 
-    public function count()
-    {
-        return count($this->items);
-    }
-
+    /**
+     * @return string
+     */
     public function __toString()
     {
-        return $this->resolve();
+        return $this->assembled();
     }
 }

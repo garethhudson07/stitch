@@ -25,11 +25,12 @@ class Column extends Path
         $this->schema = $schema;
         $this->table = $table;
         $this->resolver = $resolver;
-
-        $this->qualifiedName->push($table->alias());
     }
 
-    public function build(): void
+    /**
+     *
+     */
+    public function evaluate(): void
     {
         if (count($this->resolver->rootTable()->getBuilder()->getJoins())) {
             $this->qualifiedName->push(

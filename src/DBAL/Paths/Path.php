@@ -17,31 +17,44 @@ abstract class Path
     }
 
     /**
-     *
+     * @return $this
      */
-    abstract protected function build(): void;
+    public function assemble()
+    {
+        $this->evaluate();
+
+        $this->qualifiedName->assemble();
+        $this->alias->assemble();
+
+        return $this;
+    }
 
     /**
-     * @return string
+     * @return Components
      */
     public function qualifiedName(): Components
     {
-        if (!$this->qualifiedName->count()) {
-            $this->build();
+        if (!$this->qualifiedName->assembled()) {
+            $this->assemble();
         }
 
         return $this->qualifiedName;
     }
 
     /**
-     * @return string
+     * @return Components
      */
     public function alias(): Components
     {
-        if (!$this->alias->count()) {
-            $this->build();
+        if (!$this->alias->assembled()) {
+            $this->assemble();
         }
 
         return $this->alias;
     }
+
+    /**
+     *
+     */
+    abstract protected function evaluate(): void;
 }

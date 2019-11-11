@@ -31,7 +31,7 @@ class Collection extends BaseCollection
         }
 
         if ($pipeline->count() > 1) {
-            return $this->items[$name]->getJoins()->push($pipeline->after(0));
+            return $this->items[$name]->getJoins()->resolve($pipeline->after(0));
         }
 
         return $this->items[$name];

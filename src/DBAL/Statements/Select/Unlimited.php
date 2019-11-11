@@ -10,7 +10,6 @@ use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Paths\Resolver as PathResolver;
 use Stitch\DBAL\Syntax\Select as Syntax;
 
-
 /**
  * Class Unlimited
  * @package Stitch\DBAL\Statements\Select
@@ -41,13 +40,21 @@ class Unlimited extends Statement
      */
     public function evaluate()
     {
+        $table = $this->paths->table($this->builder);
+
         $this->push(
             new Select($this->builder, $this->paths)
         )->push(
             Syntax::from()
         )->push(
-            $this->paths->table($this->builder)->qualifiedName()
+            $table->qualifiedName()
         );
+
+        if ($table->conflict()) {
+            $this->push(
+                Syntax::alias($table->alias())
+            );
+        }
 
         foreach ($this->builder->getJoins() as $join) {
             $this->push(

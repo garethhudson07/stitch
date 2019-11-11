@@ -59,9 +59,9 @@ class Record implements Arrayable
     public function extract(array $raw)
     {
         foreach ($this->blueprint->columns() as $column) {
-            if (array_key_exists($column->alias(), $raw)) {
+            if (array_key_exists($column->alias()->assembled(), $raw)) {
                 $this->data[$column->name()] = $column->getSchema()->cast(
-                    $raw[$column->alias()]
+                    $raw[$column->alias()->assembled()]
                 );
             }
         }

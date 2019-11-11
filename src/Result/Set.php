@@ -50,8 +50,8 @@ class Set extends Collection
     {
         $primaryKey = $this->blueprint->table()->primaryKey();
 
-        if ($raw[$primaryKey->alias()] !== null) {
-            if ($item = $this->find($raw[$primaryKey->alias()])) {
+        if ($raw[$primaryKey->alias()->assembled()] !== null) {
+            if ($item = $this->find($raw[$primaryKey->alias()->assembled()])) {
                 $item->extractRelations($raw);
             } else {
                 $item = $this->blueprint->resultRecord()->extract($raw);

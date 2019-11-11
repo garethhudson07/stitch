@@ -23,7 +23,10 @@ class Table extends Path
         $this->resolver = $resolver;
     }
 
-    protected function build(): void
+    /**
+     *
+     */
+    protected function evaluate(): void
     {
         $schema = $this->builder->getSchema();
 
@@ -37,30 +40,10 @@ class Table extends Path
 
         if ($this->conflict()) {
             $this->alias->push(
-                "_{$this->resolver->uniqueId($this)}"
+                $this->resolver->uniqueId($this)
             );
         }
     }
-
-//    /**
-//     * @return array
-//     */
-//    public function components(): array
-//    {
-//        if (!$this->components) {
-//            $schema = $this->builder->getSchema();
-//            $suffix = $this->conflict() ? "_{$this->resolver->uniqueId($this)}" : '';
-//
-//
-//            if ($schema->getConnection()->getName() !== $this->resolver->rootConnection()->getName()) {
-//               $this->components[] = $schema->getConnection()->getDatabase();
-//            }
-//
-//            $this->components[] = "{$schema->getName()}$suffix";
-//        }
-//
-//        return $this->components;
-//    }
 
     /**
      * @return bool

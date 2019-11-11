@@ -38,15 +38,13 @@ class Select extends Statement
      */
     public function evaluate()
     {
-        $selection = $this->builder->getSelection();
-
-        if (!$selection->count() && !count($this->builder->getJoins())) {
-            $this->push(
-                Syntax::selectAll()
-            );
-
-            return;
-        }
+//        if (!$this->builder->getSelection()->count() && !count($this->builder->getJoins())) {
+//            $this->push(
+//                Syntax::selectAll()
+//            );
+//
+//            return;
+//        }
 
         $this->push(
             Syntax::selectColumns(

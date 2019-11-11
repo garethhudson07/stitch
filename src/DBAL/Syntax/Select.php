@@ -92,8 +92,7 @@ class Select
         ];
 
         if ($table->conflict()) {
-            $components[] = Lexicon::alias();
-            $components[] = $table->alias();
+            $components[] = static::alias($table->alias());
         }
 
         $components[] = Lexicon::on();
