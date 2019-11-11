@@ -35,7 +35,7 @@ class Selection
             }
         }
 
-        return in_array($column, $this->columns);
+        return false;
     }
 
     /**
