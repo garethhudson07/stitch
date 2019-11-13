@@ -186,7 +186,7 @@ class Select
                 }
                 break;
 
-            case null:
+            case 'NULL':
                 $pieces[] = $operator === Grammar::notEqual() ? Lexicon::notNull() : Lexicon::null();
                 break;
 
