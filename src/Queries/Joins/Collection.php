@@ -24,6 +24,11 @@ class Collection extends BaseCollection
     public function resolve(Pipeline $pipeline)
     {
         $relation = $pipeline->first();
+
+        if (is_array($relation)) {
+            var_dump($relation);exit;
+        }
+
         $name = $relation->getName();
 
         if (!array_key_exists($name, $this->items)) {
