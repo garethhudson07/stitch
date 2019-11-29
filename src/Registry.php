@@ -51,7 +51,7 @@ class Registry
         $item = static::$items[$name];
 
         if ($item instanceof Closure) {
-            $item = $item(Factory::class);
+            $item = $item();
             static::$items[$name] = $item;
         }
 

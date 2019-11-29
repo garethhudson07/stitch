@@ -4,6 +4,7 @@ namespace Stitch;
 
 use Closure;
 use Stitch\DBAL\Connection;
+use Stitch\DBAL\Schema\Table;
 
 /**
  * Class Stitch
@@ -52,7 +53,11 @@ class Stitch
      */
     public static function make(Closure $callback)
     {
-        return Factory::model($callback);
+        $table = new Table();
+
+        $callback($table);
+
+        return new Model($table);
     }
 
     /**

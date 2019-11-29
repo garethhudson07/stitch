@@ -17,17 +17,25 @@ class Pivoted extends Join
      */
     public function apply(TableBuilder $tableBuilder)
     {
-        $pivotJoinBuilder = (new JoinBuilder($this->relation->getPivotTable()))
-            ->type('LEFT')
-            ->on(
-                new ColumnBuilder($this->relation->getLocalPivotKey()),
-                new ColumnBuilder($this->relation->getLocalKey())
+        $pivotJoinBuilder = (new JoinBuilder($this->relation->getPivot()->getTable()))->type('LEFT');
+
+        $pivotJoinBuilder->on(
+                (new ColumnBuilder(
+                    $this->relation->getLocalPivotKey()
+                ))->table($pivotJoinBuilder),
+                (new ColumnBuilder(
+                    $this->relation->getLocalKey()
+                ))->table($tableBuilder)
             );
 
         $this->builder->type('LEFT')
             ->on(
-                new ColumnBuilder($this->relation->getForeignKey()),
-                new ColumnBuilder($this->relation->getForeignPivotKey())
+                (new ColumnBuilder(
+                    $this->relation->getForeignKey()
+                ))->table($this->builder),
+                (new ColumnBuilder(
+                    $this->relation->getForeignPivotKey()
+                ))->table($pivotJoinBuilder)
             );
 
         $pivotJoinBuilder->join($this->builder);

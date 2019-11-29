@@ -40,7 +40,9 @@ class BelongsTo extends Record
     {
         $foreignKey = $this->blueprint->getForeignKey();
 
-        $this->attributes[$foreignKey->getLocalColumn()->getName()] = $this->associated->getAttribute($foreignKey->getReferenceColumnName());
+        $this->attributes[$foreignKey->getLocalColumn()->getName()] = $this->associated->getAttribute(
+            $foreignKey->getReferenceColumnName()
+        );
 
         return $this;
     }
