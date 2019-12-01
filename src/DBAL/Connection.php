@@ -186,6 +186,7 @@ class Connection
      */
     public function execute(Statement $statement)
     {
+        echo 'execute' . '<br>';
         echo $statement . '<br>';
         var_dump($statement->bindings());
 
@@ -202,6 +203,9 @@ class Connection
      */
     public function insert(InsertStatement $statement)
     {
+        echo 'insert';
+        echo '<br>';
+
         $this->execute($statement);
 
         return $this;

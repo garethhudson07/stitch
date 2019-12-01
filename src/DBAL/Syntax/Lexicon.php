@@ -7,6 +7,38 @@ class Lexicon
     /**
      * @return string
      */
+    public static function insert(): string
+    {
+        return 'INSERT';
+    }
+
+    /**
+     * @return string
+     */
+    public static function into(): string
+    {
+        return 'INTO';
+    }
+
+    /**
+     * @return string
+     */
+    public static function values(): string
+    {
+        return 'VALUES';
+    }
+
+    /**
+     * @return string
+     */
+    public static function update(): string
+    {
+        return 'UPDATE';
+    }
+
+    /**
+     * @return string
+     */
     public static function select(): string
     {
         return 'SELECT';

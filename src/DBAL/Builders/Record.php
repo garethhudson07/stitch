@@ -2,6 +2,8 @@
 
 namespace Stitch\DBAL\Builders;
 
+use Stitch\DBAL\Schema\Table as Schema;
+
 /**
  * Class Record
  * @package Stitch\DBAL\Builders
@@ -9,27 +11,22 @@ namespace Stitch\DBAL\Builders;
 class Record
 {
     /**
-     * @var string
+     * @var Schema
      */
-    protected $table;
+    protected $schema;
 
     /**
      * @var array
      */
-    protected $attributes = [];
-
-    /**
-     * @var string
-     */
-    protected $primaryKey;
+    protected $columns = [];
 
     /**
      * Record constructor.
-     * @param string $table
+     * @param Schema $schema
      */
-    public function __construct(string $table)
+    public function __construct(Schema $schema)
     {
-        $this->table = $table;
+        $this->schema = $schema;
     }
 
     /**
@@ -37,45 +34,58 @@ class Record
      * @param $value
      * @return $this
      */
-    public function attribute(string $name, $value)
+    public function column(string $name, $value)
     {
-        $this->attributes[$name] = $value;
+        if ($this->schema->hasColumn($name)) {
+            $this->columns[$name] = $value;
+        }
 
         return $this;
     }
 
     /**
-     * @param string $name
+     * @param array $columns
      * @return $this
      */
-    public function primaryKey(string $name)
+    public function fill(array $columns)
     {
-        $this->primaryKey = $name;
+        foreach ($columns as $name => $value) {
+            $this->column($name, $value);
+        }
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return Schema
      */
-    public function getTable()
+    public function getSchema()
     {
-        return $this->table;
+        return $this->schema;
     }
 
     /**
      * @return array
      */
-    public function getAttributes()
+    public function getColumns()
     {
-        return $this->attributes;
+        return $this->columns;
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getPrimaryKey()
+    public function getMutatableColumns(): array
     {
-        return $this->primaryKey;
+        $primaryKeyName = $this->schema->getPrimaryKey()->getName();
+        $mutatable = [];
+
+        foreach ($this->columns as $name => $value) {
+            if ($name !== $primaryKeyName) {
+                $mutatable[$name] = $value;
+            }
+        }
+
+        return $mutatable;
     }
 }

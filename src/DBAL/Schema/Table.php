@@ -131,7 +131,16 @@ class Table
      */
     public function getColumn(string $name): Column
     {
-        return array_key_exists($name, $this->columns) ? $this->columns[$name] : null;
+        return $this->hasColumn($name) ? $this->columns[$name] : null;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasColumn(string $name): bool
+    {
+        return array_key_exists($name, $this->columns);
     }
 
     /**

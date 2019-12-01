@@ -2,8 +2,10 @@
 
 namespace Stitch\DBAL\Statements\Persist;
 
+use Stitch\DBAL\Statements\Binder;
 use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Builders\Record as Builder;
+use Stitch\DBAL\Syntax\Update as Syntax;
 
 /**
  * Class Update
@@ -22,6 +24,8 @@ class Update extends Statement
      */
     public function __construct(Builder $builder)
     {
+        parent::__construct();
+
         $this->builder = $builder;
     }
 
@@ -30,62 +34,24 @@ class Update extends Statement
      */
     public function evaluate()
     {
-        $this->push("UPDATE {$this->builder->getTable()} SET")
-            ->push(
-                $this->component($this->assignments())->bindMany($this->assignmentValues())
-            )->push('WHERE')
-            ->push(
-                $this->component($this->condition())->bind($this->conditionValue())
-            );
-    }
+        $schema = $this->builder->getSchema();
+        $primaryKey = $schema->getPrimaryKey();
+        $mutatable = $this->builder->getMutatableColumns();
 
-    /**
-     * @return string
-     */
-    protected function assignments()
-    {
-        $primaryKey = $this->builder->getPrimaryKey();
-        $assignments = [];
-
-        foreach ($this->builder->getAttributes() as $name => $value) {
-            if ($name !== $primaryKey) {
-                $assignments[] = "$name = ?";
-            }
-        }
-
-        return implode(', ', $assignments);
-    }
-
-    /**
-     * @return array
-     */
-    protected function assignmentValues()
-    {
-        $primaryKey = $this->builder->getPrimaryKey();
-        $values = [];
-
-        foreach ($this->builder->getAttributes() as $name => $value) {
-            if ($name !== $primaryKey) {
-                $values[] = $value;
-            }
-        }
-
-        return $values;
-    }
-
-    /**
-     * @return string
-     */
-    protected function condition()
-    {
-        return "{$this->builder->getPrimaryKey()} = ?";
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function conditionValue()
-    {
-        return $this->builder->getAttributes()[$this->builder->getPrimaryKey()];
+        $this->push(
+            Syntax::table($schema)
+        )->push(
+            (new Binder(
+                Syntax::set(array_keys($mutatable))
+            ))->many(array_values($mutatable))
+        )->push(
+            Syntax::where()
+        )->push(
+            (new Binder(
+                Syntax::scope($primaryKey)
+            ))->one(
+                $this->builder->getcolumns()[$primaryKey->getName()]
+            )
+        );
     }
 }

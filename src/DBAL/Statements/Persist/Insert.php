@@ -2,8 +2,10 @@
 
 namespace Stitch\DBAL\Statements\Persist;
 
+use Stitch\DBAL\Statements\Binder;
 use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Builders\Record as Builder;
+use Stitch\DBAL\Syntax\Insert as Syntax;
 
 /**
  * Class Insert
@@ -22,6 +24,8 @@ class Insert extends Statement
      */
     public function __construct(Builder $builder)
     {
+        parent::__construct();
+
         $this->builder = $builder;
     }
 
@@ -30,42 +34,21 @@ class Insert extends Statement
      */
     public function evaluate()
     {
+        $columns = $this->builder->getColumns();
+        $values = array_values($columns);
+
         $this->push(
-            'INSERT INTO ' . $this->builder->getTable()
+            Syntax::into(
+                $this->builder->getSchema()
+            )
         )->push(
-            $this->columns()
+            Syntax::columns(
+                array_keys($columns)
+            )
         )->push(
-            'VALUES'
-        )->push(
-            $this->component($this->placeholders())->bindMany($this->values())
+            (new Binder(
+                Syntax::values($values)
+            ))->many($values)
         );
-    }
-
-    /**
-     * @return string
-     */
-    protected function columns()
-    {
-        $columns = array_keys($this->builder->getAttributes());
-
-        return '(' . implode(', ', $columns) . ')';
-    }
-
-    /**
-     * @return string
-     */
-    protected function placeholders()
-    {
-        $placeholders = array_fill(0, count($this->builder->getAttributes()), '?');
-
-        return '(' . implode(', ', $placeholders) . ')';
-    }
-
-    /**
-     * @return array
-     */
-    protected function values()
-    {
-        return array_values($this->builder->getAttributes());
     }
 }

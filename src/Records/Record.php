@@ -166,45 +166,14 @@ class Record implements Arrayable
      */
     protected function update()
     {
-        $builder = $this->builder()
-            ->primaryKey($this->model->getTable()->getPrimaryKey()->getName());
+        $table = $this->model->getTable();
 
-        Dispatcher::update($this->model->getTable()->getConnection(), $builder);
+        Dispatcher::update(
+            $table->getConnection(),
+            (new RecordBuilder($table))->fill($this->attributes)
+        );
 
         return $this;
-    }
-
-    /**
-     * @return RecordBuilder
-     */
-    protected function builder()
-    {
-        $builder = new RecordBuilder($this->model->getTable()->getName());
-
-        foreach ($this->persistableAttributes() as $key => $value) {
-            $builder->attribute($key, $value);
-        }
-
-        return $builder;
-    }
-
-    /**
-     * @return array
-     */
-    protected function persistableAttributes()
-    {
-        $attributes = [];
-
-        foreach ($this->model->getTable()->getColumns() as $column) {
-            /** @var Column $column */
-            $name = $column->getName();
-
-            if (array_key_exists($name, $this->attributes)) {
-                $attributes[$name] = $this->attributes[$name];
-            }
-        }
-
-        return $attributes;
     }
 
     /**
@@ -212,12 +181,16 @@ class Record implements Arrayable
      */
     protected function insert()
     {
-        $connection = $this->model->getTable()->getConnection();
-        $primaryKey = $this->model->getTable()->getPrimaryKey();
+        $table = $this->model->getTable();
+        $connection = $table->getConnection();
+        $primaryKey = $table->getPrimaryKey();
 
-        Dispatcher::insert($connection, $this->builder());
+        Dispatcher::insert(
+            $connection,
+            (new RecordBuilder($table))->fill($this->attributes)
+        );
 
-        if ($primaryKey->autoIncrements()) {
+        if ($primaryKey->incrementing()) {
             $this->attributes[$primaryKey->getName()] = $connection->lastInsertId();
         }
 

@@ -26,7 +26,7 @@ class Column
     /**
      * @var bool
      */
-    protected $autoIncrement = false;
+    protected $increments = false;
 
     /**
      * Column constructor.
@@ -44,9 +44,9 @@ class Column
     /**
      * @return $this
      */
-    public function autoIncrement()
+    public function increments()
     {
-        $this->autoIncrement = true;
+        $this->increments = true;
 
         return $this;
     }
@@ -133,9 +133,9 @@ class Column
     /**
      * @return bool
      */
-    public function autoIncrements()
+    public function incrementing()
     {
-        return $this->autoIncrement;
+        return $this->increments;
     }
 
     /**
