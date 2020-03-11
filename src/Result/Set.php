@@ -2,13 +2,13 @@
 
 namespace Stitch\Result;
 
-use stitch\Collection;
+use stitch\Aggregate\Set as Aggregate;
 
 /**
  * Class Set
  * @package Stitch\Result
  */
-class Set extends Collection
+class Set extends Aggregate
 {
     /**
      * @var Blueprint

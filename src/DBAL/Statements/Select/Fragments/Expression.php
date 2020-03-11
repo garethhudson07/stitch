@@ -10,7 +10,7 @@ use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Paths\Resolver as PathResolver;
 use Stitch\DBAL\Syntax\Select as Syntax;
 /**
- * Class Expression
+ * Class Where
  * @package Stitch\DBAL\Statements\Select\Fragments
  */
 class Expression extends Statement
@@ -23,7 +23,7 @@ class Expression extends Statement
     protected $paths;
 
     /**
-     * Expression constructor.
+     * Where constructor.
      * @param Builder $builder
      */
     public function __construct(Builder $builder, PathResolver $paths)
@@ -39,24 +39,33 @@ class Expression extends Statement
      */
     public function evaluate()
     {
+        $first = true;
+
         foreach ($this->builder->getItems() as $key => $item) {
-            if ($key > 0) {
-                $this->push($item['operator']);
-            }
+            $constraint = null;
 
             if ($item['constraint'] instanceOf Builder) {
-                $this->push(
-                    (new static($item['constraint'], $this->paths))->isolate()
-                );
+                if ($item['constraint']->count()) {
+                    $constraint = (new static($item['constraint'], $this->paths));
+
+                    if ($item['constraint']->count() > 1) {
+                        $constraint->isolate();
+                    }
+                }
             } elseif ($item['constraint'] instanceOf Raw) {
-                $this->push(
-                    (new Binder($item['constraint']->getSql()))
-                        ->many($item['constraint']->getBindings())
-                );
+                $constraint = (new Binder($item['constraint']->getSql()))
+                        ->many($item['constraint']->getBindings());
             } else {
-                $this->push(
-                    new Condition($item['constraint'], $this->paths)
-                );
+                $constraint = new Condition($item['constraint'], $this->paths);
+            }
+            
+            if ($constraint) {
+                if (!$first) {
+                    $this->push($item['operator']);
+                }
+                
+                $this->push($constraint);
+                $first = false;
             }
         }
     }

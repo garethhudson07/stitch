@@ -5,7 +5,7 @@ namespace Stitch\DBAL\Builders;
 use Closure;
 
 /**
- * Class Expression
+ * Class Where
  * @package Stitch\DBAL\Builders
  */
 class Expression

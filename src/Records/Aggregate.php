@@ -2,10 +2,10 @@
 
 namespace Stitch\Records;
 
-use Stitch\Collection as BaseCollection;
+use Stitch\Aggregate\Set;
 use Stitch\Model;
 
-class Collection extends BaseCollection
+class Aggregate extends Set
 {
     protected $model;
 

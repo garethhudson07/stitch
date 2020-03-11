@@ -2,7 +2,6 @@
 
 namespace Stitch\Result;
 
-use Stitch\Queries\Joins\Collection as Joins;
 use Stitch\Queries\Query;
 use Stitch\Relations\Relation;
 use Stitch\DBAL\Paths\Resolver as PathResolver;
@@ -39,23 +38,27 @@ class Blueprint
         $instance = (new static(
             $paths->table($query->getBuilder()),
             $query->getModel()
-        ))->resolveJoins($query->getJoins(), $paths);
+        ))->resolveJoins($query, $paths);
 
         return $instance;
     }
 
     /**
-     * @param Joins $joins
+     * @param $joinable
      * @param PathResolver $paths
      * @return $this
      */
-    public function resolveJoins(Joins $joins, PathResolver $paths)
+    public function resolveJoins($joinable, PathResolver $paths)
     {
-        foreach ($joins->all() as $key => $join) {
-            $this->relations[$key] = (new static(
+        $joins = $joinable->getJoins();
+
+        foreach ($joinable->getRelations()->all() as $name) {
+            $join = $joins->get($name);
+
+            $this->relations[$name] = (new static(
                 $paths->table($join->getBuilder()),
                 $join->getRelation()
-            ))->resolveJoins($join->getJoins(), $paths);
+            ))->resolveJoins($join, $paths);
         }
 
         return $this;

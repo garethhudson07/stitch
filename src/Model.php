@@ -6,7 +6,7 @@ use Closure;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\Queries\Query;
 use Stitch\Relations\BelongsTo;
-use Stitch\Relations\Collection as Relations;
+use Stitch\Relations\Aggregate as Relations;
 use Stitch\Relations\Has;
 use Stitch\Relations\HasOne;
 use Stitch\Relations\ManyToMany;

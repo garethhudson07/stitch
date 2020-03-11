@@ -1,6 +1,6 @@
 <?php
 
-namespace Stitch;
+namespace Stitch\Aggregate;
 
 use ArrayAccess;
 use ArrayIterator;
@@ -12,7 +12,7 @@ use Stitch\Contracts\Arrayable;
  * Class Collection
  * @package Stitch
  */
-class Collection implements IteratorAggregate, ArrayAccess, Countable, Arrayable
+class Aggregate implements IteratorAggregate, ArrayAccess, Countable, Arrayable
 {
 
     /**
@@ -42,6 +42,25 @@ class Collection implements IteratorAggregate, ArrayAccess, Countable, Arrayable
         $this->items = $items;
 
         return $this;
+    }
+
+    /**
+     * @param $key
+     * @return $this
+     */
+    public function unset($key)
+    {
+        $this->offsetUnset($key);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function all()
+    {
+        return $this->items;
     }
 
     /**
@@ -79,10 +98,6 @@ class Collection implements IteratorAggregate, ArrayAccess, Countable, Arrayable
      */
     public function offsetExists($key)
     {
-        if ($this->items instanceof Collection) {
-            return $this->items->offsetExists($key);
-        }
-
         return array_key_exists($key, $this->items);
     }
 
@@ -94,7 +109,7 @@ class Collection implements IteratorAggregate, ArrayAccess, Countable, Arrayable
      */
     public function offsetGet($key)
     {
-        return isset($this->items[$key]) ? $this->items[$key] : null;
+        return $this->offsetExists($key) ? $this->items[$key] : null;
     }
 
     /**

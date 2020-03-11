@@ -3,13 +3,13 @@
 namespace Stitch\Relations;
 
 use Closure;
-use Stitch\Collection as BaseCollection;
+use Stitch\Aggregate\Map;
 
 /**
  * Class Collection
  * @package Stitch\Relations
  */
-class Collection extends BaseCollection
+class Aggregate extends Map
 {
     /**
      * @param string $name
@@ -42,15 +42,6 @@ class Collection extends BaseCollection
     public function get(string $name): ?Relation
     {
         return $this->has($name) ? $this->resolve($name) : null;
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function has(string $name)
-    {
-        return array_key_exists($name, $this->items);
     }
 
     /**

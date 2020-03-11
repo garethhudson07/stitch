@@ -2,10 +2,10 @@
 
 namespace Stitch\Records\Relations;
 
-use Stitch\Records\Collection as BaseCollection;
+use Stitch\Records\Aggregate as BaseAggregate;
 use Stitch\Records\Record;
 
-class Collection extends BaseCollection
+class Aggregate extends BaseAggregate
 {
     /**
      * @param array $attributes

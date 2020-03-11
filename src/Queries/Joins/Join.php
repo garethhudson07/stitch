@@ -2,10 +2,14 @@
 
 namespace Stitch\Queries\Joins;
 
+use Stitch\Aggregate\Map;
+use Stitch\Aggregate\Set;
 use Stitch\DBAL\Builders\Join as Builder;
 use Stitch\DBAL\Builders\Table as TableBuilder;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\Model;
+use Stitch\Queries\Conditions\On;
+use Stitch\Queries\Pipeline;
 use Stitch\Relations\Relation;
 
 /**
@@ -31,6 +35,10 @@ class Join
      */
     protected $joins;
 
+    protected $relations;
+
+    protected $conditions;
+
     /**
      * Join constructor.
      * @param Model $model
@@ -42,7 +50,9 @@ class Join
         $this->model = $model;
         $this->builder = $builder;
         $this->relation = $relation;
-        $this->joins = new Collection($builder);
+        $this->joins = new Map();
+        $this->relations = new Set();
+        $this->conditions = On::make($this->builder);
     }
 
     /**
@@ -70,11 +80,50 @@ class Join
     }
 
     /**
-     * @return array|Collection
+     * @return Map
      */
     public function getJoins()
     {
         return $this->joins;
+    }
+
+    /**
+     * @param mixed ...$pipelines
+     * @return $this
+     */
+    public function with(Pipeline $pipeline)
+    {
+        $join = $pipeline->first();
+
+        $this->relations->include($join->getRelation()->getName());
+
+        if ($pipeline->count() > 1) {
+            $join->with($pipeline->after(0));
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return $this
+     */
+    public function on(...$arguments)
+    {
+        $this->conditions->and(...$arguments);
+
+        return $this;
+    }
+
+    /**
+     * @param array ...$arguments
+     * @return $this
+     */
+    public function orOn(...$arguments)
+    {
+        $this->conditions->or(...$arguments);
+
+        return $this;
     }
 
     /**
@@ -115,5 +164,13 @@ class Join
             );
 
         $tableBuilder->join($this->builder);
+    }
+
+    /**
+     * @return Set
+     */
+    public function getRelations()
+    {
+        return $this->relations;
     }
 }
