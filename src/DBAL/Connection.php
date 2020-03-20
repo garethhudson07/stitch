@@ -6,6 +6,7 @@ use PDO;
 use PDOStatement;
 use Stitch\DBAL\Statements\Persist\Insert as InsertStatement;
 use Stitch\DBAL\Statements\Persist\Update as UpdateStatement;
+use Stitch\DBAL\Statements\Delete\Delete as DeleteStatement;
 use Stitch\DBAL\Statements\Select\Query as QueryStatement;
 use Stitch\DBAL\Statements\Statement;
 
@@ -186,8 +187,8 @@ class Connection
      */
     public function execute(Statement $statement)
     {
-        echo $statement . '<br>';
-        var_dump($statement->bindings());
+//        echo $statement . '<br>';
+//        var_dump($statement->bindings());
 
         $prepared = $this->get()->prepare($statement->query());
 
@@ -198,13 +199,11 @@ class Connection
 
     /**
      * @param InsertStatement $statement
-     * @return $this
+     * @return bool|PDOStatement
      */
     public function insert(InsertStatement $statement)
     {
-        $this->execute($statement);
-
-        return $this;
+        return $this->execute($statement);
     }
 
     /**
@@ -217,12 +216,19 @@ class Connection
 
     /**
      * @param UpdateStatement $statement
-     * @return $this
+     * @return bool|PDOStatement
      */
     public function update(UpdateStatement $statement)
     {
-        $this->execute($statement);
+        return $this->execute($statement);
+    }
 
-        return $this;
+    /**
+     * @param DeleteStatement $statement
+     * @return bool|PDOStatement
+     */
+    public function delete(DeleteStatement $statement)
+    {
+        return $this->execute($statement);
     }
 }

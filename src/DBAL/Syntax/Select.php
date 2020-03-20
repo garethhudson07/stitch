@@ -19,6 +19,7 @@ class Select extends Syntax
     }
 
     /**
+     * @param array $columns
      * @return string
      */
     public static function selectColumns(array $columns): string

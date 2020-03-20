@@ -2,6 +2,7 @@
 
 namespace Stitch\DBAL\Syntax;
 
+use Stitch\DBAL\Schema\Column as Column;
 use Closure;
 
 class Syntax
@@ -190,6 +191,19 @@ class Syntax
         return static::implode(
             Lexicon::limit(),
             $quantity
+        );
+    }
+
+    /**
+     * @param Column $primaryKey
+     * @return string
+     */
+    public static function scope(Column $primaryKey): string
+    {
+        return static::implode(
+            $primaryKey->getName(),
+            Grammar::equal(),
+            Grammar::placeholder()
         );
     }
 

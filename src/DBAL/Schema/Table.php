@@ -78,9 +78,20 @@ class Table
     {
         $column = new Column($this, $name, $type);
 
-        $this->columns[$name] = $column;
+        $this->pushColumn($column);
 
         return $column;
+    }
+
+    /**
+     * @param Column $column
+     * @return $this
+     */
+    public function pushColumn(Column $column)
+    {
+        $this->columns[$column->getName()] = $column;
+
+        return $this;
     }
 
     /**

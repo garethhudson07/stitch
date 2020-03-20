@@ -21,7 +21,6 @@ class Grammar
     }
 
     /**
-     * @param array $pieces
      * @return string
      */
     public static function qualifier()
@@ -38,6 +37,7 @@ class Grammar
     }
 
     /**
+     * @param string $name
      * @return string
      */
     public static function variable(string $name): string

@@ -3,7 +3,6 @@
 namespace Stitch\DBAL\Syntax;
 
 use Stitch\DBAL\Schema\Table;
-use Stitch\DBAL\Schema\Column as Column;
 
 class Update extends Syntax
 {
@@ -37,19 +36,6 @@ class Update extends Syntax
                     );
                 }, $columns)
             )
-        );
-    }
-
-    /**
-     * @param Column $primaryKey
-     * @return string
-     */
-    public static function scope(Column $primaryKey): string
-    {
-        return static::implode(
-            $primaryKey->getName(),
-            Grammar::equal(),
-            Grammar::placeholder()
         );
     }
 }

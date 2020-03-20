@@ -6,6 +6,7 @@ use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
 use Stitch\DBAL\Statements\Persist\Insert as InsertStatement;
 use Stitch\DBAL\Statements\Persist\Update as UpdateStatement;
+use Stitch\DBAL\Statements\Delete\Delete as DeleteStatement;
 use Stitch\DBAL\Statements\Select\Query as QueryStatement;
 use Stitch\DBAL\Statements\Select\Variables\Declaration as VariableDeclaration;
 use Stitch\DBAL\Paths\Resolver as PathResolver;
@@ -44,7 +45,7 @@ class Dispatcher
      */
     public static function insert(Connection $connection, RecordBuilder $builder)
     {
-        $connection->insert(
+        return $connection->insert(
             new InsertStatement($builder)
         );
     }
@@ -52,11 +53,24 @@ class Dispatcher
     /**
      * @param Connection $connection
      * @param RecordBuilder $builder
+     * @return bool|\PDOStatement
      */
     public static function update(Connection $connection, RecordBuilder $builder)
     {
-        $connection->update(
+        return $connection->update(
             new UpdateStatement($builder)
+        );
+    }
+
+    /**
+     * @param Connection $connection
+     * @param RecordBuilder $builder
+     * @return bool|\PDOStatement
+     */
+    public static function delete(Connection $connection, RecordBuilder $builder)
+    {
+        return $connection->delete(
+            new DeleteStatement($builder)
         );
     }
 }

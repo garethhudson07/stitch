@@ -39,6 +39,14 @@ class Lexicon
     /**
      * @return string
      */
+    public static function delete(): string
+    {
+        return 'DELETE';
+    }
+
+    /**
+     * @return string
+     */
     public static function select(): string
     {
         return 'SELECT';

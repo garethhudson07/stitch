@@ -99,7 +99,7 @@ class Record implements Arrayable
      */
     public function hydrate()
     {
-        $activeRecord = $this->blueprint->activeRecord($this->data);
+        $activeRecord = $this->blueprint->activeRecord($this->data)->markAsPersisted();
 
         foreach ($this->relations as $name => $relation) {
             $activeRecord->setRelation($name, $relation->hydrate());

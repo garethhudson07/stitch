@@ -6,7 +6,6 @@ use Stitch\Contracts\Arrayable;
 use Stitch\Model;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
 use Stitch\DBAL\Dispatcher;
-use Stitch\DBAL\Schema\Column;
 
 /**
  * Class Record
@@ -32,7 +31,7 @@ class Record implements Arrayable
     /**
      * @var bool
      */
-    protected $exists;
+    protected $persisted;
 
     /**
      * Record constructor.
@@ -46,11 +45,19 @@ class Record implements Arrayable
     /**
      * @return $this
      */
-    public function exists()
+    public function markAsPersisted()
     {
-        $this->exists = true;
+        $this->persisted = true;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function persisted()
+    {
+        return $this->persisted;
     }
 
     /**
@@ -158,7 +165,7 @@ class Record implements Arrayable
      */
     public function save()
     {
-        return $this->exists ? $this->update() : $this->insert();
+        return $this->persisted() ? $this->update() : $this->insert();
     }
 
     /**
@@ -194,7 +201,22 @@ class Record implements Arrayable
             $this->attributes[$primaryKey->getName()] = $connection->lastInsertId();
         }
 
-        return $this->exists();
+        $this->markAsPersisted();
+
+        return $this;
+    }
+
+    /**
+     * @return bool|\PDOStatement
+     */
+    public function delete()
+    {
+        $table = $this->model->getTable();
+
+        return Dispatcher::delete(
+            $table->getConnection(),
+            (new RecordBuilder($table))->fill($this->attributes)
+        );
     }
 
     /**

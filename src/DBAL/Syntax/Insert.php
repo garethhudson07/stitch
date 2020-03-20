@@ -7,7 +7,7 @@ use Stitch\DBAL\Schema\Table;
 class Insert extends Syntax
 {
     /**
-     * @param string $table
+     * @param Table $table
      * @return string
      */
     public static function into(Table $table): string
