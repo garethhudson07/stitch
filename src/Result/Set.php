@@ -67,7 +67,7 @@ class Set extends Aggregate
      * @param $primaryKey
      * @return bool|mixed
      */
-    public function find(int $primaryKey)
+    public function find($primaryKey)
     {
         if (array_key_exists($primaryKey, $this->map)) {
             return $this->items[$this->map[$primaryKey]];

@@ -6,7 +6,7 @@ use Stitch\DBAL\Builders\Join as JoinBuilder;
 use Stitch\Model;
 use Stitch\Queries\Joins\Join;
 use Stitch\Registry;
-use Stitch\Records\Relations\Collection as RecordCollection;
+use Stitch\Records\Relations\Aggregate as RecordAggregate;
 
 /**
  * Class Relation
@@ -199,11 +199,11 @@ abstract class Relation
     }
 
     /**
-     * @return RecordCollection
+     * @return RecordAggregate
      */
     public function collection()
     {
-        return new RecordCollection($this->getForeignModel());
+        return new RecordAggregate($this->getForeignModel());
     }
 
     /**

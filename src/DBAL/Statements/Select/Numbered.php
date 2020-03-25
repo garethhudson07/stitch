@@ -80,7 +80,9 @@ class Numbered extends Statement
         }
 
         if (!$added) {
-            $this->sorter->add(new ColumnBuilder($schema->getPrimaryKey()));
+            $this->sorter->add(
+                (new ColumnBuilder($schema->getPrimaryKey()))->table($builder)
+            );
         }
 
         foreach ($builder->getJoins() as $join) {

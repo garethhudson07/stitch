@@ -13,7 +13,7 @@ use Stitch\Relations\ManyToMany;
 use Stitch\Relations\Relation;
 use Stitch\DBAL\Schema\Table;
 use Stitch\Records\Record;
-use Stitch\Records\Collection as RecordCollection;
+use Stitch\Records\Aggregate as RecordAggregate;
 
 /**
  * Class Model
@@ -59,11 +59,11 @@ class Model
     }
 
     /**
-     * @return RecordCollection
+     * @return RecordAggregate
      */
     public function collection()
     {
-        return new RecordCollection($this);
+        return new RecordAggregate($this);
     }
 
     /**
