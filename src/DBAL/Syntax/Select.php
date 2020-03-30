@@ -60,7 +60,9 @@ class Select extends Syntax
         $components = [
             $type,
             Lexicon::join(),
-            $table->qualifiedname()
+            $table->qualifiedname(),
+            Lexicon::alias(),
+            $table->alias()
         ];
 
         if ($table->conflict()) {
