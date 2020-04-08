@@ -17,11 +17,11 @@ class Registry
 
     /**
      * @param string $name
-     * @param Closure $callback
+     * @param $item
      */
-    public static function add(string $name, Closure $callback)
+    public static function add(string $name, $item)
     {
-        static::$items[$name] = $callback;
+        static::$items[$name] = $item;
     }
 
     /**

@@ -40,11 +40,11 @@ class Stitch
 
     /**
      * @param string $name
-     * @param Closure $callback
+     * @param $item
      */
-    public static function register(string $name, Closure $callback)
+    public static function register(string $name, $item)
     {
-        Registry::add($name, $callback);
+        Registry::add($name, $item);
     }
 
     /**
