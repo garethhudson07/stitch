@@ -90,7 +90,10 @@ class Select extends Syntax
                     $pieces[] = Grammar::method($operator, static::placeholders($value));
                 } else {
                     $pieces[] = $operator;
-                    $pieces[] = implode(' ' . Lexicon::and() . ' ', $value);
+                    $pieces[] = implode(
+                        ' ' . Lexicon::and() . ' ',
+                        array_fill(0, count($value), Grammar::placeholder())
+                    );
                 }
                 break;
 
