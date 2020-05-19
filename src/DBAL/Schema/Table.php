@@ -142,8 +142,8 @@ class Table
      */
     public function getColumn(string $name): Column
     {
-        if ($this->hasColumn($name)) {
-            throw new Exception("Column [$name] not found on [{$this->name}] table");
+        if (!$this->hasColumn($name)) {
+            throw new Exception("Column [$name] not found on the [{$this->name}] table");
         }
 
         return  $this->columns[$name];
