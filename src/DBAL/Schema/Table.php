@@ -142,7 +142,11 @@ class Table
      */
     public function getColumn(string $name): Column
     {
-        return $this->hasColumn($name) ? $this->columns[$name] : null;
+        if ($this->hasColumn($name)) {
+            throw new Exception("Column [$name] not found on [{$this->name}] table");
+        }
+
+        return  $this->columns[$name];
     }
 
     /**
