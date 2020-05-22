@@ -144,6 +144,10 @@ class Column
      */
     public function cast($value)
     {
+        if (is_null($value)) {
+            return $value;
+        }
+
         switch ($this->type) {
             case 'integer':
                 return (int)$value;
