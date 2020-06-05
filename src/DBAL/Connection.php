@@ -47,6 +47,11 @@ class Connection
     protected $host = 'localhost';
 
     /**
+     * @var string
+     */
+    protected $charset = 'utf8';
+
+    /**
      * @var PDO
      */
     protected $pdo;
@@ -57,7 +62,7 @@ class Connection
     public function connect()
     {
         $this->pdo = new PDO(
-            $this->driver . ':host=' . $this->host . ';dbname=' . $this->database,
+            $this->driver . ':host=' . $this->host . ';dbname=' . $this->database . ';charset=' . $this->charset,
             $this->username,
             $this->password
         );
@@ -117,6 +122,17 @@ class Connection
     public function host(string $host)
     {
         $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * @param string $charset
+     * @return $this
+     */
+    public function charset(string $charset)
+    {
+        $this->charset = $charset;
 
         return $this;
     }
