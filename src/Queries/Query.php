@@ -159,7 +159,7 @@ class Query
     }
 
     /**
-     * @param array ...$arguments
+     * @param ...$arguments
      * @return Query
      */
     public function where(...$arguments)
