@@ -18,6 +18,8 @@ use Stitch\Records\Aggregate as RecordAggregate;
 /**
  * Class Model
  * @package Stitch
+ * @method Query where(...$arguments)
+ * @method Query with(...$pipelines)
  */
 class Model
 {
@@ -203,7 +205,7 @@ class Model
 
     /**
      * @param string $id
-     * @return null|Record
+     * @return null|\Stitch\Result\Record
      */
     public function find(string $id)
     {
