@@ -205,7 +205,7 @@ class Model
 
     /**
      * @param string $id
-     * @return null|Record
+     * @return null|\Stitch\Result\Record
      */
     public function find(string $id)
     {
