@@ -18,6 +18,7 @@ use Stitch\Records\Aggregate as RecordAggregate;
 /**
  * Class Model
  * @package Stitch
+ * @method Query where(...$arguments)
  */
 class Model
 {
