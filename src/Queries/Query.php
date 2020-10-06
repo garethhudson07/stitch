@@ -10,7 +10,7 @@ use Stitch\Model;
 use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Dispatcher;
 use Stitch\Queries\Conditions\Where;
-use Stitch\Records\Record;
+use Stitch\Result\Record;
 use Stitch\Result\Blueprint as ResultBlueprint;
 use Stitch\Result\Set as ResultSet;
 
@@ -159,7 +159,7 @@ class Query
     }
 
     /**
-     * @param array ...$arguments
+     * @param ...$arguments
      * @return Query
      */
     public function where(...$arguments)
