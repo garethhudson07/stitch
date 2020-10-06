@@ -57,21 +57,14 @@ class Select extends Syntax
      */
     public static function join(string $type, TablePath $table): string
     {
-        $components = [
+        return static::implode(
             $type,
             Lexicon::join(),
             $table->qualifiedname(),
             Lexicon::alias(),
-            $table->alias()
-        ];
-
-        if ($table->conflict()) {
-            $components[] = static::alias($table->alias());
-        }
-
-        $components[] = Lexicon::on();
-
-        return static::implode(...$components);
+            $table->alias(),
+            Lexicon::on()
+        );
     }
 
     /**

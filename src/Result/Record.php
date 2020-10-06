@@ -43,7 +43,7 @@ class Record implements Arrayable
     {
         foreach ($this->blueprint->relations() as $key => $blueprint) {
             if (!array_key_exists($key, $this->relations)) {
-                $this->relations[$key] = $blueprint->result()->extract($raw);
+                $this->relations[$key] = $blueprint->extract($raw);
             } else {
                 $this->relations[$key]->extract($raw);
             }
@@ -67,6 +67,16 @@ class Record implements Arrayable
         }
 
         return $this->extractRelations($raw);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNull(): bool
+    {
+        $primaryKeyName = $this->blueprint->table()->primaryKey()->name();
+
+        return (array_key_exists($primaryKeyName, $this->data) && is_null($this->data[$primaryKeyName]));
     }
 
     /**
@@ -102,7 +112,7 @@ class Record implements Arrayable
         $activeRecord = $this->blueprint->activeRecord($this->data)->markAsPersisted();
 
         foreach ($this->relations as $name => $relation) {
-            $activeRecord->setRelation($name, $relation->hydrate());
+            $activeRecord->setRelation($name, is_null($relation) ? null : $relation->hydrate());
         }
 
         return $activeRecord;
@@ -115,7 +125,7 @@ class Record implements Arrayable
     {
         return array_merge($this->data, array_map(function ($relation)
         {
-            return $relation->toArray();
+            return is_null($relation) ? null : $relation->toArray();
         }, $this->relations));
     }
 }

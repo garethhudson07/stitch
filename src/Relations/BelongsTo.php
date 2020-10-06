@@ -8,6 +8,8 @@ namespace Stitch\Relations;
  */
 class BelongsTo extends Relation
 {
+    protected $associate = 'one';
+
     /**
      * @return $this
      */

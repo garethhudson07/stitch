@@ -89,15 +89,22 @@ class Blueprint
     }
 
     /**
-     * @return Record|Set
+     * @param array $raw
+     * @return null|Record|Set
      */
-    public function result()
+    public function extract(array $raw)
     {
-        if ($this->factory instanceof Relation) {
-            return $this->factory->associatesOne() ? $this->resultRecord() : $this->resultSet();
+        if ($this->factory instanceof Relation && $this->factory->associatesOne()) {
+            $extracted = $this->resultRecord()->extract($raw);
+
+            if ($extracted->isNull()) {
+                $extracted = null;
+            }
+
+            return $extracted;
         }
 
-        return $this->resultSet();
+        return $this->resultSet()->extract($raw);
     }
 
     /**
