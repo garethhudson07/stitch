@@ -146,6 +146,14 @@ class Lexicon
     /**
      * @return string
      */
+    public static function offset(): string
+    {
+        return 'OFFSET';
+    }
+
+    /**
+     * @return string
+     */
     public static function orderBy(): string
     {
         return 'ORDER BY';

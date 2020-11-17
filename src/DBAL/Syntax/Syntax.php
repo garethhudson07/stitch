@@ -195,6 +195,18 @@ class Syntax
     }
 
     /**
+     * @param int $quantity
+     * @return string
+     */
+    public static function offset(int $quantity): string
+    {
+        return static::implode(
+            Lexicon::offset(),
+            $quantity
+        );
+    }
+
+    /**
      * @param Column $primaryKey
      * @return string
      */

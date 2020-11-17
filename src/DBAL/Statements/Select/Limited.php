@@ -6,6 +6,7 @@ use Stitch\DBAL\Builders\Expression as ExpressionBuilder;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Builders\Table as TableBuilder;
 use Stitch\DBAL\Statements\Select\Operations\Limit;
+use Stitch\DBAL\Statements\Select\Operations\Offset;
 use Stitch\DBAL\Statements\Select\Operations\Where;
 use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Syntax\Select as Syntax;
@@ -78,7 +79,7 @@ class Limited extends Statement
 
         if ($offset !== null) {
             $conditions->andRaw(
-                Syntax::greaterThan($column, $limit)
+                Syntax::greaterThan($column, $offset)
             );
         }
 
@@ -106,6 +107,8 @@ class Limited extends Statement
             new Unlimited($this->builder, $this->paths)
         )->push(
             new Limit($this->builder)
+        )->push(
+            new Offset($this->builder)
         );
     }
 }
