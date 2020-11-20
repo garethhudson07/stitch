@@ -67,15 +67,16 @@ class Stitch
      */
     public static function __callStatic($name, $arguments)
     {
-        return static::resolve($name);
+        return static::resolve($name, $arguments);
     }
 
     /**
      * @param string $name
+     * @param array $arguments
      * @return mixed|null
      */
-    public static function resolve(string $name)
+    public static function resolve(string $name, array $arguments = [])
     {
-        return Registry::get($name);
+        return Registry::get($name, $arguments);
     }
 }

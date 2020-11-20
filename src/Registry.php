@@ -26,11 +26,12 @@ class Registry
 
     /**
      * @param $name
+     * @param array $arguments
      * @return mixed|null
      */
-    public static function get($name)
+    public static function get($name, array $arguments = [])
     {
-        return static::has($name) ? static::resolve($name) : null;
+        return static::has($name) ? static::resolve($name, $arguments) : null;
     }
 
     /**
@@ -44,15 +45,19 @@ class Registry
 
     /**
      * @param string $name
+     * @param array $arguments
      * @return mixed
      */
-    public static function resolve(string $name)
+    public static function resolve(string $name, array $arguments = [])
     {
         $item = static::$items[$name];
 
         if ($item instanceof Closure) {
-            $item = $item();
-            static::$items[$name] = $item;
+            $item = $item(...$arguments);
+
+            if (!$arguments) {
+                static::$items[$name] = $item;
+            }
         }
 
         return $item;
