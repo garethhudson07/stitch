@@ -2,8 +2,10 @@
 
 namespace Stitch\DBAL;
 
+use Closure;
 use PDO;
 use PDOStatement;
+use Stitch\DBAL\Schema\Database;
 use Stitch\DBAL\Statements\Persist\Insert as InsertStatement;
 use Stitch\DBAL\Statements\Persist\Update as UpdateStatement;
 use Stitch\DBAL\Statements\Delete\Delete as DeleteStatement;
@@ -22,9 +24,9 @@ class Connection
     protected $name = 'default';
 
     /**
-     * @var string
+     * @var array
      */
-    protected $database;
+    protected $databases = [];
 
     /**
      * @var string
@@ -62,7 +64,7 @@ class Connection
     public function connect()
     {
         $this->pdo = new PDO(
-            $this->driver . ':host=' . $this->host . ';dbname=' . $this->database . ';charset=' . $this->charset,
+            $this->driver . ':host=' . $this->host . ';charset=' . $this->charset,
             $this->username,
             $this->password
         );
@@ -138,22 +140,45 @@ class Connection
     }
 
     /**
-     * @param string $database
+     * @param $arg
      * @return $this
      */
-    public function database(string $database)
+    public function database($arg)
     {
-        $this->database = $database;
+        $db = new Database();
+
+        if ($arg instanceof Closure) {
+            $arg($db);
+        } else {
+            $db->name($arg);
+        }
+
+        if (!$db->getAlias()) {
+            $db->alias(
+                count($this->databases) ? $db->getName() : 'default'
+            );
+        }
+
+        $this->databases[$db->getAlias()] = $db;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getDatabase()
+    public function getDatabases()
     {
-        return $this->database;
+        return $this->databases;
+    }
+
+    /**
+     * @param string $alias
+     * @return null|Database
+     */
+    public function getDatabase(?string $alias = null): ?Database
+    {
+        return $this->databases[$alias ?: 'default'] ?? null;
     }
 
     /**
@@ -203,11 +228,10 @@ class Connection
      */
     public function execute(Statement $statement)
     {
-//        echo $statement . '<br>';
-//        var_dump($statement->bindings());
+        echo $statement . '<br>';
+        var_dump($statement->bindings());
 
         $prepared = $this->get()->prepare($statement->query());
-
         $prepared->execute($statement->bindings());
 
         return $prepared;

@@ -18,6 +18,11 @@ class Table
     /**
      * @var string
      */
+    protected $database;
+
+    /**
+     * @var string
+     */
     protected $connection = 'default';
 
     /**
@@ -50,10 +55,27 @@ class Table
     }
 
     /**
+     * @param string $path
+     * @return $this|Table
+     */
+    public function database(string $path)
+    {
+        $pieces = explode('.', $path);
+
+        $this->database = array_pop($pieces);
+
+        if ($pieces) {
+            return $this->connection($pieces[0]);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $name
      * @return $this
      */
-    public function connection(string $name)
+    protected function connection(string $name)
     {
         $this->connection = $name;
 
@@ -126,6 +148,14 @@ class Table
     public function getConnection(): Connection
     {
         return Stitch::getConnection($this->connection);
+    }
+
+    /**
+     * @return Database
+     */
+    public function getDatabase(): Database
+    {
+        return Stitch::getConnection($this->connection)->getDatabase($this->database);
     }
 
     /**
