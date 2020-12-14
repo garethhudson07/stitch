@@ -4,6 +4,11 @@ namespace Stitch\DBAL\Syntax;
 
 class Lexicon
 {
+    public static function use(): string
+    {
+        return 'USE';
+    }
+
     /**
      * @return string
      */

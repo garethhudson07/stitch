@@ -29,10 +29,11 @@ class Table extends Path
     protected function evaluate(): void
     {
         $schema = $this->builder->getSchema();
+        $db = $schema->getDatabase();
 
-        if ($schema->getConnection()->getName() !== $this->resolver->rootConnection()->getName()) {
+        if ($db !== $this->resolver->rootTable()->getBuilder()->getSchema()->getDatabase()) {
             $this->qualifiedName->push(
-                $schema->getConnection()->getDatabase()
+                $db->getName()
             );
         }
 

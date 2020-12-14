@@ -4,6 +4,7 @@ namespace Stitch\DBAL;
 
 use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
+use Stitch\DBAL\Statements\DB as DBStatement;
 use Stitch\DBAL\Statements\Persist\Insert as InsertStatement;
 use Stitch\DBAL\Statements\Persist\Update as UpdateStatement;
 use Stitch\DBAL\Statements\Delete\Delete as DeleteStatement;
@@ -18,7 +19,6 @@ use Stitch\DBAL\Paths\Resolver as PathResolver;
 class Dispatcher
 {
     /**
-     * @param Connection $connection
      * @param QueryBuilder $builder
      * @param PathResolver $paths
      * @return mixed
@@ -26,6 +26,7 @@ class Dispatcher
     public static function select(QueryBuilder $builder, PathResolver $paths)
     {
         $connection = $builder->getSchema()->getConnection();
+        $connection->execute(new DBStatement($builder->getSchema()->getDatabase()));
 
         if (($builder->hasLimit() || $builder->hasOffset()) && count($builder->getJoins())) {
             $connection->execute(
@@ -45,6 +46,8 @@ class Dispatcher
      */
     public static function insert(Connection $connection, RecordBuilder $builder)
     {
+        $connection->execute(new DBStatement($builder->getSchema()->getDatabase()));
+
         return $connection->insert(
             new InsertStatement($builder)
         );
@@ -57,6 +60,8 @@ class Dispatcher
      */
     public static function update(Connection $connection, RecordBuilder $builder)
     {
+        $connection->execute(new DBStatement($builder->getSchema()->getDatabase()));
+
         return $connection->update(
             new UpdateStatement($builder)
         );
@@ -69,6 +74,8 @@ class Dispatcher
      */
     public static function delete(Connection $connection, RecordBuilder $builder)
     {
+        $connection->execute(new DBStatement($builder->getSchema()->getDatabase()));
+
         return $connection->delete(
             new DeleteStatement($builder)
         );
