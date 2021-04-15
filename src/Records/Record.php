@@ -6,6 +6,7 @@ use Stitch\Contracts\Arrayable;
 use Stitch\Model;
 use Stitch\DBAL\Builders\Record as RecordBuilder;
 use Stitch\DBAL\Dispatcher;
+use Stitch\Records\Relations\Aggregate as RelationAggregate;
 
 /**
  * Class Record
@@ -141,7 +142,13 @@ class Record implements Arrayable
         }
 
         if ($relation = $this->model->getRelation($name)) {
-            $relation = $relation->make()->associate($this);
+            if ($relation->associatesMany()) {
+                $relation = (new RelationAggregate(
+                    $relation
+                ))->associate($this);
+            } else {
+                $relation = $relation->record()->associate($this);
+            }
 
             $this->setRelation($name, $relation);
 

@@ -31,6 +31,8 @@ class BelongsTo extends Record
     public function associate(Record $record)
     {
         $this->associated = $record;
+
+        return $this;
     }
 
     /**
@@ -38,10 +40,8 @@ class BelongsTo extends Record
      */
     public function applyAssociation()
     {
-        $foreignKey = $this->blueprint->getForeignKey();
-
-        $this->attributes[$foreignKey->getLocalColumn()->getName()] = $this->associated->getAttribute(
-            $foreignKey->getReferenceColumnName()
+        $this->attributes[$this->blueprint->getForeignKey()->getName()] = $this->associated->getAttribute(
+            $this->blueprint->getLocalKey()->getName()
         );
 
         return $this;
@@ -54,6 +54,6 @@ class BelongsTo extends Record
     {
         $this->applyAssociation();
 
-        parent::save();
+        return parent::save();
     }
 }

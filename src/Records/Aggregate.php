@@ -28,15 +28,6 @@ class Aggregate extends Set
     }
 
     /**
-     * @param array $attributes
-     * @return Collection
-     */
-    public function new(array $attributes)
-    {
-        return $this->push($this->record($attributes));
-    }
-
-    /**
      * @return $this
      */
     public function save()
