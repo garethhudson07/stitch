@@ -116,8 +116,6 @@ abstract class Relation
      */
     public function foreignKey(string $column)
     {
-        echo $column;
-
         $this->foreignKey = $this->getForeignModel()->getTable()->getColumn($column);
 
         return $this;
