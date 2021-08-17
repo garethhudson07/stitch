@@ -8,7 +8,6 @@ use Stitch\DBAL\Schema\ForeignKey;
 use Stitch\Queries\Joins\Pivoted as PivotedJoin;
 use Stitch\Records\Relations\ManyToMany as Record;
 use Closure;
-use Stitch\Stitch;
 
 /**
  * Class ManyToMany
@@ -163,14 +162,16 @@ class ManyToMany extends Relation
     }
 
     /**
-     * @return PivotedJoin
+     * @param Path $path
+     * @return \Stitch\Queries\Joins\Join|PivotedJoin
      */
-    public function join()
+    public function join(Path $path)
     {
-        return new PivotedJoin(
+        return PivotedJoin::make(
             $this->getForeignModel(),
             $this->joinBuilder(),
-            $this
+            $this,
+            $path
         );
     }
 

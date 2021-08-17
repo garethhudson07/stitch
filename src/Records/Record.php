@@ -182,10 +182,14 @@ class Record implements Arrayable
     {
         $table = $this->model->getTable();
 
+        $this->model->emitEvent('updating', $this);
+
         Dispatcher::update(
             $table->getConnection(),
             (new RecordBuilder($table))->fill($this->attributes)
         );
+
+        $this->model->emitEvent('updated', $this);
 
         return $this;
     }
@@ -199,6 +203,8 @@ class Record implements Arrayable
         $connection = $table->getConnection();
         $primaryKey = $table->getPrimaryKey();
 
+        $this->model->emitEvent('creating', $this);
+
         Dispatcher::insert(
             $connection,
             (new RecordBuilder($table))->fill($this->attributes)
@@ -210,6 +216,8 @@ class Record implements Arrayable
 
         $this->markAsPersisted();
 
+        $this->model->emitEvent('created', $this);
+
         return $this;
     }
 
@@ -220,10 +228,16 @@ class Record implements Arrayable
     {
         $table = $this->model->getTable();
 
-        return Dispatcher::delete(
+        $this->model->emitEvent('deleting', $this);
+
+        $success = Dispatcher::delete(
             $table->getConnection(),
             (new RecordBuilder($table))->fill($this->attributes)
         );
+
+        $this->model->emitEvent('deleted', $this);
+
+        return $success;
     }
 
     /**

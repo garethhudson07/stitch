@@ -9,7 +9,10 @@ use Stitch\DBAL\Builders\Table as TableBuilder;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\Model;
 use Stitch\Queries\Conditions\On;
+use Stitch\Queries\Emitter;
+use Stitch\Queries\Path;
 use Stitch\Queries\Pipeline;
+use Stitch\Queries\Query;
 use Stitch\Relations\Relation;
 
 /**
@@ -30,6 +33,8 @@ class Join
      */
     protected $relation;
 
+    protected $pipeline;
+
     /**
      * @var array
      */
@@ -39,20 +44,49 @@ class Join
 
     protected $conditions;
 
+    protected $emitter;
+
     /**
      * Join constructor.
      * @param Model $model
      * @param Builder $builder
      * @param Relation $relation
+     * @param Map $joins
+     * @param Set $relations
+     * @param On $conditions
+     * @param Emitter $emitter
      */
-    public function __construct(Model $model, Builder $builder, Relation $relation)
+    public function __construct(Model $model, Builder $builder, Relation $relation, Map $joins, Set $relations, On $conditions, Emitter $emitter)
     {
         $this->model = $model;
         $this->builder = $builder;
         $this->relation = $relation;
-        $this->joins = new Map();
-        $this->relations = new Set();
-        $this->conditions = On::make($this->builder);
+        $this->joins = $joins;
+        $this->relations = $relations;
+        $this->conditions = $conditions;
+        $this->emitter = $emitter;
+    }
+
+    /**
+     * @param Model $model
+     * @param Builder $builder
+     * @param Relation $relation
+     * @param Path $path
+     * @return static
+     */
+    public static function make(Model $model, Builder $builder, Relation $relation, Path $path): Join
+    {
+        $joins = new Map();
+
+        return new static(
+            $model,
+            $builder,
+            $relation,
+            $joins,
+            new Set(),
+            On::make($builder),
+            Emitter::make($model, $joins, $path)
+        );
     }
 
     /**
@@ -164,6 +198,17 @@ class Join
             );
 
         $tableBuilder->join($this->builder);
+    }
+
+    /**
+     * @param Query $query
+     * @return $this
+     */
+    public function emitFetching(Query $query): Join
+    {
+        $this->emitter->fetching($query);
+
+        return $this;
     }
 
     /**

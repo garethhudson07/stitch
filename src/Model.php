@@ -4,6 +4,7 @@ namespace Stitch;
 
 use Closure;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
+use Stitch\Events\Emitter;
 use Stitch\Queries\Query;
 use Stitch\Relations\BelongsTo;
 use Stitch\Relations\Aggregate as Relations;
@@ -33,6 +34,8 @@ class Model
      */
     protected $relations;
 
+    protected $eventEmitter;
+
     /**
      * Model constructor.
      * @param Table $table
@@ -41,6 +44,7 @@ class Model
     {
         $this->table = $table;
         $this->relations = new Relations();
+        $this->eventEmitter =  new Emitter();
     }
 
     /**
@@ -228,8 +232,31 @@ class Model
     /**
      * @return Query
      */
-    public function query()
+    public function query(): Query
     {
-        return new Query($this, new QueryBuilder($this->table));
+        return Query::make($this, new QueryBuilder($this->table));
+    }
+
+    /**
+     * @param Closure $listener
+     * @return $this
+     */
+    public function listen(Closure $listener)
+    {
+        $this->eventEmitter->listen($listener);
+
+        return $this;
+    }
+
+    /**
+     * @param string $event
+     * @param $payload
+     * @return $this
+     */
+    public function emitEvent(string $event, $payload)
+    {
+        $this->eventEmitter->emit($event, $payload);
+
+        return $this;
     }
 }

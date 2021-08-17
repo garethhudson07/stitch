@@ -71,4 +71,15 @@ class Set extends Aggregate
             array_slice($this->items, $index + 1)
         );
     }
+
+    /**
+     * @param int $index
+     * @return static
+     */
+    public function slice(int $index)
+    {
+        return (new static)->fill(
+            array_slice($this->items, $index)
+        );
+    }
 }

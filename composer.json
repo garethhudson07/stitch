@@ -14,7 +14,8 @@
   "require": {
     "php": "^7.1|^8.0",
     "ext-pdo": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "league/event": "^2.2"
   },
   "autoload": {
     "psr-4": {

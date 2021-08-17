@@ -13,27 +13,22 @@ use Stitch\DBAL\Builders\JsonPath as JsonPathBuilder;
 class Pipeline extends Set
 {
     /**
-     * @var string
-     */
-    protected static $delimiter = '.';
-
-    /**
      * @param Query $query
-     * @param string $pipeline
+     * @param string $path
      * @return static
      */
-    public static function build(Query $query, string $pipeline)
+    public static function build(Query $query, string $path)
     {
         $joinable = $query;
         $model = $query->getModel();
         $instance = new static();
-        $pieces = explode(static::$delimiter, $pipeline);
+        $path = Path::make($path);
 
-        foreach ($pieces as $key => $piece) {
+        foreach ($path as $key => $piece) {
             $relations = $model->getRelations();
 
             if (!$relations->has($piece)) {
-                $columnPieces = array_slice($pieces, $key);
+                $columnPieces = $path->slice($key)->toArray();
 
                 $columnBuilder = (new ColumnBuilder(
                     $model->getTable()->getColumn(array_shift($columnPieces))
@@ -56,8 +51,10 @@ class Pipeline extends Set
             $model = $relation->getForeignModel();
 
             if (!$join = $joinable->getJoins()->get($relation->getName())) {
-                $join = $relation->join();
+                $join = $relation->join($path->before($key + 1));
                 $join->apply($joinable->getBuilder());
+
+                // Add this join to our query
                 $joinable->getJoins()->set($relation->getName(), $join);
             }
 

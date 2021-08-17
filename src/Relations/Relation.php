@@ -5,6 +5,7 @@ namespace Stitch\Relations;
 use Stitch\DBAL\Builders\Join as JoinBuilder;
 use Stitch\Model;
 use Stitch\Queries\Joins\Join;
+use Stitch\Queries\Path;
 use Stitch\Registry;
 use Stitch\Records\Relations\Aggregate as RecordAggregate;
 
@@ -177,14 +178,16 @@ abstract class Relation
     }
 
     /**
+     * @param Path $path
      * @return Join
      */
-    public function join()
+    public function join(Path $path)
     {
-        return new Join(
+        return Join::make(
             $this->getForeignModel(),
             $this->joinBuilder(),
-            $this
+            $this,
+            $path
         );
     }
 

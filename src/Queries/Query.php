@@ -37,22 +37,46 @@ class Query
      */
     protected $relations;
 
+    protected $emitter;
+
     protected $conditions;
 
     protected $hydrate = true;
 
     /**
-     * Base constructor.
+     * Query constructor.
      * @param Model $model
-     * @param $builder
+     * @param Builder $builder
+     * @param Map $joins
+     * @param Set $relations
+     * @param Emitter $emitter
      */
-    public function __construct(Model $model, Builder $builder)
+    public function __construct(Model $model, Builder $builder, Map $joins, Set $relations, Emitter $emitter)
     {
         $this->model = $model;
         $this->builder = $builder;
-        $this->joins = new Map();
-        $this->relations = new Set();
+        $this->joins = $joins;
+        $this->relations = $relations;
+        $this->emitter = $emitter;
         $this->conditions = new Where($this, $builder->getConditions());
+    }
+
+    /**
+     * @param Model $model
+     * @param Builder $builder
+     * @return Query
+     */
+    public static function make(Model $model, Builder $builder): Query
+    {
+        $joins = new Map();
+
+        return new static(
+            $model,
+            $builder,
+            $joins,
+            new Set(),
+            Emitter::make($model, $joins, Path::make())
+        );
     }
 
     /**
@@ -268,6 +292,8 @@ class Query
     protected function getResultSet(): ResultSet
     {
         $paths = new PathResolver();
+
+        $this->emitter->fetching($this);
 
         return ResultBlueprint::make($this, $paths)->resultSet()->assemble(
             Dispatcher::select($this->builder, $paths)
