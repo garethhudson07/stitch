@@ -33,4 +33,26 @@ class Map extends Aggregate
     {
         return $this->offsetExists($name);
     }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __get(string $name)
+    {
+        if ($this->has($name)) {
+            return $this->get($name);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
+    public function __set(string $name, mixed $value): void
+    {
+        $this->set($name, $value);
+    }
 }

@@ -182,14 +182,21 @@ class Record implements Arrayable
     {
         $table = $this->model->getTable();
 
-        $this->model->emitEvent('updating', $this);
+        $event = $this->model->makeEvent('updating');
+        $event->fillPayload(['record' => $this])->fire();
+
+        if ($event->defaultPrevented()) {
+            return $this;
+        }
+
+        echo 'updating';
 
         Dispatcher::update(
             $table->getConnection(),
             (new RecordBuilder($table))->fill($this->attributes)
         );
 
-        $this->model->emitEvent('updated', $this);
+        $this->model->makeEvent('updated')->fillPayload(['record' => $this])->fire();
 
         return $this;
     }
@@ -197,13 +204,18 @@ class Record implements Arrayable
     /**
      * @return $this
      */
-    protected function insert()
+    protected function insert(): self
     {
         $table = $this->model->getTable();
         $connection = $table->getConnection();
         $primaryKey = $table->getPrimaryKey();
 
-        $this->model->emitEvent('creating', $this);
+        $event = $this->model->makeEvent('creating');
+        $event->fillPayload(['record' => $this])->fire();
+
+        if ($event->defaultPrevented()) {
+            return $this;
+        }
 
         Dispatcher::insert(
             $connection,
@@ -216,7 +228,7 @@ class Record implements Arrayable
 
         $this->markAsPersisted();
 
-        $this->model->emitEvent('created', $this);
+        $this->model->makeEvent('created')->fillPayload(['record' => $this])->fire();
 
         return $this;
     }
@@ -228,14 +240,19 @@ class Record implements Arrayable
     {
         $table = $this->model->getTable();
 
-        $this->model->emitEvent('deleting', $this);
+        $event = $this->model->makeEvent('deleting');
+        $event->fillPayload(['record' => $this])->fire();
+
+        if ($event->defaultPrevented()) {
+            return false;
+        }
 
         $success = Dispatcher::delete(
             $table->getConnection(),
             (new RecordBuilder($table))->fill($this->attributes)
         );
 
-        $this->model->emitEvent('deleted', $this);
+        $this->model->makeEvent('deleted')->fillPayload(['record' => $this])->fire();
 
         return $success;
     }

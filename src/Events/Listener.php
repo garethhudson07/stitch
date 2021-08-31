@@ -14,18 +14,15 @@ class Listener
     }
 
     /**
-     * @param string $action
-     * @param $payload
+     * @param Event $event
      * @return $this
      */
-    public function handle(string $action, $payload)
+    public function handle(Event $event): self
     {
-        if ($this->handles($action)) {
-            if (!is_array($payload)) {
-                $payload = [$payload];
-            }
+        $action = $event->getName();
 
-            $this->{$action}(...$payload);
+        if ($this->handles($action)) {
+            $this->{$action}($event);
         }
 
         return $this;

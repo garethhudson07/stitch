@@ -34,10 +34,15 @@ class Emitter
      */
     public function fetching(Query $query): Emitter
     {
-        $this->model->emitEvent('fetching', [$query, $this->path]);
+        $event = $this->model->makeEvent('fetching')->fillPayload([
+            'query' => $query,
+            'path' => $this->path
+        ])->fire();
 
-        foreach ($this->joins as $join) {
-            $join->emitFetching($query);
+        if ($event->propagating()) {
+            foreach ($this->joins as $join) {
+                $join->emitFetching($query);
+            }
         }
 
         return $this;

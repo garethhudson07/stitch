@@ -5,6 +5,7 @@ namespace Stitch;
 use Closure;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\Events\Emitter;
+use Stitch\Events\Event;
 use Stitch\Queries\Query;
 use Stitch\Relations\BelongsTo;
 use Stitch\Relations\Aggregate as Relations;
@@ -241,7 +242,7 @@ class Model
      * @param Closure $listener
      * @return $this
      */
-    public function listen(Closure $listener)
+    public function listen(Closure $listener): self
     {
         $this->eventEmitter->listen($listener);
 
@@ -249,14 +250,11 @@ class Model
     }
 
     /**
-     * @param string $event
-     * @param $payload
-     * @return $this
+     * @param string $name
+     * @return Event
      */
-    public function emitEvent(string $event, $payload)
+    public function makeEvent(string $name): Event
     {
-        $this->eventEmitter->emit($event, $payload);
-
-        return $this;
+        return $this->eventEmitter->makeEvent($name);
     }
 }
