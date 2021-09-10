@@ -189,8 +189,6 @@ class Record implements Arrayable
             return $this;
         }
 
-        echo 'updating';
-
         Dispatcher::update(
             $table->getConnection(),
             (new RecordBuilder($table))->fill($this->attributes)
