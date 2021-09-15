@@ -7,6 +7,7 @@ use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Builders\Table as TableBuilder;
 use Stitch\DBAL\Statements\Select\Operations\Limit;
 use Stitch\DBAL\Statements\Select\Operations\Offset;
+use Stitch\DBAL\Statements\Select\Operations\OrderBy;
 use Stitch\DBAL\Statements\Select\Operations\Where;
 use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Syntax\Select as Syntax;

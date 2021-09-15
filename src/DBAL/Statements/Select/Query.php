@@ -41,8 +41,6 @@ class Query extends Statement
             $this->builder->hasLimit() || $this->builder->hasOffset() ?
                 new Limited($this->builder, $this->paths) :
                 new Unlimited($this->builder, $this->paths)
-        )->push(
-            new OrderBy($this->builder->getSorter(), $this->paths)
         );
     }
 }
