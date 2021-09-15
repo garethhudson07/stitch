@@ -2,29 +2,28 @@
 
 namespace Stitch\DBAL\Builders;
 
-class JsonPath
+use Stitch\Aggregate\Set;
+
+class JsonPath extends Set
 {
-    protected $items = [];
+    protected $column;
 
     /**
-     * @param string $leg
+     * @param Column $column
      * @return $this
      */
-    public function push(string $item)
+    public function column(Column $column)
     {
-        $this->items[] = $item;
+        $this->column = $column;
 
         return $this;
     }
 
     /**
-     * @param array $legs
-     * @return $this
+     * @return Column
      */
-    public function merge(array $items)
+    public function getColumn(): Column
     {
-        $this->items = array_merge($this->items, $items);
-
-        return $this;
+        return $this->column;
     }
 }

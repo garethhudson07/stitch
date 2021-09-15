@@ -5,6 +5,7 @@ namespace Stitch\DBAL\Paths;
 use Stitch\DBAL\Builders\Table as TableBuilder;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
+use Stitch\DBAL\Builders\JsonPath as JsonBuilder;
 
 class Resolver
 {
@@ -38,6 +39,39 @@ class Resolver
         return $this->table($builder->getTable())->column(
             $builder->getSchema()
         );
+    }
+
+    /**
+     * @param JsonBuilder $builder
+     * @return Json
+     */
+    public function json(JsonBuilder $builder)
+    {
+        return new Json(
+            $builder,
+            $this->column($builder->getColumn())
+        );
+    }
+
+    /**
+     * @param $builder
+     * @return mixed|Json|Table|null
+     */
+    public function make($builder)
+    {
+        if ($builder instanceof TableBuilder) {
+            return $this->table($builder);
+        }
+
+        if ($builder instanceof ColumnBuilder) {
+            return $this->column($builder);
+        }
+
+        if ($builder instanceof JsonBuilder) {
+            return $this->json($builder);
+        }
+
+        return null;
     }
 
     /**

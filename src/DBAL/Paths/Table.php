@@ -5,7 +5,7 @@ namespace Stitch\DBAL\Paths;
 use Stitch\DBAL\Builders\Table as Builder;
 use Stitch\DBAL\Schema\Column as ColumnSchema;
 
-class Table extends Path
+class Table extends AliasablePath
 {
     protected $resolver;
 
@@ -14,6 +14,7 @@ class Table extends Path
     protected $components = [];
 
     protected $columns = [];
+
 
     public function __construct(Builder $builder, Resolver $resolver)
     {

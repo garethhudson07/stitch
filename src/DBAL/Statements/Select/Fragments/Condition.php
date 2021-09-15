@@ -40,17 +40,17 @@ class Condition extends Statement
      */
     public function evaluate()
     {
-        $column = $this->paths->column($this->builder->getColumn());
+        $path = $this->paths->make($this->builder->getTarget());
         $operator = $this->builder->getOperator();
         $value = $this->builder->getValue();
 
         if ($value instanceof ColumnBuilder) {
-            $this->push(Syntax::condition($column, $operator, $this->paths->column($value)));
+            $this->push(Syntax::condition($path, $operator, $this->paths->column($value)));
 
             return;
         }
 
-        $syntax = Syntax::condition($column, $operator, $value);
+        $syntax = Syntax::condition($path, $operator, $value);
 
         if (!is_null($value)) {
             $syntax = (new Binder($syntax))->add($value);

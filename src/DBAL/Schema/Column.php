@@ -159,4 +159,18 @@ class Column
                 return $value;
         }
     }
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    public function encode($value)
+    {
+        switch ($this->type) {
+            case 'json':
+                return json_encode($value);
+        }
+
+        return $value;
+    }
 }

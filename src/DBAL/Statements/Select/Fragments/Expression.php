@@ -58,12 +58,12 @@ class Expression extends Statement
             } else {
                 $constraint = new Condition($item['constraint'], $this->paths);
             }
-            
+
             if ($constraint) {
                 if (!$first) {
                     $this->push($item['operator']);
                 }
-                
+
                 $this->push($constraint);
                 $first = false;
             }

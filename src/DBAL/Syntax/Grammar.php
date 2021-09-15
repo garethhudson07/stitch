@@ -31,6 +31,22 @@ class Grammar
     /**
      * @return string
      */
+    public static function jsonAccessor()
+    {
+        return '->';
+    }
+
+    /**
+     * @return string
+     */
+    public static function jsonPrefix()
+    {
+        return '$';
+    }
+
+    /**
+     * @return string
+     */
     public static function listDelimiter()
     {
         return ', ';

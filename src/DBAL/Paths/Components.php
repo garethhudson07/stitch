@@ -18,7 +18,18 @@ class Components
      */
     public function __construct(string $glue)
     {
+        $this->glue($glue);
+    }
+
+    /**
+     * @param string $glue
+     * @return $this
+     */
+    public function glue(string $glue)
+    {
         $this->glue = $glue;
+
+        return $this;
     }
 
     /**
@@ -65,6 +76,17 @@ class Components
     public function push($item)
     {
         $this->items[] = $item;
+
+        return $this;
+    }
+
+    /**
+     * @param array $items
+     * @return $this
+     */
+    public function fill(array $items)
+    {
+        $this->items = $items;
 
         return $this;
     }

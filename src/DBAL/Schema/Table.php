@@ -117,14 +117,6 @@ class Table
     }
 
     /**
-     * @return Column
-     */
-    public function softDeletes(): Column
-    {
-        return $this->addColumn('timestamp', 'deleted_at');
-    }
-
-    /**
      * @param string $method
      * @param array $arguments
      * @return Column
