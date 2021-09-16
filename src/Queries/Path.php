@@ -33,4 +33,20 @@ class Path extends Set
             array_merge($this->items, [$path])
         );
     }
+
+    /**
+     * @return bool
+     */
+    public function isRelation(): bool
+    {
+        return ($this->count() > 0);
+    }
+
+    /**
+     * @return String
+     */
+    public function relation(): String
+    {
+        return implode(static::$delimiter, $this->items);
+    }
 }
