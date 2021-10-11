@@ -150,7 +150,10 @@ class Column
 
         switch ($this->type) {
             case 'integer':
-                return (int)$value;
+                return intval($value);
+
+            case 'boolean':
+                return boolval($value);
 
             case 'json':
                 return json_decode($value, true);
