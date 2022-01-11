@@ -37,10 +37,18 @@ class Query extends Statement
      */
     public function evaluate()
     {
+        if ($this->builder->hasLimit() || $this->builder->hasOffset()) {
+            $this->push(
+                new Limited($this->builder, $this->paths)
+            );
+
+            return;
+        }
+
         $this->push(
-            $this->builder->hasLimit() || $this->builder->hasOffset() ?
-                new Limited($this->builder, $this->paths) :
-                new Unlimited($this->builder, $this->paths)
+            new Unlimited($this->builder, $this->paths)
+        )->push(
+            new OrderBy($this->builder->getSorter(), $this->paths)
         );
     }
 }

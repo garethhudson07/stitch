@@ -107,6 +107,8 @@ class Limited extends Statement
         $this->push(
             new Unlimited($this->builder, $this->paths)
         )->push(
+            new OrderBy($this->builder->getSorter(), $this->paths)
+        )->push(
             new Limit($this->builder)
         )->push(
             new Offset($this->builder)
