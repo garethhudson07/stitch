@@ -65,8 +65,6 @@ class Unlimited extends Statement
 
         $this->push(
             new Where($this->builder->getConditions(), $this->paths)
-        )->push(
-            new OrderBy($this->builder->getSorter(), $this->paths)
         );
     }
 }
