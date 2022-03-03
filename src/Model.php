@@ -209,10 +209,10 @@ class Model
     }
 
     /**
-     * @param string $id
-     * @return null|\Stitch\Result\Record
+     * @param mixed $id
+     * @return null|\Stitch\Result\Record|\Stitch\Record\Record
      */
-    public function find(string $id)
+    public function find($id)
     {
         return $this->query()->where(
             $this->table->getPrimaryKey()->getName(),
