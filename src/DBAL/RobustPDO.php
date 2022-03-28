@@ -35,11 +35,6 @@ class RobustPDO
     protected array $attributes = [];
 
     /**
-     * @var PDO
-     */
-    protected PDO $pdo = null;
-
-    /**
      * @var int
      */
     protected int $connectionFailCount = 0;
@@ -48,6 +43,11 @@ class RobustPDO
      * @var int
      */
     protected int $maxConnectionFailCount = 10;
+
+    /**
+     * @var PDO
+     */
+    protected PDO $pdo;
 
     /**
      * Create a new PDO wrapper object.
