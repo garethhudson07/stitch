@@ -1,6 +1,6 @@
 <?php
 
-// https://gist.github.com/christiaangoossens/6fb1720bf854e6a79d630a8f9e7af66e
+// Based on https://gist.github.com/christiaangoossens/6fb1720bf854e6a79d630a8f9e7af66e
 
 namespace Stitch\DBAL;
 
@@ -18,29 +18,39 @@ class RobustPDO
     /**
      * @var array
      */
-    protected $config = [];
+    protected array $config = [];
 
     /**
      * For lazy connection tracking
      *
      * @var bool
      */
-    protected $_connected = false;
+    protected bool $isConnected = false;
 
     /**
      * Cached attributes for reconnection
      *
      * @var array
      */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * @var PDO
      */
-    protected $pdo = null;
+    protected PDO $pdo = null;
 
     /**
-     * Create a new PDO object.
+     * @var int
+     */
+    protected int $connectionFailCount = 0;
+
+    /**
+     * @var int
+     */
+    protected int $maxConnectionFailCount = 10;
+
+    /**
+     * Create a new PDO wrapper object.
      * Does not connect to the database until needed.
      *
      * @param string $dsn The Data Source Name, or DSN, contains the information required to connect to the database.
@@ -78,7 +88,7 @@ class RobustPDO
             $this->_setAttribute($attr, $value);
         }
 
-        $this->_connected = true;
+        $this->isConnected = true;
     }
 
     /**
@@ -88,15 +98,17 @@ class RobustPDO
      */
     public function __call($name, $arguments)
     {
-        if (!$this->_connected) {
+        if (!$this->isConnected) {
             $this->reconnect();
         }
 
         try {
             return call_user_func_array([$this->pdo, $name], $arguments);
         } catch (PDOException $e) {
-            if (static::hasGoneAway($e)) {
+            if (static::hasGoneAway($e) && !$this->connectionFailLimitExceeded()) {
+                $this->connectionFailCount++;
                 $this->reconnect();
+
                 return call_user_func_array([$this->pdo, $name], $arguments);
             } else {
                 throw $e;
@@ -113,12 +125,15 @@ class RobustPDO
     {
         $this->attributes[$attribute] = $value;
 
-        if ($this->_connected) {
+        if ($this->isConnected) {
             try {
                 $this->_setAttribute($attribute, $value);
             } catch (PDOException $e) {
-                if (static::hasGoneAway($e)) {
+                if (static::hasGoneAway($e) && !$this->connectionFailLimitExceeded()) {
+                    $this->connectionFailCount++;
                     $this->reconnect();
+
+                    $this->_setAttribute($attribute, $value);
                 } else {
                     throw $e;
                 }
@@ -153,9 +168,12 @@ class RobustPDO
                 return $st->execute();
             }
         } catch (PDOException $e) {
-            if (!$recursion && static::hasGoneAway($e)) {
+            if (!$recursion && static::hasGoneAway($e) && !$this->connectionFailLimitExceeded()) {
+                $this->connectionFailCount++;
                 $this->reconnect();
+
                 $st = $this->prepare($st->queryString);
+
                 return $this->tryExecuteStatement($st, $input_parameters, true);
             }
 
@@ -232,5 +250,13 @@ class RobustPDO
         } else {
             return $this->pdo->setAttribute($attribute, $value);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function connectionFailLimitExceeded(): bool
+    {
+        return $this->connectionFailCount >= $this->maxConnectionFailCount;
     }
 }
