@@ -8,7 +8,7 @@ use PDO;
 use PDOException;
 use PDOStatement;
 
-class RobustPDO extends PDO
+class RobustPDO
 {
     /**
      * Call setAttribute to set the session wait_timeout value
@@ -32,7 +32,12 @@ class RobustPDO extends PDO
      *
      * @var array
      */
-    private $attributes = [];
+    protected $attributes = [];
+
+    /**
+     * @var PDO
+     */
+    protected $pdo = null;
 
     /**
      * Create a new PDO object.
@@ -66,7 +71,7 @@ class RobustPDO extends PDO
      */
     public function reconnect()
     {
-        parent::__construct($this->config['dsn'], $this->config['user'], $this->config['pass'], $this->config['options']);
+        $this->pdo = new PDO($this->config['dsn'], $this->config['user'], $this->config['pass'], $this->config['options']);
 
         // Reapply attributes to the new connection
         foreach ($this->attributes as $attr => $value) {
@@ -77,7 +82,7 @@ class RobustPDO extends PDO
     }
 
     /**
-     * Try to call the function on the parent inside a try/catch to detect a disconnect
+     * Try to call the function on the pdo object inside a try/catch to detect a disconnect
      *
      * @throws PDOException
      */
@@ -88,34 +93,11 @@ class RobustPDO extends PDO
         }
 
         try {
-            return call_user_func_array(['parent', $name], $arguments);
+            return call_user_func_array([$this->pdo, $name], $arguments);
         } catch (PDOException $e) {
             if (static::hasGoneAway($e)) {
                 $this->reconnect();
-                return call_user_func_array(['parent', $name], $arguments);
-            } else {
-                throw $e;
-            }
-        }
-    }
-
-    /**
-     * {@InheritDoc}
-     */
-    public function prepare(string $statement, array $driver_options = []): PDOStatement
-    {
-        if (!$this->_connected) {
-            $this->reconnect();
-        }
-        if (is_null($driver_options)) {
-            $driver_options = [];
-        }
-        try {
-            return parent::prepare($statement, $driver_options);
-        } catch (PDOException $e) {
-            if (static::hasGoneAway($e)) {
-                $this->reconnect();
-                return parent::prepare($statement, $driver_options);
+                return call_user_func_array([$this->pdo, $name], $arguments);
             } else {
                 throw $e;
             }
@@ -245,10 +227,10 @@ class RobustPDO extends PDO
     protected function _setAttribute($attribute, $value)
     {
         if ($attribute === self::ATTR_MYSQL_TIMEOUT) {
-            parent::exec("SET SESSION wait_timeout=" . intval($value));
+            $this->pdo->exec("SET SESSION wait_timeout=" . intval($value));
             return true;
         } else {
-            return parent::setAttribute($attribute, $value);
+            return $this->pdo->setAttribute($attribute, $value);
         }
     }
 }
