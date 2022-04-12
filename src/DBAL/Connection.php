@@ -63,20 +63,20 @@ class Connection
      */
     public function connect()
     {
-        $this->pdo = new PDO(
+        $this->pdo = new RobustPDO(
             $this->driver . ':host=' . $this->host . ';charset=' . $this->charset,
             $this->username,
-            $this->password
+            $this->password,
+            [
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]
         );
-
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
         return $this;
     }
 
     /**
-     * @return PDO
+     * @return RobustPDO
      */
     public function get()
     {
@@ -232,7 +232,8 @@ class Connection
 //        var_dump($statement->bindings());
 
         $prepared = $this->get()->prepare($statement->query());
-        $prepared->execute($statement->bindings());
+
+        $this->get()->tryExecuteStatement($prepared, $statement->bindings());
 
         return $prepared;
     }
