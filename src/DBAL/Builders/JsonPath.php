@@ -2,7 +2,7 @@
 
 namespace Stitch\DBAL\Builders;
 
-use Stitch\Aggregate\Set;
+use Aggregate\Set;
 
 class JsonPath extends Set
 {
