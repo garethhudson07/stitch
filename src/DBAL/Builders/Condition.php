@@ -11,7 +11,7 @@ class Condition
     /**
      * @var string
      */
-    protected $column;
+    protected $target;
 
     /**
      * @var string
@@ -30,7 +30,7 @@ class Condition
     public function __construct(...$arguments)
     {
         if ($arguments) {
-            $this->column(array_shift($arguments));
+            $this->target(array_shift($arguments));
 
             if (count($arguments) == 1) {
                 $this->value($arguments[0]);
@@ -42,12 +42,12 @@ class Condition
     }
 
     /**
-     * @param Column $column
+     * @param $target
      * @return $this
      */
-    public function column(Column $column)
+    public function target($target)
     {
-        $this->column = $column;
+        $this->target = $target;
 
         return $this;
     }
@@ -77,9 +77,9 @@ class Condition
     /**
      * @return mixed
      */
-    public function getColumn()
+    public function getTarget()
     {
-        return $this->column;
+        return $this->target;
     }
 
     /**

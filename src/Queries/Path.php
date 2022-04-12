@@ -2,7 +2,7 @@
 
 namespace Stitch\Queries;
 
-use Stitch\Aggregate\Set;
+use Aggregate\Set;
 
 class Path extends Set
 {
@@ -32,5 +32,21 @@ class Path extends Set
             static::$delimiter,
             array_merge($this->items, [$path])
         );
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRelation(): bool
+    {
+        return ($this->count() > 0);
+    }
+
+    /**
+     * @return String
+     */
+    public function relation(): String
+    {
+        return implode(static::$delimiter, $this->items);
     }
 }

@@ -3,7 +3,7 @@
 namespace Stitch\Events;
 
 use Closure;
-use Stitch\Aggregate\Map;
+use Aggregate\Map;
 
 class Event
 {

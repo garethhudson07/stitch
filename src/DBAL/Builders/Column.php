@@ -17,8 +17,6 @@ class Column
 
     protected $table;
 
-    protected $jsonPath;
-
     /**
      * Column constructor.
      * @param Schema $schema
@@ -40,17 +38,6 @@ class Column
     }
 
     /**
-     * @param JsonPath $path
-     * @return $this
-     */
-    public function jsonPath(JsonPath $path)
-    {
-        $this->jsonPath = $path;
-
-        return $this;
-    }
-
-    /**
      * @return Schema
      */
     public function getSchema()
@@ -64,14 +51,6 @@ class Column
     public function getTable()
     {
         return $this->table;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getJsonPath()
-    {
-        return $this->jsonPath;
     }
 
     /**

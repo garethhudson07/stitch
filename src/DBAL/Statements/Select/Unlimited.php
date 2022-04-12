@@ -4,6 +4,7 @@ namespace Stitch\DBAL\Statements\Select;
 
 use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Statements\Select\Operations\Join;
+use Stitch\DBAL\Statements\Select\Operations\OrderBy;
 use Stitch\DBAL\Statements\Select\Operations\Select;
 use Stitch\DBAL\Statements\Select\Operations\Where;
 use Stitch\DBAL\Statements\Statement;

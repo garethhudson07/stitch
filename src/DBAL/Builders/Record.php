@@ -37,7 +37,7 @@ class Record
     public function column(string $name, $value)
     {
         if ($this->schema->hasColumn($name)) {
-            $this->columns[$name] = $value;
+            $this->columns[$name] = $this->schema->getColumn($name)->encode($value);
         }
 
         return $this;

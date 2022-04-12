@@ -2,6 +2,7 @@
 
 namespace Stitch\DBAL\Syntax;
 
+use Stitch\DBAL\Paths\Path;
 use Stitch\DBAL\Paths\Table as TablePath;
 use Stitch\DBAL\Paths\Column as ColumnPath;
 
@@ -68,14 +69,14 @@ class Select extends Syntax
     }
 
     /**
-     * @param ColumnPath $column
+     * @param Path $path
      * @param $operator
      * @param $value
      * @return string
      */
-    public static function condition(ColumnPath $column, $operator, $value)
+    public static function condition(Path $path, $operator, $value)
     {
-        $pieces = [$column->qualifiedName()];
+        $pieces = [$path->qualifiedName()];
 
         switch (gettype($value)) {
             case 'array':

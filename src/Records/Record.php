@@ -281,4 +281,12 @@ class Record implements Arrayable
             return $relation->toArray();
         }, $this->relations));
     }
+
+    /**
+     * @return Model
+     */
+    public function getModel(): Model
+    {
+        return $this->model;
+    }
 }

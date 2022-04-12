@@ -2,7 +2,7 @@
 
 namespace Stitch\Queries;
 
-use Stitch\Aggregate\Set;
+use Aggregate\Set;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Builders\JsonPath as JsonPathBuilder;
 
@@ -30,19 +30,17 @@ class Pipeline extends Set
             if (!$relations->has($piece)) {
                 $columnPieces = $path->slice($key)->toArray();
 
-                $columnBuilder = (new ColumnBuilder(
+                $builder = (new ColumnBuilder(
                     $model->getTable()->getColumn(array_shift($columnPieces))
                 ))->table(
                     $joinable->getBuilder()
                 );
 
                 if (count($columnPieces) > 0) {
-                    $columnBuilder->jsonPath(
-                        (new JsonPathBuilder())->merge($columnPieces)
-                    );
+                    $builder = (new JsonPathBuilder())->column($builder)->fill($columnPieces);
                 }
 
-                $instance->push($columnBuilder);
+                $instance->push($builder);
 
                 break;
             }

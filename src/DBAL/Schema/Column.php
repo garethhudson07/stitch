@@ -150,7 +150,10 @@ class Column
 
         switch ($this->type) {
             case 'integer':
-                return (int)$value;
+                return intval($value);
+
+            case 'boolean':
+                return boolval($value);
 
             case 'json':
                 return json_decode($value, true);
@@ -158,5 +161,19 @@ class Column
             default:
                 return $value;
         }
+    }
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    public function encode($value)
+    {
+        switch ($this->type) {
+            case 'json':
+                return json_encode($value);
+        }
+
+        return $value;
     }
 }

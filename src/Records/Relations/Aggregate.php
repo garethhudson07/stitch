@@ -2,7 +2,7 @@
 
 namespace Stitch\Records\Relations;
 
-use Stitch\Aggregate\Set;
+use Aggregate\Set;
 use Stitch\Records\Record;
 
 class Aggregate extends Set

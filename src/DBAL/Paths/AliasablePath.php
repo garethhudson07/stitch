@@ -2,15 +2,15 @@
 
 namespace Stitch\DBAL\Paths;
 
-use Stitch\DBAL\Syntax\Grammar;
-
-abstract class Path
+abstract class AliasablePath extends Path
 {
-    protected $qualifiedName;
+    protected $alias;
 
     public function __construct()
     {
-        $this->qualifiedName = new Components(Grammar::qualifier());
+        parent::__construct();
+
+        $this->alias = (new Components('_'))->inherit($this->qualifiedName);
     }
 
     /**
@@ -18,9 +18,9 @@ abstract class Path
      */
     public function assemble()
     {
-        $this->evaluate();
+        parent::assemble();
 
-        $this->qualifiedName->assemble();
+        $this->alias->assemble();
 
         return $this;
     }
@@ -28,13 +28,13 @@ abstract class Path
     /**
      * @return Components
      */
-    public function qualifiedName(): Components
+    public function alias(): Components
     {
-        if (!$this->qualifiedName->assembled()) {
+        if (!$this->alias->assembled()) {
             $this->assemble();
         }
 
-        return $this->qualifiedName;
+        return $this->alias;
     }
 
     /**

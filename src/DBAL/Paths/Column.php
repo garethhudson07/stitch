@@ -4,7 +4,7 @@ namespace Stitch\DBAL\Paths;
 
 use Stitch\DBAL\Schema\Column as Schema;
 
-class Column extends Path
+class Column extends AliasablePath
 {
     protected $schema;
 
