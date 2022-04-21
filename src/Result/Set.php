@@ -2,7 +2,7 @@
 
 namespace Stitch\Result;
 
-use stitch\Aggregate\Set as Aggregate;
+use Aggregate\Set as Aggregate;
 
 /**
  * Class Set
