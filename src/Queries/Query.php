@@ -3,8 +3,8 @@
 namespace Stitch\Queries;
 
 use Closure;
-use Stitch\Aggregate\Map;
-use Stitch\Aggregate\Set;
+use Aggregate\Map;
+use Aggregate\Set;
 use Stitch\DBAL\Paths\Resolver as PathResolver;
 use Stitch\Model;
 use Stitch\DBAL\Builders\Query as Builder;

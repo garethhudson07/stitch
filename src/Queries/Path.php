@@ -2,7 +2,7 @@
 
 namespace Stitch\Queries;
 
-use Stitch\Aggregate\Set;
+use Aggregate\Set;
 
 class Path extends Set
 {

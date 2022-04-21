@@ -2,8 +2,8 @@
 
 namespace Stitch\Queries\Joins;
 
-use Stitch\Aggregate\Map;
-use Stitch\Aggregate\Set;
+use Aggregate\Map;
+use Aggregate\Set;
 use Stitch\DBAL\Builders\Join as Builder;
 use Stitch\DBAL\Builders\Table as TableBuilder;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;

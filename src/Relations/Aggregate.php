@@ -3,7 +3,7 @@
 namespace Stitch\Relations;
 
 use Closure;
-use Stitch\Aggregate\Map;
+use Aggregate\Map;
 
 /**
  * Class Collection

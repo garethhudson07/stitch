@@ -2,7 +2,7 @@
 
 namespace Stitch\Queries;
 
-use Stitch\Aggregate\Set;
+use Aggregate\Set;
 use Stitch\DBAL\Builders\Column as ColumnBuilder;
 use Stitch\DBAL\Builders\JsonPath as JsonPathBuilder;
 
