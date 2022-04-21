@@ -41,6 +41,17 @@ class Column
         $this->type = $type;
     }
 
+    public function rename(string $name)
+    {
+        $this->table->removeColumn($this->name);
+
+        $this->name = $name;
+
+        $this->table->pushColumn($this);
+
+        return $this;
+    }
+
     /**
      * @return $this
      */

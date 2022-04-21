@@ -117,6 +117,19 @@ class Table
     }
 
     /**
+     * @param $name
+     * @return $this
+     */
+    public function removeColumn($name): self
+    {
+        if (array_key_exists($name, $this->columns)) {
+            unset($this->columns[$name]);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $method
      * @param array $arguments
      * @return Column
