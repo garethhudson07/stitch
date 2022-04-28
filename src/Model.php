@@ -210,7 +210,7 @@ class Model
 
     /**
      * @param mixed $id
-     * @return null|\Stitch\Result\Record|\Stitch\Record\Record
+     * @return null|\Stitch\Result\Record|\Stitch\Records\Record
      */
     public function find($id)
     {
