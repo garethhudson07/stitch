@@ -132,6 +132,14 @@ class Record implements Arrayable
     }
 
     /**
+     * @return array
+     */
+    public function getRelations(): array
+    {
+        return $this->relations;
+    }
+
+    /**
      * @param string $name
      * @return mixed|null
      */
