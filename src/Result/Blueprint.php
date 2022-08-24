@@ -6,6 +6,7 @@ use Stitch\Queries\Query;
 use Stitch\Relations\Relation;
 use Stitch\DBAL\Paths\Resolver as PathResolver;
 use Stitch\DBAL\Paths\Table;
+use Stitch\Events\Event;
 
 class Blueprint
 {
@@ -137,5 +138,13 @@ class Blueprint
     public function activeRecordCollection()
     {
         return $this->factory->collection();
+    }
+
+    /**
+     * @return Event
+     */
+    public function event(string $event): Event
+    {
+        return $this->factory->makeEvent($event);
     }
 }

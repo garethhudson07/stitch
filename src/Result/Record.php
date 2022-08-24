@@ -3,7 +3,6 @@
 namespace Stitch\Result;
 
 use Stitch\Contracts\Arrayable;
-use Stitch\Queries\Query;
 
 /**
  * Class Record
@@ -12,7 +11,7 @@ use Stitch\Queries\Query;
 class Record implements Arrayable
 {
     /**
-     * @var Query
+     * @var Blueprint
      */
     protected $blueprint;
 
@@ -109,11 +108,20 @@ class Record implements Arrayable
      */
     public function hydrate()
     {
+        $event = $this->blueprint->event('hydrating');
+        $event->fillPayload(['record' => $this])->fire();
+
+        if ($event->defaultPrevented()) {
+            return $this;
+        }
+
         $activeRecord = $this->blueprint->activeRecord($this->data)->markAsPersisted();
 
         foreach ($this->relations as $name => $relation) {
             $activeRecord->setRelation($name, is_null($relation) ? null : $relation->hydrate());
         }
+
+        $this->blueprint->event('hydrated')->fillPayload(['record' => $this, 'activeRecord' => $activeRecord])->fire();
 
         return $activeRecord;
     }
