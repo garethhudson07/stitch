@@ -61,9 +61,9 @@ class Select extends Syntax
         return static::implode(
             $type,
             Lexicon::join(),
-            $table->qualifiedname(),
+            $table->qualifiedName(),
             Lexicon::alias(),
-            $table->alias(),
+            Grammar::escape($table->alias()),
             Lexicon::on()
         );
     }

@@ -6,6 +6,7 @@ use Stitch\DBAL\Builders\Sorter as Builder;
 use Stitch\DBAL\Statements\Assembler;
 use Stitch\DBAL\Statements\Statement;
 use Stitch\DBAL\Paths\Resolver as PathResolver;
+use Stitch\DBAL\Syntax\Grammar;
 use Stitch\DBAL\Syntax\Select as Syntax;
 
 /**
@@ -50,7 +51,7 @@ class OrderBy extends Statement
 
             foreach ($this->builder->getItems() as $item) {
                 $this->columns->push(
-                    "{$this->paths->column($item['column'])->alias()} {$item['direction']}"
+                    Grammar::escape($this->paths->column($item['column'])->alias()) . " " . $item['direction']
                 );
             }
         }

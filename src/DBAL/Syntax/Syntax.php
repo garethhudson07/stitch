@@ -43,7 +43,7 @@ class Syntax
     {
         return static::implode(
             Lexicon::alias(),
-            $name
+            Grammar::escape($name),
         );
     }
 

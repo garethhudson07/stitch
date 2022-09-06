@@ -155,4 +155,12 @@ class Grammar
     {
         return '?';
     }
+
+    /**
+     * @return string
+     */
+    public static function quote($value)
+    {
+        return "'" . $value . "'";
+    }
 }

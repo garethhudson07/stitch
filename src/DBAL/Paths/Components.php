@@ -2,6 +2,8 @@
 
 namespace Stitch\DBAL\Paths;
 
+use Stitch\DBAL\Syntax\Grammar;
+
 class Components
 {
     protected $items = [];
@@ -11,6 +13,8 @@ class Components
     protected $parent;
 
     protected $assembled = '';
+
+    protected $escape = false;
 
     /**
      * Components constructor.
@@ -33,6 +37,16 @@ class Components
     }
 
     /**
+     * @return $this
+     */
+    public function escape()
+    {
+        $this->escape = true;
+
+        return $this;
+    }
+
+    /**
      * @param Components $parent
      * @return $this
      */
@@ -48,7 +62,7 @@ class Components
      */
     public function implode()
     {
-        return implode($this->glue, $this->all());
+        return implode($this->glue, $this->escape ? array_map(fn($segment) => Grammar::escape($segment), $this->all()) : $this->all());
     }
 
     /**

@@ -10,7 +10,7 @@ abstract class Path
 
     public function __construct()
     {
-        $this->qualifiedName = new Components(Grammar::qualifier());
+        $this->qualifiedName = (new Components(Grammar::qualifier()))->escape();
     }
 
     /**
