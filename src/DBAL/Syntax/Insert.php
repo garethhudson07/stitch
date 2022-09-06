@@ -26,7 +26,7 @@ class Insert extends Syntax
     public static function columns(array $columns): string
     {
         return static::parentheses(
-            static::list($columns)
+            static::list(array_map(fn($column) => Grammar::escape($column), $columns))
         );
     }
 

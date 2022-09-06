@@ -30,7 +30,7 @@ class Update extends Syntax
                 array_map(function ($column)
                 {
                     return static::implode(
-                        $column,
+                        Grammar::escape($column),
                         Grammar::equal(),
                         Grammar::placeholder()
                     );
