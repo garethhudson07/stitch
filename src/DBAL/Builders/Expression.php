@@ -69,7 +69,7 @@ class Expression
      */
     public function __call($method, $arguments)
     {
-        if (array_key_exists($method, $this->aliases)) {
+        if ($this->aliases[$method] ?? false) {
             $this->{$this->aliases[$method]}(...$arguments);
         }
     }

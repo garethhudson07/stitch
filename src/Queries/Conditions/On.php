@@ -88,7 +88,7 @@ class On
      */
     public function __call(string $method, array $arguments)
     {
-        if (array_key_exists($method, $this->aliases)) {
+        if ($this->aliases[$method] ?? false) {
             $method = $this->aliases[$method];
         }
 
