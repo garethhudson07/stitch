@@ -54,7 +54,7 @@ class Set extends Aggregate
             if ($item = $this->find($raw[$primaryKey->alias()->assembled()])) {
                 $item->extractRelations($raw);
             } else {
-                $item = $this->blueprint->resultRecord()->extract($raw);
+                $item = $this->blueprint->resultRecord()->resultSet($this)->extract($raw);
                 $this->items[] = $item;
                 $this->map[$item->{$primaryKey->name()}] = count($this->items) - 1;
             }
@@ -90,5 +90,29 @@ class Set extends Aggregate
         }
 
         return $collection;
+    }
+
+    /**
+     * @param mixed $primaryKey
+     * @return bool
+     */
+    public function remove($primaryKey)
+    {
+        if (array_key_exists($primaryKey, $this->map)) {
+            unset($this->items[$this->map[$primaryKey]]);
+
+            $this->items = array_values($this->items);
+            $this->map = [];
+
+            $primaryKey = $this->blueprint->table()->primaryKey();
+
+            foreach ($this->items as $index => $item) {
+                $this->map[$item->{$primaryKey->name()}] = $index;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

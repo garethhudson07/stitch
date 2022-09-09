@@ -3,6 +3,7 @@
 namespace Stitch\Result;
 
 use Stitch\Contracts\Arrayable;
+use Stitch\Result\Set as ResultSet;
 
 /**
  * Class Record
@@ -14,6 +15,11 @@ class Record implements Arrayable
      * @var Blueprint
      */
     protected $blueprint;
+
+    /**
+     * @var ResultSet|null
+     */
+    protected $resultSet = null;
 
     /**
      * @var array
@@ -32,6 +38,17 @@ class Record implements Arrayable
     public function __construct(Blueprint $blueprint)
     {
         $this->blueprint = $blueprint;
+    }
+
+    /**
+     * @param Set $resultSet
+     * @return $this
+     */
+    public function resultSet(ResultSet $resultSet)
+    {
+        $this->resultSet = $resultSet;
+
+        return $this;
     }
 
     /**
@@ -73,9 +90,7 @@ class Record implements Arrayable
      */
     public function isNull(): bool
     {
-        $primaryKeyName = $this->blueprint->table()->primaryKey()->name();
-
-        return (array_key_exists($primaryKeyName, $this->data) && is_null($this->data[$primaryKeyName]));
+        return $this->getPrimaryKey() === null;
     }
 
     /**
@@ -85,6 +100,14 @@ class Record implements Arrayable
     public function __get(string $key)
     {
         return $this->data[$key];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrimaryKey()
+    {
+        return $this->data[$this->blueprint->table()->primaryKey()->name()] ?? null;
     }
 
     /**
@@ -131,9 +154,18 @@ class Record implements Arrayable
      */
     public function toArray(): array
     {
-        return array_merge($this->data, array_map(function ($relation)
-        {
+        return array_merge($this->data, array_map(function ($relation) {
             return is_null($relation) ? null : $relation->toArray();
         }, $this->relations));
+    }
+
+    /**
+     * @return void
+     */
+    public function remove(): void
+    {
+        if (isset($this->resultSet)) {
+            $this->resultSet->remove($this->getPrimaryKey());
+        }
     }
 }

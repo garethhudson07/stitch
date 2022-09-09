@@ -14,6 +14,8 @@ use Stitch\Queries\Path;
 use Stitch\Queries\Pipeline;
 use Stitch\Queries\Query;
 use Stitch\Relations\Relation;
+use Stitch\Result\Set as ResultSet;
+use Stitch\Result\Record;
 
 /**
  * Class Relation
@@ -207,6 +209,18 @@ class Join
     public function emitFetching(Query $query): Join
     {
         $this->emitter->fetching($query);
+
+        return $this;
+    }
+
+    /**
+     * @param Query $query
+     * @param ResultSet|Record|null $result
+     * @return $this
+     */
+    public function emitFetched(Query $query, $result): Join
+    {
+        $this->emitter->fetched($query, $result);
 
         return $this;
     }

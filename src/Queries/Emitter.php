@@ -2,6 +2,9 @@
 
 namespace Stitch\Queries;
 
+use Stitch\Result\Set as ResultSet;
+use Stitch\Result\Record;
+
 class Emitter
 {
     protected $model;
@@ -42,6 +45,40 @@ class Emitter
         if ($event->propagating()) {
             foreach ($this->joins as $join) {
                 $join->emitFetching($query);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Query $query
+     * @param ResultSet|Record|null $result
+     * @return $this
+     */
+    public function fetched(Query $query, $result): Emitter
+    {
+        $iterator = [];
+
+        if ($result instanceof Record) {
+            $iterator[] = $result;
+        }
+
+        if ($result instanceof ResultSet) {
+            $iterator = $result->all();
+        }
+
+        foreach ($iterator as $record) {
+            $event = $this->model->makeEvent('fetched')->fillPayload([
+                'query' => $query,
+                'path' => $this->path,
+                'record' => $record,
+            ])->fire();
+
+            if ($event->propagating()) {
+                foreach ($this->joins as $join) {
+                    $join->emitFetched($query, $record->getRelations()[$join->getRelation()->getName()] ?? null);
+                }
             }
         }
 

@@ -295,9 +295,13 @@ class Query
 
         $this->emitter->fetching($this);
 
-        return ResultBlueprint::make($this, $paths)->resultSet()->assemble(
+        $result = ResultBlueprint::make($this, $paths)->resultSet()->assemble(
             Dispatcher::select($this->builder, $paths)
         );
+
+        $this->emitter->fetched($this, $result);
+
+        return $result;
     }
 
     /**
