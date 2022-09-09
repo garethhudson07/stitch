@@ -54,7 +54,7 @@ class Set extends Aggregate
             if ($item = $this->find($raw[$primaryKey->alias()->assembled()])) {
                 $item->extractRelations($raw);
             } else {
-                $item = $this->blueprint->resultRecord()->resultSet($this)->extract($raw);
+                $item = $this->blueprint->resultRecord()->parent($this)->extract($raw);
                 $this->items[] = $item;
                 $this->map[$item->{$primaryKey->name()}] = count($this->items) - 1;
             }

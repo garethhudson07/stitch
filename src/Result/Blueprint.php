@@ -93,10 +93,10 @@ class Blueprint
      * @param array $raw
      * @return null|Record|Set
      */
-    public function extract(array $raw)
+    public function extract(array $raw, ?Record $parent = null)
     {
         if ($this->factory instanceof Relation && $this->factory->associatesOne()) {
-            $extracted = $this->resultRecord()->extract($raw);
+            $extracted = $this->resultRecord()->parent($parent)->extract($raw);
 
             if ($extracted->isNull()) {
                 $extracted = null;

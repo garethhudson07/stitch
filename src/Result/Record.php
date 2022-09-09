@@ -3,7 +3,6 @@
 namespace Stitch\Result;
 
 use Stitch\Contracts\Arrayable;
-use Stitch\Result\Set as ResultSet;
 
 /**
  * Class Record
@@ -17,9 +16,9 @@ class Record implements Arrayable
     protected $blueprint;
 
     /**
-     * @var ResultSet|null
+     * @var Set|Record|null
      */
-    protected $resultSet = null;
+    protected $parent = null;
 
     /**
      * @var array
@@ -41,12 +40,12 @@ class Record implements Arrayable
     }
 
     /**
-     * @param Set $resultSet
+     * @param Set|Record|null $parent
      * @return $this
      */
-    public function resultSet(ResultSet $resultSet)
+    public function parent($parent)
     {
-        $this->resultSet = $resultSet;
+        $this->parent = $parent;
 
         return $this;
     }
@@ -61,7 +60,7 @@ class Record implements Arrayable
             if (($this->relations[$key] ?? false) && method_exists($this->relations[$key], 'extract')) {
                 $this->relations[$key]->extract($raw);
             } else {
-                $this->relations[$key] = $blueprint->extract($raw);
+                $this->relations[$key] = $blueprint->extract($raw, $this);
             }
         }
 
@@ -160,12 +159,35 @@ class Record implements Arrayable
     }
 
     /**
-     * @return void
+     * The record will remove itself from its parent (either from a collection of other records or as a related record)
+     *
+     * @return bool
      */
-    public function remove(): void
+    public function remove(): bool
     {
-        if (isset($this->resultSet)) {
-            $this->resultSet->remove($this->getPrimaryKey());
+        if ($this->parent instanceof Set) {
+            return $this->parent->remove($this->getPrimaryKey());
         }
+
+        if ($this->parent instanceof Record) {
+            return $this->parent->removeRelatedRecord($this);
+        }
+    }
+
+    /**
+     * @param Record $record
+     * @return bool
+     */
+    public function removeRelatedRecord(Record $record): bool
+    {
+        foreach ($this->relations as $key => $relation) {
+            if ($relation === $record) {
+                unset($this->relations[$key]);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }
