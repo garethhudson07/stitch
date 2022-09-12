@@ -126,6 +126,14 @@ class Record implements Arrayable
     }
 
     /**
+     * @return Blueprint
+     */
+    public function getBlueprint()
+    {
+        return $this->blueprint;
+    }
+
+    /**
      * @return mixed
      */
     public function hydrate()
