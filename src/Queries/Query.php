@@ -11,6 +11,7 @@ use Stitch\DBAL\Builders\Query as Builder;
 use Stitch\DBAL\Dispatcher;
 use Stitch\Queries\Conditions\Where;
 use Stitch\Result\Record;
+use Stitch\Records\Record as HydratedRecord;
 use Stitch\Result\Blueprint as ResultBlueprint;
 use Stitch\Result\Set as ResultSet;
 
@@ -25,6 +26,9 @@ class Query
      */
     protected $model;
 
+    /**
+     * @var Builder
+     */
     protected $builder;
 
     /**
@@ -37,14 +41,22 @@ class Query
      */
     protected $relations;
 
+    /**
+     * @var Emitter
+     */
     protected $emitter;
 
+    /**
+     * @var Where
+     */
     protected $conditions;
 
+    /**
+     * @var bool
+     */
     protected $hydrate = true;
 
     /**
-     * Query constructor.
      * @param Model $model
      * @param Builder $builder
      * @param Map $joins
@@ -88,7 +100,7 @@ class Query
     }
 
     /**
-     * @return mixed
+     * @return Builder
      */
     public function getBuilder()
     {
@@ -104,7 +116,7 @@ class Query
     }
 
     /**
-     * @return $this
+     * @return static
      */
     public function hydrated()
     {
@@ -114,7 +126,7 @@ class Query
     }
 
     /**
-     * @return $this
+     * @return static
      */
     public function dehydrated()
     {
@@ -134,7 +146,7 @@ class Query
 
     /**
      * @param mixed ...$pipelines
-     * @return $this
+     * @return static
      */
     public function with(...$pipelines)
     {
@@ -154,7 +166,7 @@ class Query
 
     /**
      * @param array ...$pipelines
-     * @return $this
+     * @return static
      */
     public function select(...$pipelines)
     {
@@ -170,7 +182,7 @@ class Query
     /**
      * @param string $pipeline
      * @param string $direction
-     * @return $this
+     * @return static
      */
     public function orderBy(string $pipeline, string $direction = 'ASC')
     {
@@ -248,7 +260,7 @@ class Query
 
     /**
      * @param array ...$arguments
-     * @return $this
+     * @return static
      */
     public function limit(...$arguments)
     {
@@ -263,7 +275,7 @@ class Query
 
     /**
      * @param array ...$arguments
-     * @return $this
+     * @return static
      */
     public function offset(...$arguments)
     {
@@ -277,7 +289,7 @@ class Query
     }
 
     /**
-     * @return Collection
+     * @return ResultSet
      */
     public function get()
     {
@@ -305,7 +317,7 @@ class Query
     }
 
     /**
-     * @return Record|null
+     * @return Record|HydratedRecord|null
      */
     public function first()
     {
