@@ -42,7 +42,7 @@ class Record implements Arrayable
     public function extractRelations(array $raw)
     {
         foreach ($this->blueprint->relations() as $key => $blueprint) {
-            if (($this->relations[$key] ?? false) && method_exists($this->relations[$key], 'extract')) {
+            if (array_key_exists($key, $this->relations) && method_exists($this->relations[$key], 'extract')) {
                 $this->relations[$key]->extract($raw);
             } else {
                 $this->relations[$key] = $blueprint->extract($raw);
@@ -59,7 +59,7 @@ class Record implements Arrayable
     public function extract(array $raw)
     {
         foreach ($this->blueprint->columns() as $column) {
-            if ($raw[$column->alias()->assembled()] ?? false) {
+            if (array_key_exists($column->alias()->assembled(), $raw)) {
                 $this->data[$column->name()] = $column->getSchema()->cast(
                     $raw[$column->alias()->assembled()]
                 );

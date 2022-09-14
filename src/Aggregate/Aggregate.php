@@ -7,10 +7,14 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Stitch\Contracts\Arrayable;
-use Traversable;
 
+/**
+ * Class Collection
+ * @package Stitch
+ */
 class Aggregate implements IteratorAggregate, ArrayAccess, Countable, Arrayable
 {
+
     /**
      * The items contained in the collection.
      *
@@ -62,39 +66,39 @@ class Aggregate implements IteratorAggregate, ArrayAccess, Countable, Arrayable
     /**
      * Set the item at a given offset.
      *
-     * @param mixed $offset
+     * @param mixed $key
      * @param mixed $value
      * @return void
      */
-    public function offsetSet(mixed $offset, mixed $value): void
+    public function offsetSet($key, $value)
     {
-        if (is_null($offset)) {
+        if (is_null($key)) {
             $this->items[] = $value;
         } else {
-            $this->items[$offset] = $value;
+            $this->items[$key] = $value;
         }
     }
 
     /**
      * Unset the item at a given offset.
      *
-     * @param mixed $offset
+     * @param string $key
      * @return void
      */
-    public function offsetUnset(mixed $offset): void
+    public function offsetUnset($key)
     {
-        unset($this->items[$offset]);
+        unset($this->items[$key]);
     }
 
     /**
      * Determine if an item exists at an offset.
      *
-     * @param mixed $offset
+     * @param mixed $key
      * @return bool
      */
-    public function offsetExists(mixed $offset): bool
+    public function offsetExists($key)
     {
-        return array_key_exists($offset, $this->items);
+        return array_key_exists($key, $this->items);
     }
 
     /**
@@ -113,8 +117,12 @@ class Aggregate implements IteratorAggregate, ArrayAccess, Countable, Arrayable
      *
      * @return ArrayIterator
      */
-    public function getIterator(): Traversable
+    public function getIterator()
     {
+        if ($this->items instanceof Collection) {
+            return new ArrayIterator($this->items->getIterator());
+        }
+
         return new ArrayIterator($this->items);
     }
 
@@ -123,7 +131,7 @@ class Aggregate implements IteratorAggregate, ArrayAccess, Countable, Arrayable
      *
      * @return int
      */
-    public function count(): int
+    public function count()
     {
         return count($this->items);
     }
