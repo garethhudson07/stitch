@@ -181,6 +181,9 @@ class Column
     public function encode($value)
     {
         switch ($this->type) {
+            case 'boolean':
+                return $value ? 1 : 0;
+            
             case 'json':
                 return json_encode($value);
         }
