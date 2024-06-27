@@ -102,6 +102,15 @@ class Record implements Arrayable
     }
 
     /**
+     * @param string $key
+     * @param mixed $value
+     */
+    public function __set(string $key, mixed $value): void
+    {
+        $this->data[$key] = $value;
+    }
+
+    /**
      * @return mixed
      */
     public function getPrimaryKey()
