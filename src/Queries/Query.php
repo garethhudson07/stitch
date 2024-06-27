@@ -295,7 +295,7 @@ class Query
     {
         $resultSet = $this->getResultSet();
 
-        if ($resultSet->count()) {
+        if ($this->builder?->getLimit() !== 1 && $resultSet->count()) {
             $this->emitter->fetchedMany($this, $resultSet);
         }
 
