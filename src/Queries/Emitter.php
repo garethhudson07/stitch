@@ -84,4 +84,36 @@ class Emitter
 
         return $this;
     }
+
+    /**
+     * @param Query $query
+     * @param Record $result
+     * @return $this
+     */
+    public function fetchedOne(Query $query, Record $result): Emitter
+    {
+        $this->model->makeEvent('fetchedOne')->fillPayload([
+            'query' => $query,
+            'path' => $this->path,
+            'record' => $result,
+        ])->fire();
+
+        return $this;
+    }
+
+    /**
+     * @param Query $query
+     * @param ResultSet $result
+     * @return $this
+     */
+    public function fetchedMany(Query $query, ResultSet $result): Emitter
+    {
+        $this->model->makeEvent('fetchedMany')->fillPayload([
+            'query' => $query,
+            'path' => $this->path,
+            'result' => $result,
+        ])->fire();
+
+        return $this;
+    }
 }

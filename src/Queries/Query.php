@@ -295,6 +295,10 @@ class Query
     {
         $resultSet = $this->getResultSet();
 
+        if ($resultSet->count()) {
+            $this->emitter->fetchedMany($this, $resultSet);
+        }
+
         return $this->hydrate ? $resultSet->hydrate() : $resultSet;
     }
 
@@ -321,9 +325,13 @@ class Query
      */
     public function first()
     {
-        $result = $this->limit(1)->get();
+        $result = $this->limit(1)->get()[0] ?? null;
 
-        return $result->count() ? $result[0] : null;
+        if ($result) {
+            $this->emitter->fetchedOne($this, $result);
+        }
+
+        return $result;
     }
 
     /**
