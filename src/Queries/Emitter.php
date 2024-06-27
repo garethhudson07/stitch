@@ -4,6 +4,7 @@ namespace Stitch\Queries;
 
 use Stitch\Result\Set as ResultSet;
 use Stitch\Result\Record;
+use Stitch\Records\Record as HydratedRecord;
 
 class Emitter
 {
@@ -53,14 +54,14 @@ class Emitter
 
     /**
      * @param Query $query
-     * @param ResultSet|Record|null $result
+     * @param ResultSet|Record|HydratedRecord|null $result
      * @return $this
      */
     public function fetched(Query $query, $result): Emitter
     {
         $iterator = [];
 
-        if ($result instanceof Record) {
+        if ($result instanceof Record || $result instanceof HydratedRecord) {
             $iterator[] = $result;
         }
 
@@ -75,7 +76,7 @@ class Emitter
                 'record' => $record,
             ])->fire();
 
-            if ($event->propagating()) {
+            if ($event->propagating() && method_exists($record, 'getRelations')) {
                 foreach ($this->joins as $join) {
                     $join->emitFetched($query, $record->getRelations()[$join->getRelation()->getName()] ?? null);
                 }
@@ -90,7 +91,7 @@ class Emitter
      * @param Record $result
      * @return $this
      */
-    public function fetchedOne(Query $query, Record $result): Emitter
+    public function fetchedOne(Query $query, Record|HydratedRecord $result): Emitter
     {
         $this->model->makeEvent('fetchedOne')->fillPayload([
             'query' => $query,
