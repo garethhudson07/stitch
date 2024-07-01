@@ -105,6 +105,16 @@ class Column
     }
 
     /**
+     * @return $this
+     */
+    public function writeable()
+    {
+        $this->readonly = false;
+
+        return $this;
+    }
+
+    /**
      * @param string $column
      * @return $this
      */
