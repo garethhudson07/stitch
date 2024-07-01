@@ -186,6 +186,34 @@ class Record implements Arrayable
     /**
      * @return $this
      */
+    public function refresh(): self
+    {
+        $event = $this->model->makeEvent('refreshing');
+        $event->fillPayload(['record' => $this])->fire();
+
+        if ($event->defaultPrevented()) {
+            return $this;
+        }
+
+        $primaryKey = $this->attributes[$this->model->getTable()->getPrimaryKey()->getName()] ?? false;
+        $current = $primaryKey ? $this->model->find($primaryKey) : false;
+
+        if ($current) {
+            $this->fill($current->toArray());
+
+            $this->markAsPersisted();
+
+            $this->model->makeEvent('refreshed')->fillPayload(['record' => $this])->fire();
+        } else {
+            $this->model->makeEvent('refreshFailed')->fillPayload(['record' => $this])->fire();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
     protected function update()
     {
         $table = $this->model->getTable();
@@ -228,7 +256,7 @@ class Record implements Arrayable
             (new RecordBuilder($table))->fill($this->attributes)
         );
 
-        if ($primaryKey->incrementing()) {
+        if (!($this->attributes[$primaryKey->getName()] ?? false)) {
             $this->attributes[$primaryKey->getName()] = $connection->lastInsertId();
         }
 

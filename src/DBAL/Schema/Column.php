@@ -29,6 +29,11 @@ class Column
     protected $increments = false;
 
     /**
+     * @var bool
+     */
+    protected $readonly = false;
+
+    /**
      * Column constructor.
      * @param Table $table
      * @param string $name
@@ -68,6 +73,7 @@ class Column
     public function primary()
     {
         $this->table->getkeyChain()->setPrimary($this);
+        $this->readonly();
 
         return $this;
     }
@@ -78,6 +84,24 @@ class Column
     public function isPrimary()
     {
         return $this->table->getPrimaryKey() === $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReadonly()
+    {
+        return $this->readonly;
+    }
+
+    /**
+     * @return $this
+     */
+    public function readonly()
+    {
+        $this->readonly = true;
+
+        return $this;
     }
 
     /**
@@ -183,7 +207,7 @@ class Column
         switch ($this->type) {
             case 'boolean':
                 return $value ? 1 : 0;
-            
+
             case 'json':
                 return json_encode($value);
         }

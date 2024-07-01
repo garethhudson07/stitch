@@ -34,7 +34,7 @@ class Insert extends Statement
      */
     public function evaluate()
     {
-        $columns = $this->builder->getColumns();
+        $columns = $this->builder->getMutatableColumns();
         $values = array_values($columns);
 
         $this->push(

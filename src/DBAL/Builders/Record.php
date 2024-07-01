@@ -3,6 +3,7 @@
 namespace Stitch\DBAL\Builders;
 
 use Stitch\DBAL\Schema\Table as Schema;
+use Stitch\DBAL\Schema\Column;
 
 /**
  * Class Record
@@ -77,11 +78,13 @@ class Record
      */
     public function getMutatableColumns(): array
     {
-        $primaryKeyName = $this->schema->getPrimaryKey()->getName();
+        $columns = $this->schema->getColumns();
         $mutatable = [];
 
         foreach ($this->columns as $name => $value) {
-            if ($name !== $primaryKeyName) {
+            $column = current(array_filter($columns, fn (Column $column) => $column->getName() === $name));
+
+            if ($column && !$column->isReadonly()) {
                 $mutatable[$name] = $value;
             }
         }
