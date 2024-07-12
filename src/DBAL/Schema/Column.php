@@ -219,7 +219,7 @@ class Column
                 return $value ? 1 : 0;
 
             case 'json':
-                return json_encode($value);
+                return $value === null ? null : json_encode($value);
         }
 
         return $value;
