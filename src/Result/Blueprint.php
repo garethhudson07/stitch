@@ -145,6 +145,10 @@ class Blueprint
      */
     public function event(string $event): Event
     {
+        if (method_exists($this->factory, 'getForeignModel')) {
+            return $this->factory->getForeignModel()->makeEvent($event);
+        }
+
         return $this->factory->makeEvent($event);
     }
 }
