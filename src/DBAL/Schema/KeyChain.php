@@ -80,4 +80,20 @@ class KeyChain
 
         return null;
     }
+
+    /**
+     * @return array
+     */
+    public function getForeign(): array
+    {
+        return $this->foreign;
+    }
+
+    /**
+     * @return array
+     */
+    public function getForeignKeys(): array
+    {
+        return array_keys($this->foreign);
+    }
 }
