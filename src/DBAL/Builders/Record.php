@@ -84,7 +84,9 @@ class Record
         foreach ($this->columns as $name => $value) {
             $column = current(array_filter($columns, fn (Column $column) => $column->getName() === $name));
 
-            if ($column && !$column->isReadonly()) {
+            // If the column is writeable or temp writeable, add it to the mutatable columns
+            // Temp writeable columns are set when the column is specifically set by setAttribute
+            if ($column && ($column->isWriteable() || $column->isTempWriteable())) {
                 $mutatable[$name] = $value;
             }
         }

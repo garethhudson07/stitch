@@ -79,6 +79,8 @@ class Record implements Arrayable
      */
     public function setAttribute(string $key, $value)
     {
+        $this->model->getTable()->getColumn($key)->tempWriteable();
+
         $this->attributes[$key] = $value;
 
         return $this;
@@ -180,7 +182,13 @@ class Record implements Arrayable
      */
     public function save()
     {
-        return $this->persisted() ? $this->update() : $this->insert();
+        $result = $this->persisted() ? $this->update() : $this->insert();
+
+        foreach ($this->model->getTable()->getColumns() as $column) {
+            $column->resetTempWriteable();
+        }
+
+        return $result;
     }
 
     /**

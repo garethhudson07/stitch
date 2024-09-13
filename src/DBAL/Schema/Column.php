@@ -34,6 +34,11 @@ class Column
     protected $readonly = false;
 
     /**
+     * @var bool
+     */
+    protected $tempWriteable = false;
+
+    /**
      * Column constructor.
      * @param Table $table
      * @param string $name
@@ -95,6 +100,22 @@ class Column
     }
 
     /**
+     * @return bool
+     */
+    public function isWriteable()
+    {
+        return !$this->readonly;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTempWriteable()
+    {
+        return $this->tempWriteable;
+    }
+
+    /**
      * @return $this
      */
     public function readonly()
@@ -110,6 +131,26 @@ class Column
     public function writeable()
     {
         $this->readonly = false;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function tempWriteable()
+    {
+        $this->tempWriteable = true;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function resetTempWriteable()
+    {
+        $this->tempWriteable = false;
 
         return $this;
     }
