@@ -39,6 +39,11 @@ class Column
     protected $tempWriteable = false;
 
     /**
+     * @var int
+     */
+    protected $precision = 2;
+
+    /**
      * Column constructor.
      * @param Table $table
      * @param string $name
@@ -148,6 +153,16 @@ class Column
     /**
      * @return $this
      */
+    public function precision(int $precision)
+    {
+        $this->precision = $precision;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
     public function resetTempWriteable()
     {
         $this->tempWriteable = false;
@@ -238,6 +253,9 @@ class Column
             case 'integer':
                 return intval($value);
 
+            case 'decimal':
+                return round($value, $this->precision);
+
             case 'boolean':
                 return boolval($value);
 
@@ -256,6 +274,12 @@ class Column
     public function encode($value)
     {
         switch ($this->type) {
+            case 'integer':
+                return intval($value);
+
+            case 'decimal':
+                return round($value, $this->precision);
+
             case 'boolean':
                 return $value ? 1 : 0;
 
