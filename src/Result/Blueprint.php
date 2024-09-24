@@ -129,6 +129,10 @@ class Blueprint
      */
     public function activeRecord(array $attributes = [])
     {
+        if (method_exists($this->factory, 'getForeignModel')) {
+            return $this->factory->getForeignModel()->record($attributes);
+        }
+
         return $this->factory->record($attributes);
     }
 
@@ -137,6 +141,10 @@ class Blueprint
      */
     public function activeRecordCollection()
     {
+        if (method_exists($this->factory, 'getForeignModel')) {
+            return $this->factory->getForeignModel()->collection();
+        }
+
         return $this->factory->collection();
     }
 
