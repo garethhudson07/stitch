@@ -275,10 +275,10 @@ class Column
     {
         switch ($this->type) {
             case 'integer':
-                return intval($value);
+                return $value === null ? null : intval($value);
 
             case 'decimal':
-                return round($value, $this->precision);
+                return $value === null ? null : round($value, $this->precision);
 
             case 'boolean':
                 return $value ? 1 : 0;
