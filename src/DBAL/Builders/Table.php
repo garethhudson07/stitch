@@ -129,7 +129,7 @@ class Table
             $columns = array_merge($columns, $join->pullColumns());
         }
 
-        return $columns;
+        return array_values(array_filter($columns, fn($column) => $column->isVisible()));
     }
 
     /**

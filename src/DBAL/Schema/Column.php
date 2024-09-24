@@ -36,6 +36,11 @@ class Column
     /**
      * @var bool
      */
+    protected $hidden = false;
+
+    /**
+     * @var bool
+     */
     protected $tempWriteable = false;
 
     /**
@@ -115,6 +120,22 @@ class Column
     /**
      * @return bool
      */
+    public function isHidden()
+    {
+        return $this->hidden;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVisible()
+    {
+        return !$this->hidden;
+    }
+
+    /**
+     * @return bool
+     */
     public function isTempWriteable()
     {
         return $this->tempWriteable;
@@ -136,6 +157,26 @@ class Column
     public function writeable()
     {
         $this->readonly = false;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function hidden()
+    {
+        $this->hidden = true;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function visible()
+    {
+        $this->hidden = false;
 
         return $this;
     }
