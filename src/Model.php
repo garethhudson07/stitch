@@ -52,11 +52,15 @@ class Model
     public function withEvents()
     {
         $this->eventEmitter = new Emitter();
+
+        return $this;
     }
 
     public function withoutEvents()
     {
         $this->eventEmitter = new NullEmitter();
+
+        return $this;
     }
 
     /**
