@@ -4,18 +4,19 @@ namespace Stitch;
 
 use Closure;
 use Stitch\DBAL\Builders\Query as QueryBuilder;
+use Stitch\DBAL\Schema\Table;
 use Stitch\Events\Emitter;
 use Stitch\Events\Event;
+use Stitch\Events\NullEmitter;
 use Stitch\Queries\Query;
-use Stitch\Relations\BelongsTo;
+use Stitch\Records\Aggregate as RecordAggregate;
+use Stitch\Records\Record;
 use Stitch\Relations\Aggregate as Relations;
+use Stitch\Relations\BelongsTo;
 use Stitch\Relations\Has;
 use Stitch\Relations\HasOne;
 use Stitch\Relations\ManyToMany;
 use Stitch\Relations\Relation;
-use Stitch\DBAL\Schema\Table;
-use Stitch\Records\Record;
-use Stitch\Records\Aggregate as RecordAggregate;
 
 /**
  * Class Model
@@ -45,7 +46,17 @@ class Model
     {
         $this->table = $table;
         $this->relations = new Relations();
-        $this->eventEmitter =  new Emitter();
+        $this->withEvents();
+    }
+
+    public function withEvents()
+    {
+        $this->eventEmitter = new Emitter();
+    }
+
+    public function withoutEvents()
+    {
+        $this->eventEmitter = new NullEmitter();
     }
 
     /**
