@@ -46,19 +46,19 @@ class Model
     {
         $this->table = $table;
         $this->relations = new Relations();
-        $this->withEvents();
+        $this->eventEmitter = new Emitter();
     }
 
     public function withEvents()
     {
-        $this->eventEmitter = new Emitter();
+        $this->eventEmitter->enable();
 
         return $this;
     }
 
     public function withoutEvents()
     {
-        $this->eventEmitter = new NullEmitter();
+        $this->eventEmitter->disable();
 
         return $this;
     }

@@ -8,6 +8,8 @@ class Emitter
 {
     protected $listeners = [];
 
+    protected $enabled = true;
+
     /**
      * @param string $name
      * @return Event
@@ -23,6 +25,10 @@ class Emitter
      */
     public function emit(Event $event): self
     {
+        if (!$this->enabled) {
+            return $this;
+        }
+
         foreach($this->listeners as &$listener) {
             if ($listener instanceof Closure) {
                 $listener = $listener();
@@ -45,6 +51,20 @@ class Emitter
     public function listen(Closure $listener): self
     {
         $this->listeners[] = $listener;
+
+        return $this;
+    }
+
+    public function enable(): self
+    {
+        $this->enabled = true;
+
+        return $this;
+    }
+
+    public function disable(): self
+    {
+        $this->enabled = false;
 
         return $this;
     }
